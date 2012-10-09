@@ -1,0 +1,28 @@
+.metadata
+Servers/*
+ZKs/*
+lib/*
+tomcat/*
+*/bin
+*/bin-groovy
+*/build
+DndOldProject/*/bin
+DndOldProject/*/build
+*/.settings
+*/*.war
+docs/*
+PaymentSystem/WebRoot/js/plotkit/
+PaymentSystemReporting/WebRoot/js/plotkit/
+thirdparty
+RemoteSystemsTempFiles/
+# for sbt
+target/
+lib_managed/
+src_managed/
+project/boot/
+# for java6
+DataStore/src/com/webaroo/smsnew/db/Connection.java
+DataStore/src/com/webaroo/smsnew/db/PreparedStatement.java
+*~
+
+/AutoBlogger/output
