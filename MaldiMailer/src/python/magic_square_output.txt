@@ -1,0 +1,139 @@
+Question 1
+
+(a) Calculate the size of the state space as a function of N.
+
+Consider the grid, there are N*N cells in all. There are N robots, but each robot has a distinct "identity" because only a specific robot can end up in a specific destination cell.
+Hence, the size of the state space (upper bound) will be N*N Permute N ( i.e. N^2 P N)
+
+(b) Calculate the branching factor as a function of n.
+
+There will be multiple ways of how to calculate the branching factor, and each are the upper bounds of what may be possible.
+For smaller sizes, these formulas fail hopelessly because while calculating, I'm not considering an illegal move. But in a larger grid , say 16, or 20 , there may be states where all robots have all the possible moves available to them and hence the formula for theoritical upper bound.
+
+Method 1:
+Each robot at any given time has 5 moves available to it "at most", very important term here. They can move UP , DOWN, RIGHT, LEFT , STAY. Although if a robot stays put, one other adjacent robot (but not more than one) can hop over it, we wont add it to the 5 (since if a robot is staying put in the right block, the RIGHT move no longer becomes available to it).
+For N such robots, the absolute maximum branching factor will be =
+	(5 ^ N ) - 1 
+The -1 is when all Stay Put.
+
+Method 2:
+We use combinations for this solution.
+At any given point, either 1 or 2 or 3 .... or N robots will move.
+Here, we have only the 4 actions available UP (or JUMP UP) , DOWN (or JUMP DOWN) ,....
+Staying PUT is not an option because it is considered in the previous combination (i.e. if when we choose 2 robots, and one stays put and the other moves, that is the same as choosing any 1 robot and making him move, and so on for N robots)
+For N robots, the max branch factor will be =
+[N C 1 ]* 4 + [N C 2 ]* 4 * 2 + [N C 3 ]* 4 * 3 .... + [N C N ]* 4 * N
+
+(c) Suppose that a robot is at (xi, yi). Write a nontrivial admissible heuristic Hi for the number of moves it needs to get to its goal location at (n - i + 1, n), assuming that no other robots are on the grid.
+
+Manhattan Distance will be an admissible heuristic for when 1 robot is present and no other are on board i.e. sum of the horizontal & vertical distance from the destination.
+
+H(i) = | (N - i + 1) - xi  | + | N - yi  |
+modulo is important for horizontal distance , though pointless for vertical
+
+IMPORTANT NOTE: This is admissible when there is ONLY 1 robot on board
+
+
+(d) Which of the following heuristics are admissible for the problem of moving all n robots to their destinations? Explain each answer.
+
+First, I will note that this is not an adverserial search, in-fact one can imagine this to be co-operative since robots can help each other JUMP over each other moving 2 steps at a time.
+
+[i]   The sum of Hi for i=1 to N
+Not an admissible heurisitc, since it will grossly over-estimate the steps required. I'll explain this with an example.
+for size = 2 , sum works fine, infact its the Perfect heurisitc.
+for size = 3 , this fails.
+H1 = 4 , H2 = 2 , H3 = 4
+so Sum = 10
+But consider the following steps,
+R1 & R3 move 1 step DOWN
+R3 moves LEFT , R1 moves DOWN
+R2 JUMPS DOWN over R3
+R3 moves LEFT , R1 JUMPS RIGHT over R2
+R3 moves DOWN 
+Thus, we've reached GOAL state within 5 steps, which is < 10 
+
+[ii]  max{H1, . . . , Hn}
+This will be an admissible heuristic. It follows by logic thus,
+The only time that MAX might be overestimating the cost would be if that robot gets at least 1 JUMP on its way to the final position & doesnt stop on the way.
+Or more generally, it gets to JUMP more than it stays PUT AND also following the optimal manhattan block path descibed in question (c) or th sum of deviation from optimal path & PUT's is lesser than JUMPS.
+In the above heuristic, max value is for the edge robots, which is about 2*(N-1) [2,4,6,8,10...] for sizes [2,3,4,5,6...]
+Although R1 moves only 3 times (< 4 for MAX) , the entire solution is still 5 ( > 4 for MAX), this is because R1 has to wait once for a robot to become available for jumping and because even if R1 reaches goal state, others are yet to reach. In trying to cross over diagonally & re-arranging themselves, some robots will have to either stop or jump over.
+The best solution for size 4 shows similar result. So I'd say by induction and logic, max Hi would be an admissible heuristic
+
+
+[iii] min{H1, . . . , Hn}
+Since max is an admissible heurisitc , min will also be an admissible heurisitc, since min will be < max and max doesnt over-estimate the cost to goal either, hence neither will min and in that case it will be admissible. It will be a poorer heuristic as compared to max though.
+Anyway, while crossing over, some bots will stop or keep jumping over each other, either ways, since min Hi will be for the centrally places bots, the edge bots will need to hopping over every other bot to reach their destination, and for which central bots will have to pause, which will make sure min never underestimates and thus will be admissible.
+
+
+======================================================================================================
+
+Question 2
+Explain why when selecting a variable to assign a value next, it is a good to choose the variable that is most constrained, but the value that is least constraining.
+
+Answer:
+The answer is fairly logical when one considers the minimum remaining values (MRV) heuristic.
+Picking a variable which is most constrained means we pick the variable which will cause failure as soon as possible, allowing the tree to be pruned & state space to be searched to be significantly reduced (i.e. choose the node on the graph that has most edges first i.e. max number of constraints involving it).
+Picking the value which is least constraining means the fewest values in the other remaining variables are ruled out, thereby leaving the maximum possible flexibility for the searcher to choose values for the remaining variables and thereby maximizing the chances of a success (i.e. in essence prefer the value that will rule out fewest choices of values for the neighbours [russel norvig]) .
+
+For example, in the sample map solving problem (in class & in russel norvig chap 5) - commited as graph.gif in cvs, SA is the most constrained. So starting (rather SA should be the next one chosen [MRV algorithm]) to color from this most constrained variable will prune the search tree and finding a solution very fast.
+
+======================================================================================================
+
+Question 3
+
+
+(a)
+
+Please see README for more details about code & output_ms2.txt & output_ms3.txt for outputs
+_______________________________________________________________________________________________________
+
+(b) Explain why MinConflicts() does not work well for this problem.
+
+First lets describe what the implementation does:
+initialize all the variables with some random values
+then repeat the following for the number of steps (default 1000, but 5000000 doesnt solve size 3 either)
+from a shuffled list of variables, for each variable check if the variable is in conflict (if none are in conflict, return as answer), if it is in conflict, then find out the list of values for that variable which have the minimum number of conflicts & set any random value from it to the variable
+
+MinConflictSolver() uses minimum conflict theory to solve CSP's. It is an example of a  hill search ( local search) , which should work well in such placement problems, but they dont. This algorithm would be highly useful in a N queen problem, but it seems that the state-space of magic square is distributed in such a way that even a  hill search gets stuck and eventually runs out of iterations. It could be that the distribution of the state space is like how Russel Norvig describe as have porcupines on a floor, i.e. the entire space is filled with local maximas and finding the global one is really difficult.
+That coupled with the fact that it has no backtracking if it gets stuck on a minima or a random-restart process, chances of solving are slim
+
+6  7  2  
+1  5  9  
+8  3  4 
+Now Consider an almost solution, which has just 2 numbers out of place
+6  7  2  
+1  5  4  
+8  3  9 
+For this near solution,there are only 2 variables which have satisfied constraints , 1(value of 7) & 3(value of 1)
+When iterating through the variables, and it chooses the variable 5(value 4) , it finds 2 conflicts, and 0 value with < 2 conflicts, 2 with 2 conflicts , values 9 & 4.
+If it chooses 9, and then variable 8 is chosen next, then we get a solution.
+
+What we see from this is that if initial state is close to goal state we could immediately get a solution.
+
+Running in a big loop, I find that MinConflictsSolver solves the problem within 1000 steps on VERY RARE occasions
+Calling for size 3 and algo <constraint.MinConflictsSolver object at 0xb744e0ac> took 0.002 seconds.
+8  1  6  
+3  5  7  
+4  9  2  
+
+This is usually in very short durations, 0.004, 0.002 , etc while failures are usually 0.5 seconds
+
+This fits into the theory that when the initial state is close , theres a chance that a solution might be found, otherwise the state space is so distributed with local maxima's that the global maxima is never really found.
+Unlike N-Queen problem, where there are N^2 places to fit N queens, this has N^2 places to fit N values. The N-queen problem has lots of solutions proportionally to the state space
+
+Example, for a 4X4 size, there are ONLY 880 solution whereas min conflict search initial state allows all 16 numbers in all 16 slots with repetitions allowed, in a huge state space running into the order on 10^13
+
+________________________________________________________________________________________________________
+
+(c) Can you get a solution for a magic square of size six using any of the solvers and if so, how long does it take? Do you think that using CSP is a good approach for generating magic squares? Why or why not.
+
+I couldnt get a solution for size 6 using any solver after a couple of hours. I think because the search algorithm is generic it performs this badly. With a proper heuristic function performance might be improved.
+
+Although this particular implementation of CSP solving couldnt solve for magic squares > 6 effectively, I'd maintain that CSP's are still a good idea in the case of solving magic squares.
+CSP's are the best way of representing such problems, i.e. they're fairly intuitive. Also, given that completing a half-filled latin square is NP-Complete (http://www.sciencedirect.com/science/article/pii/0166218X84900751) , and that a latin square is essentially a sub-problem of magic squares, using a uninformed or even a brute force informed search would probably take far longer time. Magic Squares is a problem of constraint satisfaction over multiple but finite domains. 
+The best way to solve magic squares problem would  be to combine CSP's with an effective heuristic search methods [http://www.cs.nott.ac.uk/~yxb/LAHC/LAHC_IOC.pdf].
+As listed in the previous source, if the CSP is formulated in a better way, solving magic squares becomes extremely efficient, upto 7800 sized squares in less a minute.
+The algorithm that we've used is fairly simplistic, and if we use the many techniques listed there , such as decomposing magic squares, then CSP's combined with local search algorithms become extremely effective & efficient.
+
+======================================================================================================
