@@ -134,7 +134,8 @@ def play_game(game, display, *players):
             state = game.make_move(move, state)
             if display: game.display(state)
             if game.terminal_test(state):
-                return game.utility(state, players[0])
+                #return game.utility(state, players[0])
+                return game.utility(state, game.to_move(game.initial))
 
 #______________________________________________________________________________
 # Some Sample Games

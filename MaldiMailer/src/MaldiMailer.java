@@ -21,7 +21,7 @@ public class MaldiMailer
 
 	static final String NAME_HEADER = "Name";
 
-	static final String GRADE_FILE_PATH = "C:\\Users\\Milind\\Dropbox\\UMBC\\421\\test.csv";
+	static final String GRADE_FILE_PATH = "C:\\Users\\Milind\\Dropbox\\UMBC\\421\\test.csv";// 421-discussion-grades.csv";
 
 	static final String EMAIL_PATTERN = "^[_A-Za-z0-9-]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
 
@@ -34,6 +34,8 @@ public class MaldiMailer
 	static final String SUBJECT = "CMSC 421 - Section 1 - Grades For Classroom Discussions";
 
 	static final String BODY = "The following are your Grades in Discussions, etc till date:\n";
+
+	static final String POST_SCRIPT = "\n\nPS: Clarification folks, Discussion 6 was the Producer-Consumer Problem (although printed Discussion 7 on the sheets), and Discussion 7 was finding the absolute value of an integer without using branching.\n";
 
 	/**
 	 * @param args
@@ -103,6 +105,7 @@ public class MaldiMailer
 						if (string.matches(DISCUSSION_HEADER + "[0-9]+"))
 							messageBody.append(string + " : " + nextLine[headerMap.get(string)]).append("\n");
 					}
+					messageBody.append(POST_SCRIPT);
 					String emailTo = nextLine[headerMap.get(EMAILID)];
 
 					if (!isEmpty(emailTo))

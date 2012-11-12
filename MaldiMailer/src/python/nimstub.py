@@ -77,6 +77,7 @@ class Nim(Game):
         if self.terminal_test(state):
             value = if_(state.to_move == player, -1 , +1)
             if(callable(player)):
+                print "MALDI: using hack"
                 value = if_(state.to_move == '1', -1 , +1)
         #print "Utility calculate: player = [%s] state=[%s] value=[%f]" % (player , state , value) 
         return value   

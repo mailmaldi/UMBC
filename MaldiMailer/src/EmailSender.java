@@ -50,7 +50,7 @@ public class EmailSender
 		{
 			protected PasswordAuthentication getPasswordAuthentication()
 			{
-				return new PasswordAuthentication("milindp1", "Pyrqxgl12");
+				return new PasswordAuthentication("", ""); //TODO put in cs username , password
 			}
 		});
 		session.setDebug(false);
