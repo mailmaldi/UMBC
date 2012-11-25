@@ -4,19 +4,29 @@
 -module(mygossip).
 -compile([debug_info, export_all]).
 
-myGossip({Fragment_Id, Data_Values , Neighbours_List, Delay , KCount , {MIN,MAX,AVERAGE,MEDIAN}},Initialized,Infected) -> 
+myGossip(Fragment_Id, Data_Values , Neighbours_List, Delay , KCount , MIN,MAX,AVERAGE,MEDIAN,Initialized,Infected,IsRunning) -> 
+	io:format("Invoked pid ~p~n",[self()]),
 	if 
-		Initialized == 0 ->
-		   io:format("Not initialized with Data yet for pid ~p~n",[self()]);
-		Initialized == 1 ->
-			if Infected == 0 ->
-				   %% TODO do a PULL here
-				   io:format("",[]);			   		
-			   Infected == 1 ->
-				   %% TODO do a PUSH here
-				   io:format("",[])
-			end,
-		   io:format("Data has been initialized for the pid ~p~n",[self()])
+		IsRunning == 1 ->
+			io:format("Running is pid ~p~n",[self()]),
+			if 
+				Initialized == 0 ->
+				   io:format("Not initialized with Data yet for pid ~p~n",[self()]);
+				Initialized == 1 ->
+					%% Find a random neighbour from neighbour list
+					NewNodePID = list:nth(random:uniform(length(Neighbours_List)) -1, Neighbours_List) , %%TODO is this index finding correct?
+					if Infected == 0 ->
+						   %% TODO do a PULL here
+						   io:format("PULL for PID ~p~n",[self()]);			   		
+					   Infected == 1 ->
+						   %% TODO do a PUSH here
+							NewNodePID ! {push_average_request,self(),lists:sum(Data_Values)},
+						   io:format("PUSH for PID ~p~n",[self()])
+					end,
+				   io:format("Data has been initialized for the pid ~p~n",[self()])
+			end;
+	 	IsRunning == 0 ->
+			io:format("Not Running is pid ~p~n",[self()])
 	end,
 	   
 	%% if not initialized then wait for the initialize message
@@ -24,18 +34,20 @@ myGossip({Fragment_Id, Data_Values , Neighbours_List, Delay , KCount , {MIN,MAX,
 	%% NOTE: PULL's will have a response of no_infection if it contacts an uninfected node, and gets a proper message if contacts infected. After that, a PULL message will never be sent by the node.
 	%% NOTE: PUSH will start ONLY after a node has been infected.
 	receive
-		{initialize, Fragment_Id_in, Data_Values_in , Neighbours_List_in, Delay_in , KCount_in , {MIN_in,MAX_in,AVERAGE_in,MEDIAN_in}} ->
+		{initialize, Fragment_Id_in, Data_Values_in , Neighbours_List_in, Delay_in , KCount_in , MIN_in,MAX_in,AVERAGE_in,MEDIAN_in} ->
 			io:format("~p received initialize message with [id,values,neighbour] ~p:~p:~p ~n", [self(), Fragment_Id_in, Data_Values_in,Neighbours_List_in]),
-			myGossip({Fragment_Id_in, Data_Values_in , Neighbours_List_in, Delay_in , KCount_in , {MIN_in,MAX_in,AVERAGE_in,MEDIAN_in}},1,0);
+			myGossip(Fragment_Id_in, Data_Values_in , Neighbours_List_in, Delay_in , KCount_in , MIN_in,MAX_in,AVERAGE_in,MEDIAN_in,1,0,0);
+		{initialize_average} ->
+			io:format("~p received initialized_average message.~n",[self()]);
 		{push_average_request,Pid,Source_Sum} ->
 			My_Sum = lists:sum(Data_Values),
-			Pid ! { response_push_average,self(), My_Sum}, %can return either my sum or computed average
+			Pid ! { response_push_average_request,self(), My_Sum}, %can return either my sum or computed average
 			io:format("Got message from pid ~p , source_sum ~p my_sum ~p~n",[Pid,Source_Sum,My_Sum]),
-			myGossip({Fragment_Id, Data_Values , Neighbours_List, Delay , KCount , {MIN,MAX,(My_Sum+Source_Sum)/2.0,MEDIAN}},1,1);
-		{response_push_average, Pid , Response_Sum } ->
+			myGossip(Fragment_Id, Data_Values , Neighbours_List, Delay , KCount , MIN,MAX,(My_Sum+Source_Sum)/2.0,MEDIAN,1,1,1);
+		{response_push_average_request, Pid , Response_Sum } ->
 			My_Sum = lists:sum(Data_Values),
 			io:format("Got response from pid ~p response, Response_sum ~p my_sum ~p ",[Pid,Response_Sum,My_Sum]),
-			myGossip({Fragment_Id, Data_Values , Neighbours_List, Delay , KCount-1 , {MIN,MAX,(My_Sum+Response_Sum)/2.0,MEDIAN}},1,1),
+			myGossip(Fragment_Id, Data_Values , Neighbours_List, Delay , KCount-1 , MIN,MAX,(My_Sum+Response_Sum)/2.0,MEDIAN,1,1,1),
 			timer:sleep(Delay)
 	end.
 
@@ -56,8 +68,9 @@ getAvg(N, K) ->
 	%%lists:foreach(fun(T) -> io:format("index ~p value ~p~n",[T,lists:nth(T,Values)]) end , lists:seq(1,N)).  %% io:format("~p~n~n~n",[Values]). %%This will print value of each line
 	
 	%%spawn N /2 processes on each VM. To spawn on more VM's just add another line of Pid's and then n has to be divisible by 3!!!
-	Pids1 = lists:map(fun(T) -> spawn('pong@192.168.10.102',mygossip, myGossip, [0]) end, lists:seq(1, N div 2)),
-	Pids = Pids1 ++ lists:map(fun(T) -> spawn('ping@192.168.10.101',mygossip, myGossip, [0]) end, lists:seq(1, N div 2)),
+	Pids1 = lists:map(fun(T) -> spawn('pong@192.168.10.102',mygossip, myGossip, [0,[],[],0,K,0,0,0,0,0,0,0]) end, lists:seq(1, N div 2)),
+	Pids = Pids1 ++ lists:map(fun(T) -> spawn('ping@192.168.10.101',mygossip, myGossip, [0,[],[],0,K,0,0,0,0,0,0,0]) end, lists:seq(1, N div 2)),
+	%%%%(Fragment_Id, Data_Values , Neighbours_List, Delay , KCount , MIN,MAX,AVERAGE,MEDIAN,Initialized,Infected,IsRunning)%%%%
 	io:format("List of pids: ~p~n~n~n", [Pids]),
 	
 	timer:sleep(1000),
