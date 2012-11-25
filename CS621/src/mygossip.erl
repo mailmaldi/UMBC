@@ -4,41 +4,6 @@
 -module(mygossip).
 -compile([debug_info, export_all]).
 
-pingAVG(Delay) -> 
-	receive
-        	{pingAVG, Sender, SenderIndex, ReceiverIndex, Targets, Counter} ->
-
-		io:format("~p has selected Process ~p ~n", [Sender, self()]),
-		
-           	timer:sleep(Delay),
-	
-		ReceiverValue = element(2,lists:nth(ReceiverIndex, Targets)),
-		SenderValue = element(2,lists:nth(SenderIndex, Targets)),
-		Avg = float((SenderValue + ReceiverValue) / 2),
-	
-		TdeletedSender = lists:delete({Sender,SenderValue}, Targets),
-		Tmedsender = [{Sender,Avg}],
-		TappendNewSender = lists:append(TdeletedSender, Tmedsender),
-		
-		TdeletedReceiver = lists:delete({self(),ReceiverValue}, TappendNewSender),
-		Tmedreceiver = [{self(),Avg}],
-		TappendNewReceiver = lists:append(TdeletedReceiver, Tmedreceiver),
-		
-		TSorted = lists:sort(TappendNewReceiver),
-
-		NewSenderIndex = ReceiverIndex,		
-		NewReceiverIndex = random:uniform(length(Targets)),
-
-		Counter1 = Counter - 1,
-		
-		if Counter1 < 1  -> 
-			io:format("Average is ~p...~n", [Avg]);
-		true ->
-			element(1,lists:nth(NewReceiverIndex, Targets)) ! {pingAVG, self(), NewSenderIndex, NewReceiverIndex, TSorted, Counter1},
-			pingAVG(Delay)
-		end
-	  end.
-
 myGossip({Fragment_Id, Data_Values , Neighbours_List, Delay , KCount , {MIN,MAX,AVERAGE,MEDIAN}},Initialized,Infected) -> 
 	if 
 		Initialized == 0 ->
