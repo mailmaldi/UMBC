@@ -72,20 +72,27 @@ io:format("Heh, we're smarter than you humans.~n")
 end.
 
 dolphin2() ->
+io:format("Welcome to the world of Dolphins.~n"),
 receive
 {From, do_a_flip} ->
-From ! "How about no?";
+From ! "How about no?",
+dolphin2();
 {From, fish} ->
 From ! "So long and thanks for all the fish!";
 _ ->
-io:format("Heh, we're smarter than you humans.~n")
+timer:sleep(1000),
+io:format("Heh, we're smarter than you humans.~n"),
+dolphin2()
 end.
 
+gets(_,0)-> io:format("REACHED END of ~p~n",[self()]);
 gets(N, K) ->
 SeedValue = 1.5,
 %%Values = lists:map(fun(T) -> [SeedValue+T+100] end, lists:seq(1, N)),
 Values = lists:map(fun(T) -> [SeedValue + T , SeedValue + T +1] end, lists:seq(1, N)), % foreach 1,2,3,4...N
-lists:foreach(fun(T) -> io:format("index ~p value ~p sum ~p~n",[T,lists:nth(T,Values),lists:sum(lists:nth(T,Values))]) end , lists:seq(1,N)).  %% io:format("~p~n~n~n",[Values]).
+lists:foreach(fun(T) -> io:format("index ~p value ~p sum ~p~n",[T,lists:nth(T,Values),lists:sum(lists:nth(T,Values))]) end , lists:seq(1,N)),  %% io:format("~p~n~n~n",[Values]).
+io:format("REACHED END of ~p~n", [self()]),
+gets(N,K-1).
 
 
 

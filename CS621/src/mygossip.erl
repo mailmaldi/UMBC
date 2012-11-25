@@ -39,24 +39,42 @@ pingAVG(Delay) ->
 		end
 	  end.
 
-myGossip({Fragment_Id, Data_Values , Neighbours_List, Delay , KCount , {MIN,MAX,AVERAGE,MEDIAN}}) -> 
+myGossip({Fragment_Id, Data_Values , Neighbours_List, Delay , KCount , {MIN,MAX,AVERAGE,MEDIAN}},Initialized,Infected) -> 
+	if 
+		Initialized == 0 ->
+		   io:format("Not initialized with Data yet for pid ~p~n",[self()]);
+		Initialized == 1 ->
+			if Infected == 0 ->
+				   %% TODO do a PULL here
+				   io:format("",[]);			   		
+			   Infected == 1 ->
+				   %% TODO do a PUSH here
+				   io:format("",[])
+			end,
+		   io:format("Data has been initialized for the pid ~p~n",[self()])
+	end,
+	   
+	%% if not initialized then wait for the initialize message
+	%% now that PUSH or PULL message has been sent , wait for a response and then updated your state.
+	%% NOTE: PULL's will have a response of no_infection if it contacts an uninfected node, and gets a proper message if contacts infected. After that, a PULL message will never be sent by the node.
+	%% NOTE: PUSH will start ONLY after a node has been infected.
 	receive
 		{initialize, Fragment_Id_in, Data_Values_in , Neighbours_List_in, Delay_in , KCount_in , {MIN_in,MAX_in,AVERAGE_in,MEDIAN_in}} ->
 			io:format("~p received initialize message with [id,values,neighbour] ~p:~p:~p ~n", [self(), Fragment_Id_in, Data_Values_in,Neighbours_List_in]),
-			myGossip({Fragment_Id_in, Data_Values_in , Neighbours_List_in, Delay_in , KCount_in , {MIN_in,MAX_in,AVERAGE_in,MEDIAN_in}});
-		{initialize_average} ->
-			;
+			myGossip({Fragment_Id_in, Data_Values_in , Neighbours_List_in, Delay_in , KCount_in , {MIN_in,MAX_in,AVERAGE_in,MEDIAN_in}},1,0);
 		{push_average_request,Pid,Source_Sum} ->
 			My_Sum = lists:sum(Data_Values),
 			Pid ! { response_push_average,self(), My_Sum}, %can return either my sum or computed average
-			io:format("Got message from pid ~p , source_sum ~p my_sum",[Pid,Source_Sum,My_Sum]),
-			myGossip({Fragment_Id, Data_Values , Neighbours_List, Delay , KCount , {MIN,MAX,(My_Sum+Source_Sum)/2.0,MEDIAN}});
+			io:format("Got message from pid ~p , source_sum ~p my_sum ~p~n",[Pid,Source_Sum,My_Sum]),
+			myGossip({Fragment_Id, Data_Values , Neighbours_List, Delay , KCount , {MIN,MAX,(My_Sum+Source_Sum)/2.0,MEDIAN}},1,1);
 		{response_push_average, Pid , Response_Sum } ->
 			My_Sum = lists:sum(Data_Values),
 			io:format("Got response from pid ~p response, Response_sum ~p my_sum ~p ",[Pid,Response_Sum,My_Sum]),
-			myGossip({Fragment_Id, Data_Values , Neighbours_List, Delay , KCount-1 , {MIN,MAX,(My_Sum+Response_Sum)/2.0,MEDIAN}}),
+			myGossip({Fragment_Id, Data_Values , Neighbours_List, Delay , KCount-1 , {MIN,MAX,(My_Sum+Response_Sum)/2.0,MEDIAN}},1,1),
 			timer:sleep(Delay)
 	end.
+
+
 
 
 %%Please note Limitation that N always HAS to be EVEN!!! I will fix this later if needed, but as PoC this is just fine.
