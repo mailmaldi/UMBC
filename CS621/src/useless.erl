@@ -128,7 +128,50 @@ testReceive() ->
 					io:format("3. testReceive RECEIVED MESSAGE")
 	end.
 
+testMerge() ->
+	Dict = dict:new(),
+	Dict1 = dict:store(1,[1,2,3,4,5],Dict),
+	Dict2 = dict:store(2,[1,2,3],Dict1),
+	Dict3 = dict:store(1,[1.5,2.5,3.5],Dict),
+	Dict4 = dict:store(3,[1.5],Dict3),
+	DataDict = dict:merge(fun(_,V1,V2) -> V2 end,Dict2,Dict4),
+	DataDict.
+	
+testSumDict() ->
+	MyDict = testMerge(),
+	io:format("~p Dict~n",[dict:to_list(MyDict)]),
+	List = dict:fold(fun(Key,Val,Acc) -> Acc++Val end, [],MyDict),
+	io:format("~p List~n~p Sorted~n~n",[List,lists:sort(List)]),
+	io:format("MAX=~p MIN=~p AVERAGE=~p MEDIAN=~p ~n~n~n",[lists:max(List), lists:min(List), lists:sum(List)/length(List) , median(List)]).
 
+
+%% Note that this function will only use the 2nd arguments values if same are found
+mergeDicts(Dict1,Dict2) ->
+	dict:merge(fun(_,V1,V2) -> V2 end,Dict1,Dict2).
+
+%% This function will accumulate values of all keys in a Dict into a single list. Valid when values are []
+dictToValueList(Dict) ->
+	dict:fold(fun(Key,Val,Acc) -> Acc++Val end, [],Dict).
+
+%% Find median from a list
+median(List) when is_list(List) ->
+    SList = lists:sort(List),
+    Length = length(SList),
+    case even_or_odd(Length) of
+        even -> [A,B] = lists:sublist(SList, round(Length/2), 2), (A+B)/2;
+        odd  -> lists:nth( round((Length+1)/2), SList )
+    end.
+
+%% check if a number is even or odd
+even_or_odd(Num) when is_integer(Num) ->
+    if
+        Num band 1 == 0 -> even;
+        true            -> odd
+    end.
+
+testPrint() ->
+	List = lists:seq(1,10),
+	lists:foreach( fun(T) -> io:format("~p veeresh says ~n",[T]) end , List).
 
 
 

@@ -45,9 +45,9 @@ class Nim(Game):
     def make_move(self, move, state):
         """Given a move and a state, returns a representation of the
         new state that results after making the move."""
-        if move not in self.legal_moves(state):
+        """if move not in self.legal_moves(state):
             print "MALDI: ILLEGAL MOVE"
-            return state
+            return state"""
         
         #print "Player%d is making the move=" % state.to_move, ; print move
         return Struct(to_move=if_(state.to_move == '1' , '2' , '1') , board={ "heaps": move})
@@ -112,7 +112,7 @@ PLAYER = {'me':query_player, 'random':random_player}
 
 def make_alphabeta_player(N):
     """ returns a player function that uses alpha_beta search to depth N """
-    return lambda game, state: alphabeta_full_search(state, game)
+    return lambda game, state: alphabeta_search(state, game , d = N)
 
 # add to the PLAYER dictionary player function named ab1,ab2,...ab20
 # that use alpha_beta search with depth cutoffs between 1 and 20
