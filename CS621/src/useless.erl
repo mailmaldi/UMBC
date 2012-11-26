@@ -99,6 +99,35 @@ test_random() ->
 	Index = random:uniform(length(List)), 
 	lists:nth(Index, List). 
 
+getMinimum(MIN1,MIN2) ->
+	if
+				MIN1 < MIN2 ->
+					NEW_MIN = MIN1;
+				MIN2 < MIN1 ->
+					NEW_MIN = MIN2;
+				MIN1 == MIN2 ->
+					NEW_MIN = MIN1
+			end.
+
+getMaximum(MAX1,MAX2) ->
+	if
+				MAX1 > MAX2 ->
+					NEW_MAX = MAX1;
+				MAX2 > MAX1 ->
+					NEW_MAX = MAX2;
+				MAX1 == MAX2 ->
+					NEW_MAX = MAX1
+			end.
+
+testReceive() ->
+	io:format("1. testReceive INVOKED~n"),
+	timer:sleep(10000),
+	io:format("2. testReceive AFTER SLEEP~n"),
+	receive
+				_ -> 
+					io:format("3. testReceive RECEIVED MESSAGE")
+	end.
+
 
 
 

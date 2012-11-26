@@ -4,6 +4,30 @@
 -module(mygossip).
 -compile([debug_info, export_all]).
 
+
+getMinimum(MIN1,MIN2) ->
+	if
+				MIN1 < MIN2 ->
+					NEW_MIN = MIN1;
+				MIN2 < MIN1 ->
+					NEW_MIN = MIN2;
+				MIN1 == MIN2 ->
+					NEW_MIN = MIN1
+			end.
+
+getMaximum(MAX1,MAX2) ->
+	if
+				MAX1 > MAX2 ->
+					NEW_MAX = MAX1;
+				MAX2 > MAX1 ->
+					NEW_MAX = MAX2;
+				MAX1 == MAX2 ->
+					NEW_MAX = MAX1
+			end.
+
+getRandomNumber() ->
+	random:uniform(9999).
+
 floor(X) ->
     T = erlang:trunc(X),
     case (X - T) of
@@ -20,50 +44,56 @@ ceiling(X) ->
         _ -> T
     end.
 
+%%TODO problem here is that I will push a message and then goto receive always. Ideally i want to PUSH
 myGossip(Fragment_Id, Data_Values , Neighbours_List, Delay , KCount , MIN,MAX,AVERAGE,MEDIAN,Initialized,Infected,IsRunning) -> 
-	%io:format("~p Invoked ~n",[self()]),
+	%%%io:format("~p Invoked ~n",[self()]),
 	if 
 		IsRunning == 1 ->
-			%io:format("~p Running ~n",[self()]),
+			%%%io:format("~p Running ~n",[self()]),
 			if 
 				Initialized == 0 ->
 				   io:format("~p Not initialized yet ~n",[self()]);
 				Initialized == 1 ->
-					%io:format("~p Data has been initialized ~n",[self()]),
+					%%%io:format("~p Data has been initialized ~n",[self()]),
 					%% Find a random neighbour from neighbour list
-					%timer:sleep(Delay),
+					timer:sleep(Delay), %% Sleep before a pull and a push
 					Neighbours_List_2 = lists:delete(self(),Neighbours_List),
-					NewNodePID = lists:nth(random:uniform(length(Neighbours_List)), Neighbours_List) , %%TODO is this index finding correct?
+					NewNodePID = lists:nth(random:uniform(length(Neighbours_List_2)), Neighbours_List_2) , %%TODO is this index finding correct?
+					NewNodePID2 = lists:nth(random:uniform(length(Neighbours_List_2)), Neighbours_List_2) ,
 					if 
 						self() == NewNodePID ->
-							%io:format("~p chose itself, just sleep",[self()]),
-							timer:sleep(Delay),
+							io:format("~p PULL chose itself, just sleep, KCount ~p ~n",[self(),KCount]),
+							%timer:sleep(Delay),
 							myGossip(Fragment_Id, Data_Values , Neighbours_List, Delay , KCount , MIN,MAX,AVERAGE,MEDIAN,Initialized,Infected,IsRunning);
+						self() == NewNodePID2 ->
+							io:format("~p PUSH chose itself, just sleep,KCount ~p ~n",[self(),KCount]),
+							%timer:sleep(Delay),
+							myGossip(Fragment_Id, Data_Values , Neighbours_List, Delay , KCount-1 , MIN,MAX,AVERAGE,MEDIAN,Initialized,Infected,IsRunning);
 						true ->
-							if 
-								Infected == 0 ->
-						   			%% TODO do a PULL here
-						   			io:format("~p PULL from ~p~n",[self(),NewNodePID]),
-									NewNodePID ! {pull_request , self()};
-					  			Infected == 1 ->
 						   		if 
 							   		KCount >= 1 ->
-						   				%% TODO do a PUSH here
 										if 
-											AVERAGE == 0 -> 
+											AVERAGE =< 0 -> 
 												NEW_TOTAL_SUM = lists:sum(Data_Values),
 												NEW_TOTAL_NUM = length(Data_Values);
-											true ->
+											AVERAGE > 0 ->
 												NEW_TOTAL_SUM = AVERAGE,
 												NEW_TOTAL_NUM = MEDIAN
 										end,
-						   				%io:format("~p PUSH to ~p~n",[self(),NewNodePID]),
-										NewNodePID ! {push_average_request,self(),Data_Values,NEW_TOTAL_SUM,NEW_TOTAL_NUM, MIN, MAX};
+										
+								   		%% TODO do a PULL here
+										PULL_ID=getRandomNumber()+Fragment_Id,
+								   		io:format("~p PULL FROM ~p KCount ~p PULL_ID ~p~n",[self(),NewNodePID,KCount,PULL_ID]),
+										NewNodePID ! {pull_request , self(),Data_Values,NEW_TOTAL_SUM,NEW_TOTAL_NUM, MIN, MAX,PULL_ID},
+						   				
+										%% TODO do a PUSH here
+										PUSH_ID=getRandomNumber()+Fragment_Id,
+						   				io:format("~p PUSH TO ~p KCount ~p PUSH_ID ~p~n",[self(),NewNodePID2,KCount,PUSH_ID]),
+										NewNodePID2 ! {push_average_request,self(),Data_Values,NEW_TOTAL_SUM,NEW_TOTAL_NUM, MIN, MAX,PUSH_ID};
 							   		KCount < 1 ->
-										io:format("~p FINAL AVERAGE ~p MIN ~p MAX ~p MEDIAN ~p~n",[self(),AVERAGE/MEDIAN , MIN ,MAX, MEDIAN])
+										io:format("~p FINAL AVERAGE ~p/~p MIN ~p MAX ~p MEDIAN ~p KCount ~p~n",[self(),AVERAGE,MEDIAN , MIN ,MAX, MEDIAN,KCount])
 								end
-							end
-					end				   
+					end		   
 			end;
 	 	IsRunning == 0 ->
 			io:format("~p Not Running yet.~n",[self()])
@@ -78,23 +108,33 @@ myGossip(Fragment_Id, Data_Values , Neighbours_List, Delay , KCount , MIN,MAX,AV
 			IN_MIN = lists:min(Data_Values_in),
 			IN_MAX = lists:max(Data_Values_in),
 			io:format("~p received initialize [id,values,KCount, MIN, MAX , neighbour] ~p:~p:~p:~p:~p: ~n", [self(), Fragment_Id_in, Data_Values_in,KCount_in,IN_MIN,IN_MAX]),
-			myGossip(Fragment_Id_in, Data_Values_in , Neighbours_List_in, Delay_in , KCount_in , IN_MIN ,IN_MAX,AVERAGE_in,MEDIAN_in,1,0,0);
+			myGossip(Fragment_Id_in, Data_Values_in , Neighbours_List_in, Delay_in , KCount_in , IN_MIN ,IN_MAX,AVERAGE_in,MEDIAN_in,1,0,1);
 		{initialize_average} ->
 			io:format("~p received initialized_average message.~n",[self()]),
 			myGossip(Fragment_Id, Data_Values , Neighbours_List, Delay , KCount ,MIN,MAX,AVERAGE,MEDIAN,1,1,1);
-		{push_average_request,Pid,Source_Data,TOTAL_SUM,TOTAL_NUMBERS, MIN_MESSAGE , MAX_MESSAGE} ->
-			if
-				MIN_MESSAGE < MIN ->
-					NEW_MIN = MIN_MESSAGE;
-				MIN_MESSAGE >= MIN ->
-					NEW_MIN = MIN
-			end,
-			if
-				MAX_MESSAGE >= MAX ->
-					NEW_MAX = MAX_MESSAGE;
-				MAX_MESSAGE < MAX ->
-					NEW_MAX = MAX
-			end,
+		{push_average_request,Pid,Source_Data,TOTAL_SUM,TOTAL_NUMBERS, MIN_MESSAGE , MAX_MESSAGE,PUSH_ID_IN} ->
+			NEW_MIN = getMinimum(MIN_MESSAGE,MIN),
+			NEW_MAX = getMaximum(MAX_MESSAGE,MAX),			
+			Source_Sum=lists:sum(Source_Data),
+			Source_length = length(Source_Data),
+			My_Sum = lists:sum(Data_Values),
+			My_length = length(Data_Values),
+			Current_Average = AVERAGE,
+			Computed_Average = (My_Sum+TOTAL_SUM)/(TOTAL_NUMBERS+My_length),
+			io:format("~p push_average_request ~p , src_sum ~p my_sum ~p , AVG ~p MIN=~p MAX=~p PUSH_ID ~p~n",[self(),Pid,Source_Sum,My_Sum,Computed_Average,NEW_MIN,NEW_MAX,PUSH_ID_IN]),
+			Pid ! { response_push_average_request,self(), My_Sum,My_Sum+TOTAL_SUM,TOTAL_NUMBERS+My_length, NEW_MIN , NEW_MAX,PUSH_ID_IN}, %can return either my sum or computed average
+			myGossip(Fragment_Id, Data_Values , Neighbours_List, Delay , KCount , NEW_MIN ,NEW_MAX ,My_Sum+TOTAL_SUM,TOTAL_NUMBERS+My_length,1,1,1);
+		{response_push_average_request, Pid , Response_Sum,TOTAL_SUM,TOTAL_NUMBERS , MIN_MESSAGE , MAX_MESSAGE,PUSH_ID_RESP} ->
+			NEW_MIN = getMinimum(MIN_MESSAGE,MIN),
+			NEW_MAX = getMaximum(MAX_MESSAGE,MAX),
+			My_Sum = lists:sum(Data_Values),
+			My_length = length(Data_Values),
+			Computed_Average = (TOTAL_SUM)/TOTAL_NUMBERS,
+			io:format("~p response_push_average_request ~p , resp_sum ~p my_sum ~p AVG ~p MIN=~p MAX=~p PUSH_ID ~p~n",[self(),Pid,Response_Sum,My_Sum,Computed_Average,NEW_MIN,NEW_MAX,PUSH_ID_RESP]),
+			myGossip(Fragment_Id, Data_Values , Neighbours_List, Delay , KCount-1 , NEW_MIN, NEW_MAX, My_Sum+TOTAL_SUM,TOTAL_NUMBERS+My_length,1,1,1);
+		{pull_request , Pid,Source_Data,TOTAL_SUM,TOTAL_NUMBERS, MIN_MESSAGE, MAX_MESSAGE,PULL_Id} ->
+			NEW_MIN = getMinimum(MIN_MESSAGE,MIN),
+			NEW_MAX = getMaximum(MAX_MESSAGE,MAX),
 			
 			Source_Sum=lists:sum(Source_Data),
 			Source_length = length(Source_Data),
@@ -102,45 +142,28 @@ myGossip(Fragment_Id, Data_Values , Neighbours_List, Delay , KCount , MIN,MAX,AV
 			My_length = length(Data_Values),
 			Current_Average = AVERAGE,
 			Computed_Average = (My_Sum+TOTAL_SUM)/(TOTAL_NUMBERS+My_length),
-			%io:format("~p push_average_request ~p , source_sum ~p my_sum ~p , computed average ~p ~n",[self(),Pid,Source_Sum,My_Sum,Computed_Average]),
-			Pid ! { response_push_average_request,self(), My_Sum,My_Sum+TOTAL_SUM,TOTAL_NUMBERS+My_length, NEW_MIN , NEW_MAX}, %can return either my sum or computed average
-			myGossip(Fragment_Id, Data_Values , Neighbours_List, Delay , KCount , MIN_MESSAGE ,MAX_MESSAGE ,My_Sum+TOTAL_SUM,TOTAL_NUMBERS+My_length,1,1,1);
-		{response_push_average_request, Pid , Response_Sum,TOTAL_SUM,TOTAL_NUMBERS , MIN_MESSAGE , MAX_MESSAGE} ->
-			if
-				MIN_MESSAGE < MIN ->
-					NEW_MIN = MIN_MESSAGE;
-				MIN_MESSAGE >= MIN ->
-					NEW_MIN = MIN
-			end,
-			if
-				MAX_MESSAGE >= MAX ->
-					NEW_MAX = MAX_MESSAGE;
-				MAX_MESSAGE < MAX ->
-					NEW_MAX = MAX
-			end,
+			io:format("~p pull_request ~p , src_sum ~p my_sum ~p , AVG ~p MIN=~p MAX=~p PUSH_ID ~p~n",[self(),Pid,Source_Sum,My_Sum,Computed_Average,NEW_MIN,NEW_MAX,PULL_Id]),
+			Pid ! { response_pull_request,self(), My_Sum,My_Sum+TOTAL_SUM,TOTAL_NUMBERS+My_length, NEW_MIN , NEW_MAX,PULL_Id}, %can return either my sum or computed average
+			myGossip(Fragment_Id, Data_Values , Neighbours_List, Delay , KCount , NEW_MIN ,NEW_MAX ,My_Sum+TOTAL_SUM,TOTAL_NUMBERS+My_length,1,1,1);
+			%Pid ! {push_average_request,self(),Data_Values,NEW_TOTAL_SUM_1,NEW_TOTAL_NUM_1,MIN,MAX,PULL_Id},
+			%myGossip(Fragment_Id, Data_Values , Neighbours_List, Delay , KCount , MIN,MAX,AVERAGE,MEDIAN,1,1,1);
+	{response_pull_request, Pid , Response_Sum,TOTAL_SUM,TOTAL_NUMBERS , MIN_MESSAGE , MAX_MESSAGE,PULL_ID_RESP} ->
+			NEW_MIN = getMinimum(MIN_MESSAGE,MIN),
+			NEW_MAX = getMaximum(MAX_MESSAGE,MAX),
 			My_Sum = lists:sum(Data_Values),
 			My_length = length(Data_Values),
 			Computed_Average = (TOTAL_SUM)/TOTAL_NUMBERS,
-			%io:format("~p response_push_average_request ~p , Response_sum ~p my_sum ~p computed average ~p ~n",[self(),Pid,Response_Sum,My_Sum,Computed_Average]),
+			io:format("~p response_PULL_request ~p , resp_sum ~p my_sum ~p AVG ~p MIN=~p MAX=~p PUSH_ID ~p~n",[self(),Pid,Response_Sum,My_Sum,Computed_Average,NEW_MIN,NEW_MAX,PULL_ID_RESP]),
 			myGossip(Fragment_Id, Data_Values , Neighbours_List, Delay , KCount-1 , NEW_MIN, NEW_MAX, My_Sum+TOTAL_SUM,TOTAL_NUMBERS+My_length,1,1,1);
-		{pull_request , Pid} ->
-			if 
-				AVERAGE == 0 -> 
-					NEW_TOTAL_SUM_1 = lists:sum(Data_Values),
-					NEW_TOTAL_NUM_1 = length(Data_Values);
-				true ->
-					NEW_TOTAL_SUM_1 = AVERAGE,
-					NEW_TOTAL_NUM_1 = MEDIAN
-			end,
-			Pid ! {push_average_request,self(),Data_Values,NEW_TOTAL_SUM_1,NEW_TOTAL_NUM_1,MIN,MAX},
-			myGossip(Fragment_Id, Data_Values , Neighbours_List, Delay , KCount , MIN,MAX,AVERAGE,MEDIAN,1,1,1)
+		_ ->
+			io:format("~p FINAL STATE: MIN=~p MAX=~p AVERAGE=~p MEDIAN=~p~n",[self(),MIN,MAX,AVERAGE,MEDIAN])
 	end.
 
 
 
 
 %%Please note Limitation that N always HAS to be EVEN!!! I will fix this later if needed, but as PoC this is just fine.
-getAvg(N, K) ->
+getAvg(N, K, Delay) ->
 	
 	%% K is derived from the demers, epidemic paper the K-factor, for just log N rounds , 
 	KCount = ceiling(math:log(N) * K),
@@ -168,7 +191,7 @@ getAvg(N, K) ->
 	%% TODO GENERATE NEIGHBOUR LIST FOR EACH PID, and INCLUDE ITSELF
 	%% TODO : send state to EACH process as Data,  tuple = {action=initialize, fragment_index= i , fragment_data = Values[i] , neighbour_list = [] or Pids itself for a complete graph, delay = 0,KCount }
 	%lists:foreach( fun(X) -> io:format("action=~p , pid=~p , fragment_id=~p , data= ~p , neighbour_list=~p~n", [initialize,lists:nth(X,Pids) ,X, lists:nth(X,Values),Pids])  end , lists:seq(1, N) ),
-	lists:foreach( fun(X) -> lists:nth(X,Pids) ! {initialize,X,lists:nth(X,Values),Pids,0,KCount,-1,-1,0,0} end , lists:seq(1, N) ),
+	lists:foreach( fun(X) -> lists:nth(X,Pids) ! {initialize,X,lists:nth(X,Values),Pids,Delay,KCount,-1,-1,0,0} end , lists:seq(1, N) ),
 	%% the last tuple in the message is the initial values for min , max , average, median 
 	
 	timer:sleep(5000),
