@@ -95,7 +95,7 @@ io:format("REACHED END of ~p~n", [self()]),
 gets(N,K-1).
 
 test_random() ->
-	List = [a,b,c,d,e],
+	List = [],
 	Index = random:uniform(length(List)), 
 	lists:nth(Index, List). 
 
