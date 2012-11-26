@@ -173,5 +173,10 @@ testPrint() ->
 	List = lists:seq(1,10),
 	lists:foreach( fun(T) -> io:format("~p veeresh says ~n",[T]) end , List).
 
+% gets a timestamp in ms from the epoch
+get_timestamp() ->
+    {Mega,Sec,Micro} = erlang:now(),
+    (Mega*1000000+Sec)*1000000+Micro.
+
 
 

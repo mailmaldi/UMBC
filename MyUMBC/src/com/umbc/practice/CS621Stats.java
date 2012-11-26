@@ -11,7 +11,7 @@ public class CS621Stats
 	 */
 	public static void main(String[] args)
 	{
-		int N = 22;
+		int N = 1000;
 		int multiplier = 2;
 		float seedValue = 1.5f;
 
