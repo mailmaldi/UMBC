@@ -201,3 +201,52 @@ testFlatten(N) ->
 	io:format("~p~n~n~n",[NewList]).
 %generateP() ->
 %	Neighbour_List = lists:map( fun(T) -> lists:mapfoldl( fun(X,Acc) -> Acc ++ lists:nth(random:uniform(N) , Pids)    end   , [] , Pids)  end , lists:seq(1,N)).
+
+testIf(IsRunning, Infected) ->
+	io:format("Entered function~n"),
+	if 
+		IsRunning == 1, Infected ==1 ->
+			io:format("Entered 1 , 1~n");
+		IsRunning == 1 , Infected == 0 ->
+			io:format("Entered 1 , 0~n");
+		IsRunning == 0 ->
+			io:format("Entered 0 , X~n");
+		true ->
+			io:format("Entered true~n")
+	end,
+	io:format("Exiting function~n").
+
+
+%% To Generate the Topology of the graph
+generateTopology(Pids, Flag) ->
+	case(Flag) of
+		1 -> 
+			io:format("~p Pids In this Ring Topology~n",[Pids]),
+			N = length(Pids),
+			TempPids = Pids ++ Pids,
+			Topology = lists:map(fun(T) -> [lists:nth(N+(T-1),TempPids),lists:nth(N+1+(T-1),TempPids)] end, lists:seq(1,N)),
+			io:format("Ring Topology~n~p",[Topology]);
+		2 ->
+			io:format("~p Pids In this Expander Graph Topology connected to 3 nodes(Degree=3)~n",[Pids]),
+			N = length(Pids),
+			TempPids = Pids ++ Pids ++ Pids,
+			Topology = lists:map(fun(T) -> [lists:nth(N+(T-1),TempPids),lists:nth(N+1+(T-1),TempPids),lists:nth(N+2+(T-1),TempPids)] end, lists:seq(1,N)),
+			io:format("Expander Graph with Degree = 3~n~p",[Topology]);
+		3 ->
+			io:format("~p Pids In this Expander Graph Topology connected to 4 nodes(Degree = 4)~n",[Pids]),
+			N = length(Pids),
+			TempPids = Pids ++ Pids ++ Pids ++ Pids,
+			Topology = lists:map(fun(T) -> [lists:nth(N+(T-1),TempPids),lists:nth(N+1+(T-1),TempPids),lists:nth(N+2+(T-1),TempPids),lists:nth(N+3+(T-1),TempPids)] end, lists:seq(1,N)),
+			io:format("Expander Graph with Degree = 4~n~p",[Topology]);
+		_ ->
+			N = length(Pids),
+			Topology = lists:map( fun(T) -> Pids end, lists:seq(1,N))
+	end,
+	Topology.
+
+testTopo(N,Flag) ->
+	Values = lists:map(fun(_) -> lists:map( fun(_) -> random:uniform(1000)+0.5 end  , lists:seq(1,10)) end, lists:seq(1,N)),
+	Pids = lists:map( fun(T) -> T end, lists:seq(1,N) ),
+	io:format("~n~p PID~n~n",[Pids]),
+	io:format("~n~p Values~n~n",[Values]),
+	generateTopology(Pids,Flag).

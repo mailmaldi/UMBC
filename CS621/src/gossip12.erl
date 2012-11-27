@@ -5,6 +5,33 @@
 -compile([debug_info, export_all]).
 
 
+%% To Generate the Topology of the graph
+generateTopology(Pids, Flag) ->
+	case(Flag) of
+		1 -> 
+			io:format("~p Pids In this Ring Topology~n",[Pids]),
+			N = length(Pids),
+			TempPids = Pids ++ Pids,
+			Topology = lists:map(fun(T) -> [lists:nth(N+(T-1),TempPids),lists:nth(N+1+(T-1),TempPids)] end, lists:seq(1,N)),
+			io:format("Ring Topology~n~p",[Topology]);
+		2 ->
+			io:format("~p Pids In this Expander Graph Topology connected to 3 nodes(Degree=3)~n",[Pids]),
+			N = length(Pids),
+			TempPids = Pids ++ Pids ++ Pids,
+			Topology = lists:map(fun(T) -> [lists:nth(N+(T-1),TempPids),lists:nth(N+1+(T-1),TempPids),lists:nth(N+2+(T-1),TempPids)] end, lists:seq(1,N)),
+			io:format("Expander Graph with Degree = 3~n~p",[Topology]);
+		3 ->
+			io:format("~p Pids In this Expander Graph Topology connected to 4 nodes(Degree = 4)~n",[Pids]),
+			N = length(Pids),
+			TempPids = Pids ++ Pids ++ Pids ++ Pids,
+			Topology = lists:map(fun(T) -> [lists:nth(N+(T-1),TempPids),lists:nth(N+1+(T-1),TempPids),lists:nth(N+2+(T-1),TempPids),lists:nth(N+3+(T-1),TempPids)] end, lists:seq(1,N)),
+			io:format("Expander Graph with Degree = 4~n~p",[Topology]);
+		_ ->
+			N = length(Pids),
+			Topology = lists:map( fun(T) -> Pids end, lists:seq(1,N))
+	end,
+	Topology.
+
 getCurrentTS() ->
 	element(2,now()).
 
@@ -84,6 +111,28 @@ ceiling(X) ->
         _ -> T
     end.
 
+sendPull(Neighbours_list) ->
+	
+	if 
+		length(Neighbours_list) > 0 ->
+			NewNodePID2 = lists:nth(random:uniform(length(Neighbours_list)), Neighbours_list) ,
+				if 
+							self() == NewNodePID2 ->
+								io:format("~p PULL SELF, just sleep ~n",[self()]);
+							true ->
+								PULL_ID=getRandomNumber(),
+								io:format("~p PULL TO ~p PULL_ID ~p~n",[self(),NewNodePID2,PULL_ID]),
+								NewNodePID2 ! {pull_request,self(),PULL_ID}
+				end;
+		true ->
+			a
+	end,
+	getCurrentTS().
+	
+							
+								
+	
+
 %%TODO problem here is that I will push a message and then goto receive always. Ideally i want to PUSH
 myGossip(Fragment_Id, Data_Values , Neighbours_List, Delay , KCount , MIN,MAX,SumSeen,NumbersSeen,Initialized,Infected,IsRunning,SentTimeStamp) -> 
 	NEW_TIMESTAMP = getCurrentTS(),
@@ -93,7 +142,7 @@ myGossip(Fragment_Id, Data_Values , Neighbours_List, Delay , KCount , MIN,MAX,Su
 	NEW_TIMESTAMP - SentTimeStamp  > 5 ->
 	%%%io:format("~p Invoked ~n",[self()]),
 	if 
-		IsRunning == 1 ->
+		IsRunning == 1 , Infected == 1 ->
 			%%%io:format("~p Running ~n",[self()]),
 			if 
 				Initialized == 0 ->
@@ -134,9 +183,15 @@ myGossip(Fragment_Id, Data_Values , Neighbours_List, Delay , KCount , MIN,MAX,Su
 						end; % end of self check if
 					true ->
 						io:format("~p NO NEIGHBOURS TO PING",[self()])
-				end
+				end  % end of if neighbours are there to PING
 			end; % end of initialized if
-	 	IsRunning == 0 ->
+
+		IsRunning == 1 , Infected == 0 ->
+			io:format("~p PULL Phase ONLY, not infected ~n",[self()]),
+			%%TODO send pure pull messages.
+			sendPull(Neighbours_List),
+			myGossip(Fragment_Id, Data_Values , Neighbours_List, Delay , KCount , MIN,MAX,SumSeen,NumbersSeen,Initialized,Infected,IsRunning,getCurrentTS());
+	 	true ->
 			io:format("~p Not Running yet.~n",[self()])
 	end; %%end of IsRunning condition
 	true ->
@@ -144,12 +199,13 @@ myGossip(Fragment_Id, Data_Values , Neighbours_List, Delay , KCount , MIN,MAX,Su
 		a
 	end;
 	true ->
-		if
-			NumbersSeen > 0 ->
-				io:format("~p FINAL AVERAGE ~p MIN ~p MAX ~p KCount ~p ~n",[self(),SumSeen/NumbersSeen , MIN ,MAX,KCount]);
-			true ->
-				io:format("~p FINAL AVERAGE ~p MIN ~p MAX ~p KCount ~p ~n",[self(),lists:sum(Data_Values)/length(Data_Values), MIN ,MAX,KCount])
-		end
+		s
+%		if
+%			NumbersSeen > 0 ->
+%				io:format("~p FINAL AVERAGE ~p MIN ~p MAX ~p KCount ~p ~n",[self(),SumSeen/NumbersSeen , MIN ,MAX,KCount]);
+%			true ->
+%				io:format("~p FINAL AVERAGE ~p MIN ~p MAX ~p KCount ~p ~n",[self(),lists:sum(Data_Values)/length(Data_Values), MIN ,MAX,KCount])
+%		end
 	end, %% end of KCount check
 	%% if not initialized then wait for the initialize message
 	%% now that PUSH or PULL message has been sent , wait for a response and then updated your state.
@@ -168,6 +224,12 @@ myGossip(Fragment_Id, Data_Values , Neighbours_List, Delay , KCount , MIN,MAX,Su
 			io:format("~p received initialized message.~n",[self()]),
 			timer:sleep(10000), % sleep 10 seconds in hope that ALL nodes have received their inits
 			myGossip(Fragment_Id, Data_Values , Neighbours_List, Delay , KCount ,MIN,MAX,SumSeen,NumbersSeen,1,1,1,0);
+		
+		{pull_request,Pid,PULL_ID} ->
+			io:format("~p PULL from ~p PULL_ID ~p~n",[self(),Pid,PULL_ID]),
+			%% TODO send a PUSH message for current computation.
+			%sendPushMessage(Fragment_Id, Data_Values , Neighbours_List, Delay , KCount , MIN,MAX,SumSeen,NumbersSeen,Initialized,Infected,IsRunning,SentTimeStamp)
+			myGossip(Fragment_Id, Data_Values , Neighbours_List, Delay , KCount , MIN,MAX,SumSeen,NumbersSeen,Initialized,Infected,IsRunning,SentTimeStamp);
 		
 		{push_request,Pid,Source_Data,TOTAL_SUM,TOTAL_NUMBERS, MIN_MESSAGE , MAX_MESSAGE,PUSH_ID_IN} ->					
 
@@ -239,14 +301,19 @@ getGossip(N, K, Delay , KillTime) ->
 	%%%%(Fragment_Id, Data_Values , Neighbours_List, Delay , KCount , MIN,MAX,AVERAGE,MEDIAN,Initialized,Infected,IsRunning)%%%%
 	io:format("BOOTSTRAP: List of pids: ~p~n~n~n", [Pids]), 
 	
-	timer:sleep(10000),
+	timer:sleep(1000),
+	
+	Topology = generateTopology(Pids,10),
+	%io:format("~n~n TOPOLOGY= ~p~n~n",[Topology]),
 	
 	%% TODO GENERATE NEIGHBOUR LIST FOR EACH PID, and INCLUDE ITSELF
 	%% TODO : send state to EACH process as Data,  tuple = {action=initialize, fragment_index= i , fragment_data = Values[i] , neighbour_list = [] or Pids itself for a complete graph, delay = 0,KCount }
 	%lists:foreach( fun(X) -> io:format("action=~p , pid=~p , fragment_id=~p , data= ~p , neighbour_list=~p~n", [initialize,lists:nth(X,Pids) ,X, lists:nth(X,Values),Pids])  end , lists:seq(1, N) ),
-	lists:nth(1,Pids) ! {initialize,1,lists:nth(1,Values),Pids,Delay,KCount,lists:min(lists:nth(1,Values)),lists:max(lists:nth(1,Values)),0,0},
-	lists:foreach( fun(X) -> lists:nth(X,Pids) ! {initialize,X,lists:nth(X,Values),Pids,Delay,KCount,lists:min(lists:nth(X,Values)),lists:max(lists:nth(X,Values)),0,0} end , lists:seq(2, N) ),
+	lists:nth(1,Pids) ! {initialize,1,lists:nth(1,Values),lists:nth(1,Topology),Delay,KCount,lists:min(lists:nth(1,Values)),lists:max(lists:nth(1,Values)),0,0},
+	lists:foreach( fun(X) -> lists:nth(X,Pids) ! {initialize,X,lists:nth(X,Values),lists:nth(1,Topology),Delay,KCount,lists:min(lists:nth(X,Values)),lists:max(lists:nth(X,Values)),0,0} end , lists:seq(2, N) ),
 	%% the last tuple in the message is the initial values for min , max , average, median 
+	
+	hd(Pids) ! {initialize},
 	
 	timer:sleep(KillTime*1000),
 
@@ -256,4 +323,3 @@ getGossip(N, K, Delay , KillTime) ->
 	timer:sleep(5000),
 	io:format("~n~nMALDI: MIN=~p MAX=~p AVERAGE=~p MEDIAN=~p~n~n",[lists:min(FlatList),lists:max(FlatList),mean(FlatList),median(FlatList)]).
 
-	%hd(Pids) ! {initialize}.
