@@ -194,6 +194,10 @@ testMultipleRecv(Value) ->
 	end,
 	io:format("Exiting testMultipleRecv Value=~p~n",[Value]).
 
-
+testFlatten(N) ->
+	Values = lists:map(fun(_) -> lists:map( fun(_) -> random:uniform(1000)+0.5 end  , lists:seq(1,10)) end, lists:seq(1,N)),
+	io:format("~p~n~n~n",[Values]),
+	NewList = lists:flatten(Values),
+	io:format("~p~n~n~n",[NewList]).
 %generateP() ->
 %	Neighbour_List = lists:map( fun(T) -> lists:mapfoldl( fun(X,Acc) -> Acc ++ lists:nth(random:uniform(N) , Pids)    end   , [] , Pids)  end , lists:seq(1,N)).
