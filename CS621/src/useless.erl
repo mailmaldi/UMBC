@@ -178,5 +178,22 @@ get_timestamp() ->
     {Mega,Sec,Micro} = erlang:now(),
     (Mega*1000000+Sec)*1000000+Micro.
 
+waitReceive() ->
+	receive
+		hello -> io:format("got hello in waitReceive~n")		
+	after 5000 ->
+		io:format("timed out in waitReceive~n")
+	end,
+	io:format("exiting waitReceive~n").
+
+testMultipleRecv(Value) ->
+	io:format("Entered fn, Value=~p~n",[Value]),
+	waitReceive(),
+	receive
+		_ -> ("received random message in testMultipleRecv~n")
+	end,
+	io:format("Exiting testMultipleRecv Value=~p~n",[Value]).
 
 
+%generateP() ->
+%	Neighbour_List = lists:map( fun(T) -> lists:mapfoldl( fun(X,Acc) -> Acc ++ lists:nth(random:uniform(N) , Pids)    end   , [] , Pids)  end , lists:seq(1,N)).
