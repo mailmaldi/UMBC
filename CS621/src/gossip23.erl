@@ -1,7 +1,7 @@
 %% Author: Milind
 %% Created: Nov 22, 2012
 %% Description: TODO: Add description to useless
--module(gossip12).
+-module(gossip23).
 -compile([debug_info, export_all]).
 
 
@@ -125,7 +125,7 @@ sendPull(Neighbours_list,Fragment_Id) ->
 								a;
 							true ->
 								PULL_ID=getRandomNumber()+Fragment_Id,
-								io:format("~p PULL TO ~p PULL_ID ~p~n",[self(),NewNodePID2,PULL_ID]),
+								%io:format("~p PULL TO ~p PULL_ID ~p~n",[self(),NewNodePID2,PULL_ID]),
 								NewNodePID2 ! {pull_request,self(),PULL_ID}
 				end;
 		true ->
@@ -145,7 +145,7 @@ sendPushMessage(Fragment_Id, Data_Values , Neighbours_List, Delay , KCount , MIN
 							   				
 	%%  do a PUSH-PULL here. In the end this acts as both PUSH + PULL
 	NewNodePID2 ! {push_request,self(),Data_Values,NEW_TOTAL_SUM,NEW_TOTAL_NUM, MIN, MAX,MessageID},
-	io:format("~p ~p TO ~p KCount ~p ~p_ID ~p~n",[self(),IS_PUSH,NewNodePID2,KCount,IS_PUSH,MessageID]),
+	%io:format("~p ~p TO ~p KCount ~p ~p_ID ~p~n",[self(),IS_PUSH,NewNodePID2,KCount,IS_PUSH,MessageID]),
 	NOW_TS=getCurrentTS(),
 	{NOW_TS,NEW_TOTAL_SUM,NEW_TOTAL_NUM}. %I return the current timestamp always
 	
@@ -155,36 +155,63 @@ sendPushMessage(Fragment_Id, Data_Values , Neighbours_List, Delay , KCount , MIN
 
 %%TODO problem here is that I will push a message and then goto receive always. Ideally i want to PUSH
 myGossip(Fragment_Id, Data_Values , Neighbours_List, Delay , KCount , MIN,MAX,SumSeen,NumbersSeen,Initialized,Infected,IsRunning,SentTimeStamp) -> 
-	
 	{A1,A2,A3} = now(), 
 	random:seed(A1, A2, A3),
 	NEW_TIMESTAMP = getCurrentTS(),
-	
 	if
-		KCount > 0 , NEW_TIMESTAMP - SentTimeStamp  > Delay , IsRunning == 1 , Infected == 1 , Initialized == 0 ->
-			io:format("~p Not initialized yet ~n",[self()]);
-		KCount > 0 , NEW_TIMESTAMP - SentTimeStamp  > Delay , IsRunning == 1 , Initialized == 1 , Infected == 1 ,  length(Neighbours_List) > 0 ->
-			NewNodePID2 = lists:nth(random:uniform(length(Neighbours_List)), Neighbours_List) ,
+		KCount >0 ->
+	if
+	NEW_TIMESTAMP - SentTimeStamp  > 2 ->
+	%%%io:format("~p Invoked ~n",[self()]),
+	if 
+		IsRunning == 1 , Infected == 1 ->
+			%%%io:format("~p Running ~n",[self()]),
 			if 
-					self() == NewNodePID2 ->
-						%io:format("~p SELF, just sleep,KCount ~p ~n",[self(),KCount]),
-						Now_TS_1 = getCurrentTS(),
-						myGossip(Fragment_Id, Data_Values , Neighbours_List, Delay , KCount , MIN,MAX,SumSeen,NumbersSeen,Initialized,Infected,IsRunning,Now_TS_1); %%add this TS to sent?
+				Initialized == 0 ->
+				   io:format("~p Not initialized yet ~n",[self()]);
+				Initialized == 1 ->
+					%%%io:format("~p Data has been initialized ~n",[self()]),
+					%% Find a random neighbour from neighbour list
+					timer:sleep(Delay), %% Sleep before a pull and a push
+				if 
+					length(Neighbours_List) > 0 ->
+						NewNodePID2 = lists:nth(random:uniform(length(Neighbours_List)), Neighbours_List) ,
+						if 
+							self() == NewNodePID2 ->
+								%io:format("~p SELF, just sleep,KCount ~p ~n",[self(),KCount]),
+								Now_TS_1 = getCurrentTS(),
+								myGossip(Fragment_Id, Data_Values , Neighbours_List, Delay , KCount , MIN,MAX,SumSeen,NumbersSeen,Initialized,Infected,IsRunning,Now_TS_1); %%add this TS to sent?
+							true ->
+											PUSH_ID=getRandomNumber()+Fragment_Id,
+							   				io:format("~p PUSH TO ~p KCount ~p PUSH_ID ~p~n",[self(),NewNodePID2,KCount,PUSH_ID]),											
+											{Now_TS,NEW_TOTAL_SUM,NEW_TOTAL_NUM} = sendPushMessage(Fragment_Id, Data_Values , Neighbours_List, Delay , KCount , MIN,MAX,SumSeen,NumbersSeen,Initialized,Infected,IsRunning,SentTimeStamp,NewNodePID2,PUSH_ID,"PUSH"),
+											myGossip(Fragment_Id, Data_Values , Neighbours_List, Delay , KCount-1 , MIN,MAX,NEW_TOTAL_SUM,NEW_TOTAL_NUM,Initialized,Infected,IsRunning,Now_TS)		
+						end; % end of self check if
 					true ->
-						PUSH_ID=getRandomNumber()+Fragment_Id,
-						io:format("~p PUSH TO ~p KCount ~p PUSH_ID ~p~n",[self(),NewNodePID2,KCount,PUSH_ID]),											
-						{Now_TS,NEW_TOTAL_SUM,NEW_TOTAL_NUM} = sendPushMessage(Fragment_Id, Data_Values , Neighbours_List, Delay , KCount , MIN,MAX,SumSeen,NumbersSeen,Initialized,Infected,IsRunning,SentTimeStamp,NewNodePID2,PUSH_ID,"PUSH"),
-						myGossip(Fragment_Id, Data_Values , Neighbours_List, Delay , KCount-1 , MIN,MAX,NEW_TOTAL_SUM,NEW_TOTAL_NUM,Initialized,Infected,IsRunning,Now_TS)		
-			end; % end of self check if	
-		KCount > 0 , NEW_TIMESTAMP - SentTimeStamp  > Delay , IsRunning == 1 , Initialized == 1	, Infected == 0 ->
+						io:format("~p NO NEIGHBOURS TO PING",[self()])
+				end  % end of if neighbours are there to PING
+			end; % end of initialized if
+
+		IsRunning == 1 , Infected == 0 ->
 			%%io:format("~p PULL Phase ONLY, not infected ~n",[self()]),
 			sendPull(Neighbours_List,Fragment_Id),
 			myGossip(Fragment_Id, Data_Values , Neighbours_List, Delay , KCount , MIN,MAX,SumSeen,NumbersSeen,Initialized,Infected,IsRunning,getCurrentTS());
-		true ->
-			a
-			%io:format("~p No condition Matched ~n",[self()])
-	end,
-	
+	 	true ->
+			io:format("~p Not Running yet.~n",[self()])
+	end; %%end of IsRunning condition
+	true ->
+		%io:format("~p Not enough time NEWTS = ~p SentTimeStamp = ~p~n",[self(),NEW_TIMESTAMP,SentTimeStamp]),
+		a
+	end;
+	true ->
+		s
+%		if
+%			NumbersSeen > 0 ->
+%				io:format("~p FINAL AVERAGE ~p MIN ~p MAX ~p KCount ~p ~n",[self(),SumSeen/NumbersSeen , MIN ,MAX,KCount]);
+%			true ->
+%				io:format("~p FINAL AVERAGE ~p MIN ~p MAX ~p KCount ~p ~n",[self(),lists:sum(Data_Values)/length(Data_Values), MIN ,MAX,KCount])
+%		end
+	end, %% end of KCount check
 	%% if not initialized then wait for the initialize message
 	%% now that PUSH or PULL message has been sent , wait for a response and then updated your state.
 	%% NOTE: PULL's will have a response of no_infection if it contacts an uninfected node, and gets a proper message if contacts infected. After that, a PULL message will never be sent by the node.
@@ -282,8 +309,8 @@ getGossip(N, K, Delay , KillTime) ->
 	%%spawn N /2 processes on each VM. To spawn on more VM's just add another line of Pid's and then n has to be divisible by 3!!!
 	DataDict = dict:new(),
 	MID = N div 2,
-	Pids1 = lists:map(fun(T) -> spawn('pong@192.168.10.102',gossip12, myGossip, [T,lists:nth(T,Values),[],Delay,KCount,lists:min(lists:nth(T,Values)),lists:max(lists:nth(T,Values)),lists:sum(lists:nth(T,Values)),length(lists:nth(T,Values)),0,0,0,0]) end, lists:seq(1, MID)),
-	Pids = Pids1 ++ lists:map(fun(T) -> spawn('ping@192.168.10.101',gossip12, myGossip, [MID + T,lists:nth(MID + T,Values),[],Delay,KCount,lists:min(lists:nth(MID+T,Values)),lists:max(lists:nth(T+MID,Values)),lists:sum(lists:nth(T+MID,Values)),length(lists:nth(T+MID,Values)),0,0,0,0]) end, lists:seq(1, MID)),
+	Pids1 = lists:map(fun(T) -> spawn('pong@192.168.10.102',gossip23, myGossip, [T,lists:nth(T,Values),[],Delay,KCount,lists:min(lists:nth(T,Values)),lists:max(lists:nth(T,Values)),lists:sum(lists:nth(T,Values)),length(lists:nth(T,Values)),0,0,0,0]) end, lists:seq(1, MID)),
+	Pids = Pids1 ++ lists:map(fun(T) -> spawn('ping@192.168.10.101',gossip23, myGossip, [MID + T,lists:nth(MID + T,Values),[],Delay,KCount,lists:min(lists:nth(MID+T,Values)),lists:max(lists:nth(T+MID,Values)),lists:sum(lists:nth(T+MID,Values)),length(lists:nth(T+MID,Values)),0,0,0,0]) end, lists:seq(1, MID)),
 	%%%%(Fragment_Id, Data_Values , Neighbours_List, Delay , KCount , MIN,MAX,AVERAGE,MEDIAN,Initialized,Infected,IsRunning)%%%%
 	io:format("BOOTSTRAP: List of pids: ~p~n~n~n", [Pids]), 
 	
@@ -310,9 +337,3 @@ getGossip(N, K, Delay , KillTime) ->
 	timer:sleep(5000),
 	io:format("~n~nMALDI: MIN=~p MAX=~p AVERAGE=~p MEDIAN=~p~n~n",[lists:min(FlatList),lists:max(FlatList),mean(FlatList),median(FlatList)]).
 
-
-getData(N) ->
-	Values = lists:map(fun(_) -> lists:map( fun(_) -> random:uniform(1000)+0.5 end  , lists:seq(1,10)) end, lists:seq(1,N)),
-	FlatList = lists:flatten(Values),
-	io:format("~n~nMALDI: MIN=~p MAX=~p AVERAGE=~p MEDIAN=~p~n~n",[lists:min(FlatList),lists:max(FlatList),mean(FlatList),median(FlatList)]),
-	Values.
