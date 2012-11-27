@@ -93,6 +93,8 @@ getMaximum(MAX1,MAX2) ->
 	NEW_MAX.
 
 getRandomNumber() ->
+	{A1,A2,A3} = now(), 
+    random:seed(A1, A2, A3),
 	random:uniform(9999).
 
 floor(X) ->
@@ -111,23 +113,41 @@ ceiling(X) ->
         _ -> T
     end.
 
-sendPull(Neighbours_list) ->
-	
+sendPull(Neighbours_list,Fragment_Id) ->
+	{A1,A2,A3} = now(), 
+    random:seed(A1, A2, A3),
 	if 
 		length(Neighbours_list) > 0 ->
 			NewNodePID2 = lists:nth(random:uniform(length(Neighbours_list)), Neighbours_list) ,
 				if 
 							self() == NewNodePID2 ->
-								io:format("~p PULL SELF, just sleep ~n",[self()]);
+								%io:format("~p PULL SELF, just sleep ~n",[self()]);
+								a;
 							true ->
-								PULL_ID=getRandomNumber(),
-								io:format("~p PULL TO ~p PULL_ID ~p~n",[self(),NewNodePID2,PULL_ID]),
+								PULL_ID=getRandomNumber()+Fragment_Id,
+								%io:format("~p PULL TO ~p PULL_ID ~p~n",[self(),NewNodePID2,PULL_ID]),
 								NewNodePID2 ! {pull_request,self(),PULL_ID}
 				end;
 		true ->
 			a
 	end,
 	getCurrentTS().
+
+sendPushMessage(Fragment_Id, Data_Values , Neighbours_List, Delay , KCount , MIN,MAX,SumSeen,NumbersSeen,Initialized,Infected,IsRunning,SentTimeStamp,NewNodePID2,MessageID,IS_PUSH) ->
+	if 
+		SumSeen =< 0 -> 
+			NEW_TOTAL_SUM = lists:sum(Data_Values),
+			NEW_TOTAL_NUM = length(Data_Values);
+		SumSeen > 0 ->
+			NEW_TOTAL_SUM = SumSeen,
+			NEW_TOTAL_NUM = NumbersSeen
+	end,% end of Average if
+							   				
+	%%  do a PUSH-PULL here. In the end this acts as both PUSH + PULL
+	NewNodePID2 ! {push_request,self(),Data_Values,NEW_TOTAL_SUM,NEW_TOTAL_NUM, MIN, MAX,MessageID},
+	%io:format("~p ~p TO ~p KCount ~p ~p_ID ~p~n",[self(),IS_PUSH,NewNodePID2,KCount,IS_PUSH,MessageID]),
+	NOW_TS=getCurrentTS(),
+	{NOW_TS,NEW_TOTAL_SUM,NEW_TOTAL_NUM}. %I return the current timestamp always
 	
 							
 								
@@ -135,11 +155,13 @@ sendPull(Neighbours_list) ->
 
 %%TODO problem here is that I will push a message and then goto receive always. Ideally i want to PUSH
 myGossip(Fragment_Id, Data_Values , Neighbours_List, Delay , KCount , MIN,MAX,SumSeen,NumbersSeen,Initialized,Infected,IsRunning,SentTimeStamp) -> 
+	{A1,A2,A3} = now(), 
+	random:seed(A1, A2, A3),
 	NEW_TIMESTAMP = getCurrentTS(),
 	if
 		KCount >0 ->
 	if
-	NEW_TIMESTAMP - SentTimeStamp  > 5 ->
+	NEW_TIMESTAMP - SentTimeStamp  > 2 ->
 	%%%io:format("~p Invoked ~n",[self()]),
 	if 
 		IsRunning == 1 , Infected == 1 ->
@@ -156,30 +178,14 @@ myGossip(Fragment_Id, Data_Values , Neighbours_List, Delay , KCount , MIN,MAX,Su
 						NewNodePID2 = lists:nth(random:uniform(length(Neighbours_List)), Neighbours_List) ,
 						if 
 							self() == NewNodePID2 ->
-								io:format("~p SELF, just sleep,KCount ~p ~n",[self(),KCount]),
+								%io:format("~p SELF, just sleep,KCount ~p ~n",[self(),KCount]),
 								Now_TS_1 = getCurrentTS(),
-								myGossip(Fragment_Id, Data_Values , Neighbours_List, Delay , KCount-1 , MIN,MAX,SumSeen,NumbersSeen,Initialized,Infected,IsRunning,Now_TS_1); %%add this TS to sent?
+								myGossip(Fragment_Id, Data_Values , Neighbours_List, Delay , KCount , MIN,MAX,SumSeen,NumbersSeen,Initialized,Infected,IsRunning,Now_TS_1); %%add this TS to sent?
 							true ->
-							   		if 
-								   		KCount >= 1 ->
-											if 
-												SumSeen =< 0 -> 
-													NEW_TOTAL_SUM = lists:sum(Data_Values),
-													NEW_TOTAL_NUM = length(Data_Values);
-												SumSeen > 0 ->
-													NEW_TOTAL_SUM = SumSeen,
-													NEW_TOTAL_NUM = NumbersSeen
-											end,% end of Average if
-							   				
-											%%  do a PUSH-PULL here. In the end this acts as both PUSH + PULL
 											PUSH_ID=getRandomNumber()+Fragment_Id,
-							   				io:format("~p PUSH TO ~p KCount ~p PUSH_ID ~p~n",[self(),NewNodePID2,KCount,PUSH_ID]),
-											NewNodePID2 ! {push_request,self(),Data_Values,NEW_TOTAL_SUM,NEW_TOTAL_NUM, MIN, MAX,PUSH_ID},
-											Now_TS = getCurrentTS(),
-											myGossip(Fragment_Id, Data_Values , Neighbours_List, Delay , KCount-1 , MIN,MAX,NEW_TOTAL_SUM,NEW_TOTAL_NUM,Initialized,Infected,IsRunning,Now_TS);%%TS CHECK
-								   		true ->
-											a
-									end % end of KCount if 
+							   				io:format("~p PUSH TO ~p KCount ~p PUSH_ID ~p~n",[self(),NewNodePID2,KCount,PUSH_ID]),											
+											{Now_TS,NEW_TOTAL_SUM,NEW_TOTAL_NUM} = sendPushMessage(Fragment_Id, Data_Values , Neighbours_List, Delay , KCount , MIN,MAX,SumSeen,NumbersSeen,Initialized,Infected,IsRunning,SentTimeStamp,NewNodePID2,PUSH_ID,"PUSH"),
+											myGossip(Fragment_Id, Data_Values , Neighbours_List, Delay , KCount-1 , MIN,MAX,NEW_TOTAL_SUM,NEW_TOTAL_NUM,Initialized,Infected,IsRunning,Now_TS)		
 						end; % end of self check if
 					true ->
 						io:format("~p NO NEIGHBOURS TO PING",[self()])
@@ -187,9 +193,8 @@ myGossip(Fragment_Id, Data_Values , Neighbours_List, Delay , KCount , MIN,MAX,Su
 			end; % end of initialized if
 
 		IsRunning == 1 , Infected == 0 ->
-			io:format("~p PULL Phase ONLY, not infected ~n",[self()]),
-			%%TODO send pure pull messages.
-			sendPull(Neighbours_List),
+			%%io:format("~p PULL Phase ONLY, not infected ~n",[self()]),
+			sendPull(Neighbours_List,Fragment_Id),
 			myGossip(Fragment_Id, Data_Values , Neighbours_List, Delay , KCount , MIN,MAX,SumSeen,NumbersSeen,Initialized,Infected,IsRunning,getCurrentTS());
 	 	true ->
 			io:format("~p Not Running yet.~n",[self()])
@@ -216,7 +221,7 @@ myGossip(Fragment_Id, Data_Values , Neighbours_List, Delay , KCount , MIN,MAX,Su
 		{initialize, Fragment_Id_in, Data_Values_in , Neighbours_List_in, Delay_in , KCount_in , _,_,_,_} ->
 			IN_MIN = getMinimum(lists:min(Data_Values_in),MIN),
 			IN_MAX = getMaximum(lists:max(Data_Values_in),MAX),
-			io:format("~p received initialize [id,values,KCount, MIN, MAX , neighbour] ~p:~p:~p:~p:~p: ~n", [self(), Fragment_Id_in, Data_Values_in,KCount_in,IN_MIN,IN_MAX]),
+			io:format("~p received initialize [id,values,KCount, MIN, MAX , neighbour] ~p:~p:~p:~p:~p ~n", [self(), Fragment_Id_in, Data_Values_in,KCount_in,IN_MIN,IN_MAX]),
 			timer:sleep(5000),
 			myGossip(Fragment_Id_in, Data_Values_in , Neighbours_List_in, Delay_in , KCount_in , IN_MIN ,IN_MAX,SumSeen,NumbersSeen,1,0,1,0);
 
@@ -226,10 +231,15 @@ myGossip(Fragment_Id, Data_Values , Neighbours_List, Delay , KCount , MIN,MAX,Su
 			myGossip(Fragment_Id, Data_Values , Neighbours_List, Delay , KCount ,MIN,MAX,SumSeen,NumbersSeen,1,1,1,0);
 		
 		{pull_request,Pid,PULL_ID} ->
-			io:format("~p PULL from ~p PULL_ID ~p~n",[self(),Pid,PULL_ID]),
+			%%io:format("~p PULL from ~p PULL_ID ~p~n",[self(),Pid,PULL_ID]),
 			%% TODO send a PUSH message for current computation.
-			%sendPushMessage(Fragment_Id, Data_Values , Neighbours_List, Delay , KCount , MIN,MAX,SumSeen,NumbersSeen,Initialized,Infected,IsRunning,SentTimeStamp)
-			myGossip(Fragment_Id, Data_Values , Neighbours_List, Delay , KCount , MIN,MAX,SumSeen,NumbersSeen,Initialized,Infected,IsRunning,SentTimeStamp);
+			if
+				Infected == 1 ->
+					{NowTS,TOTAL_SUM,TOTAL_NUM} = sendPushMessage(Fragment_Id, Data_Values , Neighbours_List, Delay , KCount , MIN,MAX,SumSeen,NumbersSeen,Initialized,Infected,IsRunning,SentTimeStamp,Pid,PULL_ID,"PULL"),
+					myGossip(Fragment_Id, Data_Values , Neighbours_List, Delay , KCount , MIN,MAX,TOTAL_SUM,TOTAL_NUM,Initialized,Infected,IsRunning,SentTimeStamp);
+				true ->
+					myGossip(Fragment_Id, Data_Values , Neighbours_List, Delay , KCount , MIN,MAX,SumSeen,NumbersSeen,Initialized,Infected,IsRunning,SentTimeStamp)
+			end;
 		
 		{push_request,Pid,Source_Data,TOTAL_SUM,TOTAL_NUMBERS, MIN_MESSAGE , MAX_MESSAGE,PUSH_ID_IN} ->					
 
@@ -281,6 +291,9 @@ myGossip(Fragment_Id, Data_Values , Neighbours_List, Delay , KCount , MIN,MAX,Su
 %%Please note Limitation that N always HAS to be EVEN!!! I will fix this later if needed, but as PoC this is just fine.
 getGossip(N, K, Delay , KillTime) ->
 	
+	{A1,A2,A3} = now(), 
+	random:seed(A1, A2, A3),
+	
 	%% K is derived from the demers, epidemic paper the K-factor, for just log N rounds , 
 	KCount = ceiling(math:log(N)) * K,
 	
@@ -303,15 +316,16 @@ getGossip(N, K, Delay , KillTime) ->
 	
 	timer:sleep(1000),
 	
-	Topology = generateTopology(Pids,10),
+	Topology = generateTopology(Pids,5),
 	%io:format("~n~n TOPOLOGY= ~p~n~n",[Topology]),
 	
 	%% TODO GENERATE NEIGHBOUR LIST FOR EACH PID, and INCLUDE ITSELF
 	%% TODO : send state to EACH process as Data,  tuple = {action=initialize, fragment_index= i , fragment_data = Values[i] , neighbour_list = [] or Pids itself for a complete graph, delay = 0,KCount }
 	%lists:foreach( fun(X) -> io:format("action=~p , pid=~p , fragment_id=~p , data= ~p , neighbour_list=~p~n", [initialize,lists:nth(X,Pids) ,X, lists:nth(X,Values),Pids])  end , lists:seq(1, N) ),
 	lists:nth(1,Pids) ! {initialize,1,lists:nth(1,Values),lists:nth(1,Topology),Delay,KCount,lists:min(lists:nth(1,Values)),lists:max(lists:nth(1,Values)),0,0},
-	lists:foreach( fun(X) -> lists:nth(X,Pids) ! {initialize,X,lists:nth(X,Values),lists:nth(1,Topology),Delay,KCount,lists:min(lists:nth(X,Values)),lists:max(lists:nth(X,Values)),0,0} end , lists:seq(2, N) ),
+	lists:foreach( fun(X) -> lists:nth(X,Pids) ! {initialize,X,lists:nth(X,Values),lists:nth(X,Topology),Delay,KCount,lists:min(lists:nth(X,Values)),lists:max(lists:nth(X,Values)),0,0} end , lists:seq(2, N) ),
 	%% the last tuple in the message is the initial values for min , max , average, median 
+	%% add this in Topology , ++lists:map(fun(_) -> lists:nth(X,Pids) end,lists:seq(1,length(lists:nth(X,Topology))))
 	
 	hd(Pids) ! {initialize},
 	
