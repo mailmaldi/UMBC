@@ -237,12 +237,29 @@ generateTopology(Pids, Flag) ->
 			N = length(Pids),
 			TempPids = Pids ++ Pids ++ Pids ++ Pids,
 			Topology = lists:map(fun(T) -> [lists:nth(N+(T-1),TempPids),lists:nth(N+1+(T-1),TempPids),lists:nth(N+2+(T-1),TempPids),lists:nth(N+3+(T-1),TempPids)] end, lists:seq(1,N)),
-			io:format("Expander Graph with Degree = 4~n~p",[Topology]);
+			io:format("Expander Graph with Degree = 4~n~p",[Topology]);	
 		_ ->
 			N = length(Pids),
 			Topology = lists:map( fun(T) -> Pids end, lists:seq(1,N))
 	end,
 	Topology.
+
+floor(X) ->
+    T = erlang:trunc(X),
+    case (X - T) of
+        Neg when Neg < 0 -> T - 1;
+        Pos when Pos > 0 -> T;
+        _ -> T
+    end.
+
+ceiling(X) ->
+    T = erlang:trunc(X),
+    case (X - T) of
+        Neg when Neg < 0 -> T;
+        Pos when Pos > 0 -> T + 1;
+        _ -> T
+    end.
+
 
 testTopo(N,Flag) ->
 	Values = lists:map(fun(_) -> lists:map( fun(_) -> random:uniform(1000)+0.5 end  , lists:seq(1,10)) end, lists:seq(1,N)),

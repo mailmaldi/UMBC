@@ -194,7 +194,7 @@ myGossip(Fragment_Id, Data_Values , Neighbours_List, Delay , KCount , MIN,MAX,Su
 		{initialize, Fragment_Id_in, Data_Values_in , Neighbours_List_in, Delay_in , KCount_in , _,_,_,_} ->
 			IN_MIN = getMinimum(lists:min(Data_Values_in),MIN),
 			IN_MAX = getMaximum(lists:max(Data_Values_in),MAX),
-			io:format("~p received initialize [id,values,KCount, MIN, MAX , neighbour] ~p:~p:~p:~p:~p ~n", [self(), Fragment_Id_in, Data_Values_in,KCount_in,IN_MIN,IN_MAX]),
+			%io:format("~p received initialize [id,values,KCount, MIN, MAX , neighbour] ~p:~p:~p:~p:~p ~n", [self(), Fragment_Id_in, Data_Values_in,KCount_in,IN_MIN,IN_MAX]),
 			timer:sleep(5000),
 			myGossip(Fragment_Id_in, Data_Values_in , Neighbours_List_in, Delay_in , KCount_in , IN_MIN ,IN_MAX,SumSeen,NumbersSeen,1,0,1,0);
 
@@ -289,7 +289,7 @@ getGossip(N, K, Delay , KillTime) ->
 	
 	timer:sleep(1000),
 	
-	Topology = generateTopology(Pids,5),
+	Topology = generateTopology(Pids,3),
 	%io:format("~n~n TOPOLOGY= ~p~n~n",[Topology]),
 	
 	%% TODO GENERATE NEIGHBOUR LIST FOR EACH PID, and INCLUDE ITSELF
