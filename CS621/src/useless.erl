@@ -267,3 +267,7 @@ testTopo(N,Flag) ->
 	io:format("~n~p PID~n~n",[Pids]),
 	io:format("~n~p Values~n~n",[Values]),
 	generateTopology(Pids,Flag).
+
+createTopology(N) ->
+	Pids = lists:map(fun(T) -> T + 0.5 end , lists:seq(1,N)),
+	LogN = maldi:ceiling(math:log(N))+1.
