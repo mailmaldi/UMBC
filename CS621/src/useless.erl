@@ -271,3 +271,6 @@ testTopo(N,Flag) ->
 createTopology(N) ->
 	Pids = lists:map(fun(T) -> T + 0.5 end , lists:seq(1,N)),
 	LogN = maldi:ceiling(math:log(N))+1.
+
+getLog(N) ->
+	ceiling(math:log(N))+1.

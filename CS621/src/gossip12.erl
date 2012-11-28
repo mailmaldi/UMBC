@@ -155,13 +155,15 @@ myGossip(Fragment_Id, Data_Values , Neighbours_List, Delay , KCount , MIN,MAX,Su
 
 
 %%Please note Limitation that N always HAS to be EVEN!!! I will fix this later if needed, but as PoC this is just fine.
-getGossip(N, K, Delay , KillTime) ->
+getGossip(N, TopologyId , K, Delay  ,KillTime) ->
+	
+	io:format("Size= ~p , Topology= ~p , KCount= ~p , Delay= ~p s, KillTime= ~p s",[N, TopologyId , K, Delay  ,KillTime]),
 	
 	{A1,A2,A3} = now(), 
 	random:seed(A1, A2, A3),
 	
 	%% K is derived from the demers, epidemic paper the K-factor, for just log N rounds , 
-	KCount = (maldi:ceiling(math:log(N))+1) * K,
+	KCount = maldi:getLog(N) * K,
 	
 	%% generate seemingly random data, but each node will have value list of [SeedValue + i , SeedValue + i + 1 ] where i = 1 to N
 	%% the median , max , min , avg can be mathematically calculated here 
@@ -183,7 +185,7 @@ getGossip(N, K, Delay , KillTime) ->
 	
 	timer:sleep(1000),
 	
-	Topology = maldi:generateTopology(Pids,3),
+	Topology = maldi:generateTopology(Pids,TopologyId),
 	%io:format("~n~n TOPOLOGY= ~p~n~n",[Topology]),
 	io:format("~n~n ~p entries in TOPOLOGY Size = ~p~n~n",[length(Topology), length(lists:nth(1,Topology))]),
 	

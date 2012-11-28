@@ -27,6 +27,8 @@ generateTopology(Pids, Flag) ->
 			TempPids = Pids ++ Pids ++ Pids ++ Pids,
 			Topology = lists:map(fun(T) -> [lists:nth(N+(T-1),TempPids),lists:nth(N+1+(T-1),TempPids),lists:nth(N+2+(T-1),TempPids),lists:nth(N+3+(T-1),TempPids)] end, lists:seq(1,N));
 			%io:format("Expander Graph with Degree = 4~n~p",[Topology]);
+		4 -> 
+			Topology = generateChord(Pids);
 		_ ->
 			N = length(Pids),
 			Topology = lists:map( fun(T) -> Pids end, lists:seq(1,N))
@@ -100,19 +102,24 @@ getRandomNumber() ->
 
 floor(X) ->
     T = erlang:trunc(X),
-    case (X - T) of
-        Neg when Neg < 0 -> T - 1;
-        Pos when Pos > 0 -> T;
-        _ -> T
+	TEST = (X - T),
+    if
+        TEST < 0 -> T - 1;
+        TEST > 0 -> T;
+        true -> T
     end.
 
 ceiling(X) ->
     T = erlang:trunc(X),
-    case (X - T) of
-        Neg when Neg < 0 -> T;
-        Pos when Pos > 0 -> T + 1;
-        _ -> T
+	TEST = (X - T),
+    if 
+        TEST < 0 -> T;
+        TEST > 0 -> T + 1;
+        true -> T
     end.
+
+log2(N) ->
+	math:log10(N)/ math:log10(2).
 
 
 getData(N) ->
@@ -120,3 +127,49 @@ getData(N) ->
 	FlatList = lists:flatten(Values),
 	io:format("~n~nMALDI: MIN=~p MAX=~p AVERAGE=~p MEDIAN=~p~n~n",[lists:min(FlatList),lists:max(FlatList),mean(FlatList),median(FlatList)]),
 	Values.
+
+getLog(N) ->
+	ceiling(log2(N)).
+
+getList(N) ->
+	List = lists:map(fun(T) -> T+0.5 end, lists:seq(1,N)),
+	%io:format("List ~p~n",[List]),
+	List.
+
+getIndex(T,L,N) ->
+	Index = (T + ceiling(math:pow(2,L-1))) rem N,
+	if
+		Index =< 0 ->
+			RETURN = 1;
+		Index > N ->
+			RETURN = N;
+		true ->
+			RETURN = Index
+	end,
+	RETURN.
+
+generateChord(Pids) ->
+	N = length(Pids),
+	io:format("N ~p~n",[N]),
+	LogN = getLog(N),
+	io:format("LogN ~p~n",[LogN]),
+	
+	Dict = dict:new(),
+	
+	List = lists:map( fun(T) -> T end, lists:seq(1,N) ),
+	%io:format("List ~p~n",[List]),
+
+	LogL = lists:map( fun(T) -> T end, lists:seq(1,LogN) ),
+	io:format("LogL ~p~n",[LogL]),	
+	lists:map(fun(T) ->
+					  TempList = lists:map( fun(L) -> 
+													lists:nth( getIndex(T,L,N) , Pids) 
+											end , LogL), 
+					  %io:format("Internal:~p= ~p~n",[T,TempList]),  
+					  [lists:nth(T,Pids)] ++ TempList  %% ++ lists:map( fun(_) -> lists:nth(T,Pids) end, lists:seq(1,LogN - 1))
+			  end, List).
+	
+	
+
+
+
