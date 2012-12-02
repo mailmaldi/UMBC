@@ -323,3 +323,8 @@ testDictFunction(N) ->
 	
 	DiffDict = maldi:dictSubtract(Dict3,Dict5),
 	dict:to_list(DiffDict).
+
+testTuple() ->
+	Tuple = {test,hello},
+	{TEST,HELLO} = {},
+	io:format("TEST=~p,HELLO=~p~n",[TEST,HELLO]).

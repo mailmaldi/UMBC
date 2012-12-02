@@ -229,7 +229,7 @@ init_the_dhondus(N) ->
 	Values = lists:map(fun(_) -> random:uniform(100) end, lists:seq(0,N-1)),
 	Fragments = lists:map(fun(_) -> lists:map(fun(_) -> random:uniform(100)+0.5 end, lists:seq(1, random:uniform(3))) end, lists:seq(0,erlang:trunc(N/2))),
 	FragmentsIdMap = lists:map(fun(_)-> random:uniform(erlang:trunc(N/2)) end, lists:seq(1,N)),
-	Pids = lists:map(fun(Node) -> spawn(gossip_fetch_i, gossip, [lists:map(fun(_) -> random:uniform(N) end, lists:seq(0,erlang:trunc(math:log(N)))), 
+	Pids = lists:map(fun(Node) -> spawn(gossip_fetch_i, gossip, [lists:map(fun(_) -> random:uniform(N) end, lists:seq(0,erlang:trunc(maldi:log2(N)))), 
 								N, 
 								lists:nth(lists:nth(Node, FragmentsIdMap), Fragments), 
 								lists:nth(Node, FragmentsIdMap), 
