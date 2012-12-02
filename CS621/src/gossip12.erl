@@ -174,7 +174,7 @@ myGossip(Fragment_Id, Data_Values , Neighbours_List, Delay , KCount , MIN,MAX,Su
 %%Please note Limitation that N always HAS to be EVEN!!! I will fix this later if needed, but as PoC this is just fine.
 getGossip(N, TopologyId , K, Delay  ,KillTime) ->
 	
-	io:format("Size= ~p , Topology= ~p , KCount= ~p , Delay= ~p s, KillTime= ~p s",[N, TopologyId , K, Delay  ,KillTime]),
+	io:format("Size= ~p , Topology= ~p , KCount= ~p , Delay= ~p s, KillTime= ~p s~n",[N, TopologyId , K, Delay  ,KillTime]),
 	
 	{A1,A2,A3} = now(), 
 	random:seed(A1, A2, A3),
@@ -187,7 +187,7 @@ getGossip(N, TopologyId , K, Delay  ,KillTime) ->
 	SeedValue = 0.5,
 	%Values = lists:map(fun(T) -> [SeedValue + T , SeedValue + T +1] end, lists:seq(1, N)), % foreach 1,2,3,4...N
 	%Values = lists:map(fun(_) -> lists:map( fun(_) -> random:uniform(1000)+0.5 end  , lists:seq(1,random:uniform(3))) end, lists:seq(1,N)),
-	Values = lists:map(fun(_) -> lists:map( fun(_) ->random:uniform(1000)+0.5 end  , lists:seq(1,10)) end, lists:seq(1,N)),
+	Values = lists:map(fun(_) -> lists:map( fun(_) ->random:uniform(10000)+0.5 end  , lists:seq(1,300)) end, lists:seq(1,N)),
 	%io:format("BOOTSTRAP: List of values: ~p~n~n~n", [Values]),
 	%%lists:foreach(fun(T) -> io:format("index ~p value ~p~n",[T,lists:nth(T,Values)]) end , lists:seq(1,N)).  %% io:format("~p~n~n~n",[Values]). %%This will print value of each line
 	
