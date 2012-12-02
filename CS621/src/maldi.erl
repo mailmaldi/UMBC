@@ -46,6 +46,33 @@ mergeDicts(Dict1,Dict2) ->
 dictToValueList(Dict) ->
 	dict:fold(fun(Key,Val,Acc) -> Acc++Val end, [],Dict).
 
+%% specialized 2 functions when my Dict stores <K,V> = <FragmentID, {SUM,COUNT} >
+dictToSum(Dict) ->
+	dict:fold(fun(Key,Val,Acc) -> Acc + element(1,Val) end, 0,Dict).
+
+dictToCount(Dict) ->
+	dict:fold(fun(Key,Val,Acc) -> Acc + element(2,Val) end, 0,Dict).
+
+%% Dict1 is incoming, Dict2 is existing, wish to return only those unique in Dict2
+%% Should reduce n/w b/w a lot hopefully?
+dictSubtract(Dict2,Dict1) ->
+	Dict2KeySet = ordsets:from_list(dict:fetch_keys(Dict2)),
+	Dict1KeySet = ordsets:from_list(dict:fetch_keys(Dict1)),
+	DiffKeySet = ordsets:subtract(Dict2KeySet,Dict1KeySet),
+	DiffList = ordsets:to_list(DiffKeySet),
+	
+	TempDict = dict:new(),
+	
+	DiffDict = lists:foldl( 
+				 fun(X, ACC) -> 
+						 dict:store(X, dict:fetch(X,Dict2) , ACC) 
+				 end, 
+				 TempDict, 
+				 DiffList
+			   ),	
+	DiffDict.
+	%dict:to_list(DiffDict).
+
 %% Find median from a list
 median(List) when is_list(List) ->
     SList = lists:sort(List),
@@ -169,3 +196,26 @@ generateChord(Pids) ->
 					  %io:format("Internal:~p= ~p~n",[T,TempList]),  
 					  [lists:nth(T,Pids)] ++ TempList  ++ lists:map( fun(_) -> lists:nth(T,Pids) end, lists:seq(1,LogN - 1)) %% This makes logN entries of same node & logN others
 			  end, List).
+
+
+%% Milind -> Common send PULL code for all files.
+sendPull(Neighbours_list,Fragment_Id) ->
+	{A1,A2,A3} = now(), 
+    random:seed(A1, A2, A3),
+	if 
+		length(Neighbours_list) > 0 ->
+			NewNodePID2 = lists:nth(random:uniform(length(Neighbours_list)), Neighbours_list) ,
+				if 
+							self() == NewNodePID2 ->
+								%io:format("~p PULL SELF, just sleep ~n",[self()]);
+								K = 0;
+							true ->
+								PULL_ID=maldi:getRandomNumber()+Fragment_Id,
+								%io:format("~p pull TO ~p PULL_ID ~p~n",[self(),NewNodePID2,PULL_ID]),
+								NewNodePID2 ! {pull_request,self(),PULL_ID},
+								K = 1
+				end;
+		true ->
+			K = 0
+	end,
+	{ K , maldi:getCurrentTS()}.

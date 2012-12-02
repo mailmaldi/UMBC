@@ -300,3 +300,26 @@ testIf2(Frags,Mode) ->
 	end,
 		io:format("Exited ~n").
 	
+testDictFunction(N) ->
+	Dict = dict:new(),
+	Dict1 = dict:store(1, {50.5,2}, Dict), 
+	Dict2 = dict:store(20, {500,2}, Dict1),
+	Dict25 = dict:store(10, {500,2}, Dict2),
+	Dict3 = dict:store(15, {10,1}, Dict25),
+	
+	Dict4 = dict:store(7, {1000.5,10}, Dict1),
+	Dict45 = dict:store(15, {1000.5,10}, Dict4),
+	Dict5 = dict:store(10, {2000.5,10}, Dict45),
+	
+	SUM = maldi:dictToSum(Dict3),
+	COUNT = maldi:dictToCount(Dict3),
+	io:format("SUM=~p , COUNT=~p , AVERAGE=~p~n",[SUM,COUNT,SUM/COUNT]),
+	
+	io:format("Dict3 keys=~p~n",[dict:fetch_keys(Dict3)]),
+	io:format("Dict5 keys=~p~n",[dict:fetch_keys(Dict5)]),
+	io:format("MergedDict keys=~p~n",[dict:fetch_keys(Dict3) ++ dict:fetch_keys(Dict5)]),
+	MergedKeySet = ordsets:from_list(dict:fetch_keys(Dict3) ++ dict:fetch_keys(Dict5)),
+	io:format("KeySet keys=~p~n",[ordsets:to_list(MergedKeySet)]),
+	
+	DiffDict = maldi:dictSubtract(Dict3,Dict5),
+	dict:to_list(DiffDict).
