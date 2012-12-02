@@ -148,13 +148,14 @@ getIndex(T,L,N) ->
 	end,
 	RETURN.
 
+
+%% Milind - The following generates a uni-directional chord, every node knows itself,+1,+2,+4,+8.... total logN nodes, but not guaranteed to be vice-versa.
+%% It still generates a fully-connected graph.
 generateChord(Pids) ->
 	N = length(Pids),
 	io:format("N ~p~n",[N]),
-	LogN = getLog(N),
+	LogN = getLog(N)-1, %% milind -> floor instead of ceiling, maybe partition size is smaller? wanna try 
 	io:format("LogN ~p~n",[LogN]),
-	
-	Dict = dict:new(),
 	
 	List = lists:map( fun(T) -> T end, lists:seq(1,N) ),
 	%io:format("List ~p~n",[List]),
@@ -166,10 +167,5 @@ generateChord(Pids) ->
 													lists:nth( getIndex(T,L,N) , Pids) 
 											end , LogL), 
 					  %io:format("Internal:~p= ~p~n",[T,TempList]),  
-					  [lists:nth(T,Pids)] ++ TempList  %% ++ lists:map( fun(_) -> lists:nth(T,Pids) end, lists:seq(1,LogN - 1))
+					  [lists:nth(T,Pids)] ++ TempList  ++ lists:map( fun(_) -> lists:nth(T,Pids) end, lists:seq(1,LogN - 1)) %% This makes logN entries of same node & logN others
 			  end, List).
-	
-	
-
-
-

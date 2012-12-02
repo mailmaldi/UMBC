@@ -274,3 +274,29 @@ createTopology(N) ->
 
 getLog(N) ->
 	ceiling(math:log(N))+1.
+
+testAtom(ATOM) ->
+	case ATOM of
+				push ->
+					io:format("Got push~n");
+				pull ->
+					io:format("Got pull~n");
+				_ ->
+					io:format("Got NOTHING~n")
+	end.
+
+getList(N) ->
+	List = lists:map(fun(T) -> T+0.5 end, lists:seq(1,N)),
+	%io:format("List ~p~n",[List]),
+	List.
+
+testIf2(Frags,Mode) ->
+	Nth = lists:nth(3, Frags),
+	if 
+		Mode == readyToSend, Nth > 0 ->
+			io:format("Entered ~n");
+	    true ->
+			io:format("true ~n")
+	end,
+		io:format("Exited ~n").
+	
