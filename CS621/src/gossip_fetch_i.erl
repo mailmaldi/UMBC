@@ -15,8 +15,9 @@ gossip(MyPartition, N, MyFragments, MyFragmentIds, FragmentsImFetching, Mode, De
 				%io:format("Message : ~p~n~n",[{self(), send, avg, MyFragments, MyPartition}]),
 				%RandomNode ! {self(), fetch, true, FragmentsImFetching},
 				%gossip(MyPartition, N, MyFragments, MyFragmentIds, FragmentsImFetching, awaitingReply, RoundsRemaining - 1, 0)
-	
-				case lists:nth(2, FragmentsImFetching) of
+				SecondElement = lists:nth(2, FragmentsImFetching),
+				%io:format("~pSecondelement=~p~n",[self(),SecondElement]),
+				case SecondElement of
 					iAmFetching-> %{Node_id, fetch, true, FragmentNodeIsFetching}
 						
 						RandomNode ! {self(), fetch, true, lists:nth(1, FragmentsImFetching)},
@@ -36,7 +37,7 @@ gossip(MyPartition, N, MyFragments, MyFragmentIds, FragmentsImFetching, Mode, De
 	
 					myFragment -> %{Node_id, fetch, dataIsHere, FragmentNodeIsFetching, Fragments}
 						RandomNode ! {self(), fetch, dataIsHere, MyFragmentIds, MyFragments},
-						gossip(MyPartition, N, MyFragments, MyFragmentIds, [lists:nth(1, FragmentsImFetching), myfragment, lists:nth(3, 	FragmentsImFetching)-1], readyToSend, 0);
+						gossip(MyPartition, N, MyFragments, MyFragmentIds, [lists:nth(1, FragmentsImFetching), myFragment, lists:nth(3, 	FragmentsImFetching)-1], readyToSend, 0);
 	
 					fragmentReceived -> %{Node_id, fetch, false, FragmentNodeIsFetching}
 						RandomNode ! {self(), fetch, false, lists:nth(1, FragmentsImFetching)},
@@ -110,7 +111,7 @@ gossip(MyPartition, N, MyFragments, MyFragmentIds, FragmentsImFetching, Mode, De
 				if FragmentNodeIsFetching == MyFragmentIds ->
 					%io:format("in fetch_true/0length/myData"),
 					Node_id ! {self(), fetch, dataIsHere, FragmentNodeIsFetching, MyFragments},
-					gossip(MyPartition, N, MyFragments, MyFragmentIds, [FragmentNodeIsFetching, myfragment, length(MyPartition)*3], readyToSend, 0);
+					gossip(MyPartition, N, MyFragments, MyFragmentIds, [FragmentNodeIsFetching, myFragment, length(MyPartition)*3], readyToSend, 0);
 
 				true ->
 					%io:format("in fetch_true/0length/startFetch"),
