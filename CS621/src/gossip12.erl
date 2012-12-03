@@ -28,7 +28,7 @@ sendPushMessage(Fragment_Id, Data_Values , Neighbours_List, Delay , KCount , MIN
 			Response_Sum = TOTAL_SUM + My_Sum,
 			Response_Num = TOTAL_NUMBERS+ My_length,
 			Computed_Average = (Response_Sum )/(Response_Num),
-			io:format("~p RESPONSE ~p ,AVGB=~p,AVGF=~p,MINB=~p,MINF=~p,MAXB=~p,MAXF=~p,push_ID=~p~n",[Pid,self(),NEW_TOTAL_SUM/NEW_TOTAL_NUM,Computed_Average,MIN,NEW_MIN,MAX,NEW_MAX,PUSH_ID_RESP])
+			io:format("~p RESPONSE ~p ,KCount=~p,AVGB=~p,AVGF=~p,MINB=~p,MINF=~p,MAXB=~p,MAXF=~p,push_ID=~p~n",[Pid,self(),KCount,NEW_TOTAL_SUM/NEW_TOTAL_NUM,Computed_Average,MIN,NEW_MIN,MAX,NEW_MAX,PUSH_ID_RESP])
 			%io:format("~p RESPONSE ~p , AVG= ~p , MIN=~p , MAX=~p , PUSH_ID= ~p~n",[self(),Pid,Computed_Average,NEW_MIN,NEW_MAX,PUSH_ID_RESP])
 	
 	after (3*Delay*1000+1000) ->
@@ -119,7 +119,7 @@ myGossip(Fragment_Id, Data_Values , Neighbours_List, Delay , KCount , MIN,MAX,Su
 			end,
 			Pid ! { response_push_request,self(),My_Sum,My_length, NEW_MIN , NEW_MAX,PUSH_ID_IN},
 			Computed_Average = (My_Sum+TOTAL_SUM)/(TOTAL_NUMBERS+My_length),
-			io:format("~p REQUEST ~p ,AVGB=~p,AVGF=~p,MINB=~p,MINF=~p,MAXB=~p,MAXF=~p,push_ID=~p~n",[Pid,self(),My_Sum/My_length,Computed_Average,MIN,NEW_MIN,MAX,NEW_MAX,PUSH_ID_IN]),
+			io:format("~p REQUEST ~p ,KCount=~p,AVGB=~p,AVGF=~p,MINB=~p,MINF=~p,MAXB=~p,MAXF=~p,push_ID=~p~n",[Pid,self(),KCount,My_Sum/My_length,Computed_Average,MIN,NEW_MIN,MAX,NEW_MAX,PUSH_ID_IN]),
 			myGossip(Fragment_Id, Data_Values , Neighbours_List, Delay , KCount , NEW_MIN ,NEW_MAX ,My_Sum+TOTAL_SUM,TOTAL_NUMBERS+My_length,1,1,1,maldi:getCurrentTS());
 		
 		{response_push_request, Pid ,TOTAL_SUM,TOTAL_NUMBERS , MIN_MESSAGE , MAX_MESSAGE,PUSH_ID_RESP} ->
@@ -128,7 +128,7 @@ myGossip(Fragment_Id, Data_Values , Neighbours_List, Delay , KCount , MIN,MAX,Su
 			My_Sum = SumSeen,
 			My_length = NumbersSeen,
 			Computed_Average = (TOTAL_SUM + My_Sum )/(TOTAL_NUMBERS+ My_length),
-			io:format("~p RESPONSE ~p ,AVGB=~p,AVGF=~p,MINB=~p,MINF=~p,MAXB=~p,MAXF=~p,push_ID=~p~n",[Pid,self(),My_Sum/My_length,Computed_Average,MIN,NEW_MIN,MAX,NEW_MAX,PUSH_ID_RESP]),
+			io:format("~p RESPONSE ~p ,KCount=~p,AVGB=~p,AVGF=~p,MINB=~p,MINF=~p,MAXB=~p,MAXF=~p,push_ID=~p~n",[Pid,self(),KCount,My_Sum/My_length,Computed_Average,MIN,NEW_MIN,MAX,NEW_MAX,PUSH_ID_RESP]),
 			myGossip(Fragment_Id, Data_Values , Neighbours_List, Delay , KCount , NEW_MIN, NEW_MAX, TOTAL_SUM + My_Sum,TOTAL_NUMBERS+ My_length,1,1,1,maldi:getCurrentTS());
 		
 		{exit} ->
