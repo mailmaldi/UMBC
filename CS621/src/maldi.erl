@@ -211,7 +211,7 @@ sendPull(Neighbours_list,Fragment_Id) ->
 								K = 0;
 							true ->
 								PULL_ID=maldi:getRandomNumber()+Fragment_Id,
-								%io:format("~p pull TO ~p PULL_ID ~p~n",[self(),NewNodePID2,PULL_ID]),
+								%io:format("~p pull ~p,pull_ID=~p~n",[self(),NewNodePID2,PULL_ID]),
 								NewNodePID2 ! {pull_request,self(),PULL_ID},
 								K = 1
 				end;
