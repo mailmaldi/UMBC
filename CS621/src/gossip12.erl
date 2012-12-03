@@ -15,12 +15,12 @@ sendPushMessage(Fragment_Id, Data_Values , Neighbours_List, Delay , KCount , MIN
 	end,% end of Average if
 							   				
 	%%  do a PUSH-PULL here. In the end this acts as both PUSH + PULL
-	NewNodePID2 ! {push_request,self(),NEW_TOTAL_SUM,NEW_TOTAL_NUM, MIN, MAX,MessageID}, %%TODO remove Data_Values for min,max,avg
+	NewNodePID2 ! {push_request,self(),NEW_TOTAL_SUM,NEW_TOTAL_NUM, MIN, MAX,MessageID,IS_PUSH}, %%TODO remove Data_Values for min,max,avg
 	%io:format("~p ~p ~p,~p_ID=~p,KCount=~p~n",[self(),IS_PUSH,NewNodePID2,IS_PUSH,MessageID,KCount]),
 	
 	receive
 		
-		{response_push_request, Pid ,TOTAL_SUM,TOTAL_NUMBERS , MIN_MESSAGE , MAX_MESSAGE,PUSH_ID_RESP} ->
+		{response_push_request, Pid ,TOTAL_SUM,TOTAL_NUMBERS , MIN_MESSAGE , MAX_MESSAGE,PUSH_ID_RESP,IS_PUSH_In} ->
 			NEW_MIN = maldi:getMinimum(MIN_MESSAGE,MIN),
 			NEW_MAX = maldi:getMaximum(MAX_MESSAGE,MAX),
 			My_Sum = SumSeen,
@@ -28,7 +28,7 @@ sendPushMessage(Fragment_Id, Data_Values , Neighbours_List, Delay , KCount , MIN
 			Response_Sum = TOTAL_SUM + My_Sum,
 			Response_Num = TOTAL_NUMBERS+ My_length,
 			Computed_Average = (Response_Sum )/(Response_Num),
-			io:format("~p RESPONSE ~p ,KCount=~p,AVGB=~p,AVGF=~p,MINB=~p,MINF=~p,MAXB=~p,MAXF=~p,push_ID=~p~n",[Pid,self(),KCount,NEW_TOTAL_SUM/NEW_TOTAL_NUM,Computed_Average,MIN,NEW_MIN,MAX,NEW_MAX,PUSH_ID_RESP])
+			io:format("~p ~p_RESPONSE ~p ,KCount=~p,AVGB=~p,AVGF=~p,MINB=~p,MINF=~p,MAXB=~p,MAXF=~p,~p_ID=~p~n",[Pid,IS_PUSH_In,self(),KCount,NEW_TOTAL_SUM/NEW_TOTAL_NUM,Computed_Average,MIN,NEW_MIN,MAX,NEW_MAX,IS_PUSH_In,PUSH_ID_RESP])
 			%io:format("~p RESPONSE ~p , AVG= ~p , MIN=~p , MAX=~p , PUSH_ID= ~p~n",[self(),Pid,Computed_Average,NEW_MIN,NEW_MAX,PUSH_ID_RESP])
 	
 	after (3*Delay*1000+1000) ->
@@ -90,7 +90,7 @@ myGossip(Fragment_Id, Data_Values , Neighbours_List, Delay , KCount , MIN,MAX,Su
 			myGossip(Fragment_Id_in, Data_Values_in , Neighbours_List_in, Delay_in , KCount_in , IN_MIN ,IN_MAX,SumSeen,NumbersSeen,1,0,1,0);
 
 		{initialize} ->
-			io:format("~p received initialized message.~n",[self()]),
+			io:format("~n~n~n~n~p received initialized message.~n~n~n~n",[self()]),
 			timer:sleep(10000), % sleep 10 seconds in hope that ALL nodes have received their inits
 			myGossip(Fragment_Id, Data_Values , Neighbours_List, Delay , KCount ,MIN,MAX,SumSeen,NumbersSeen,1,1,1,0);
 		
@@ -104,7 +104,7 @@ myGossip(Fragment_Id, Data_Values , Neighbours_List, Delay , KCount , MIN,MAX,Su
 					myGossip(Fragment_Id, Data_Values , Neighbours_List, Delay , KCount , MIN,MAX,SumSeen,NumbersSeen,Initialized,Infected,IsRunning,maldi:getCurrentTS())
 			end;
 		
-		{push_request,Pid,TOTAL_SUM,TOTAL_NUMBERS, MIN_MESSAGE , MAX_MESSAGE,PUSH_ID_IN} ->					
+		{push_request,Pid,TOTAL_SUM,TOTAL_NUMBERS, MIN_MESSAGE , MAX_MESSAGE,PUSH_ID_IN,IS_PUSH} ->					
 
 			%%TODO if not initialized , then do something? Note that for these problems, initialize messages ONLY pass neighbour values, everything is there when spawned itself
 			NEW_MIN = maldi:getMinimum(MIN_MESSAGE,MIN), % if unintialized , calculate from data list
@@ -117,18 +117,18 @@ myGossip(Fragment_Id, Data_Values , Neighbours_List, Delay , KCount , MIN,MAX,Su
 					My_Sum = SumSeen,
 					My_length = NumbersSeen
 			end,
-			Pid ! { response_push_request,self(),My_Sum,My_length, NEW_MIN , NEW_MAX,PUSH_ID_IN},
+			Pid ! { response_push_request,self(),My_Sum,My_length, NEW_MIN , NEW_MAX,PUSH_ID_IN,IS_PUSH},
 			Computed_Average = (My_Sum+TOTAL_SUM)/(TOTAL_NUMBERS+My_length),
-			io:format("~p REQUEST ~p ,KCount=~p,AVGB=~p,AVGF=~p,MINB=~p,MINF=~p,MAXB=~p,MAXF=~p,push_ID=~p~n",[Pid,self(),KCount,My_Sum/My_length,Computed_Average,MIN,NEW_MIN,MAX,NEW_MAX,PUSH_ID_IN]),
+			io:format("~p ~p_REQUEST ~p ,KCount=~p,AVGB=~p,AVGF=~p,MINB=~p,MINF=~p,MAXB=~p,MAXF=~p,~p_ID=~p~n",[Pid,IS_PUSH,self(),KCount,My_Sum/My_length,Computed_Average,MIN,NEW_MIN,MAX,NEW_MAX,IS_PUSH,PUSH_ID_IN]),
 			myGossip(Fragment_Id, Data_Values , Neighbours_List, Delay , KCount , NEW_MIN ,NEW_MAX ,My_Sum+TOTAL_SUM,TOTAL_NUMBERS+My_length,1,1,1,maldi:getCurrentTS());
 		
-		{response_push_request, Pid ,TOTAL_SUM,TOTAL_NUMBERS , MIN_MESSAGE , MAX_MESSAGE,PUSH_ID_RESP} ->
+		{response_push_request, Pid ,TOTAL_SUM,TOTAL_NUMBERS , MIN_MESSAGE , MAX_MESSAGE,PUSH_ID_RESP,IS_PUSH_In} ->
 			NEW_MIN = maldi:getMinimum(MIN_MESSAGE,MIN),
 			NEW_MAX = maldi:getMaximum(MAX_MESSAGE,MAX),
 			My_Sum = SumSeen,
 			My_length = NumbersSeen,
 			Computed_Average = (TOTAL_SUM + My_Sum )/(TOTAL_NUMBERS+ My_length),
-			io:format("~p RESPONSE ~p ,KCount=~p,AVGB=~p,AVGF=~p,MINB=~p,MINF=~p,MAXB=~p,MAXF=~p,push_ID=~p~n",[Pid,self(),KCount,My_Sum/My_length,Computed_Average,MIN,NEW_MIN,MAX,NEW_MAX,PUSH_ID_RESP]),
+			io:format("~p ~p_RESPONSE ~p ,KCount=~p,AVGB=~p,AVGF=~p,MINB=~p,MINF=~p,MAXB=~p,MAXF=~p,~p_ID=~p~n",[Pid,IS_PUSH_In,self(),KCount,My_Sum/My_length,Computed_Average,MIN,NEW_MIN,MAX,NEW_MAX,IS_PUSH_In,PUSH_ID_RESP]),
 			myGossip(Fragment_Id, Data_Values , Neighbours_List, Delay , KCount , NEW_MIN, NEW_MAX, TOTAL_SUM + My_Sum,TOTAL_NUMBERS+ My_length,1,1,1,maldi:getCurrentTS());
 		
 		{exit} ->
