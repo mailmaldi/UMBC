@@ -129,7 +129,7 @@ getGossip(N, TopologyId , K, Delay  ,KillTime) ->
 	
 	%% generate seemingly random data, but each node will have value list of [SeedValue + i , SeedValue + i + 1 ] where i = 1 to N
 	%% the median , max , min , avg can be mathematically calculated here 
-	SeedValue = 0.5,
+	%SeedValue = 0.5,
 	%Values = lists:map(fun(T) -> [SeedValue + T , SeedValue + T +1] end, lists:seq(1, N)), % foreach 1,2,3,4...N
 	%Values = lists:map(fun(_) -> lists:map( fun(_) -> random:uniform(1000)+0.5 end  , lists:seq(1,random:uniform(3))) end, lists:seq(1,N)),
 	Values = lists:map(fun(_) -> lists:map( fun(_) ->random:uniform(10000)+0.5 end  , lists:seq(1,2)) end, lists:seq(1,N)),
@@ -144,10 +144,6 @@ getGossip(N, TopologyId , K, Delay  ,KillTime) ->
 	MID = N div 2,
 	Pids1 = lists:map(fun(T) ->
 						Nth = lists:nth(T,Values),
-						MIN = lists:min(lists:nth(T,Values)), 
-						MAX = lists:max(lists:nth(T,Values)),
-						SUM = lists:sum(lists:nth(T,Values)),
-						COUNT = length(lists:nth(T,Values)),
 						Int_Dict = dict:store(T,Nth,DataDict),
 						spawn('pong@192.168.10.102',?MODULE, myGossip, [T,Nth,[],Delay,KCount,0,0,0,0,Int_Dict]) end, lists:seq(1, MID)
 					  ),
@@ -155,10 +151,6 @@ getGossip(N, TopologyId , K, Delay  ,KillTime) ->
 	Pids2 = lists:map(fun(T) -> 
 						Index = MID + T,
 						Nth = lists:nth(Index,Values),
-						MIN = lists:min(lists:nth(Index,Values)), 
-						MAX = lists:max(lists:nth(Index,Values)),
-						SUM = lists:sum(lists:nth(Index,Values)),
-						COUNT = length(lists:nth(Index,Values)),
 						Int_Dict = dict:store(Index,Nth,DataDict),
 						spawn('ping@192.168.10.101',?MODULE, myGossip, [Index,Nth,[],Delay,KCount,0,0,0,0,Int_Dict]) end, lists:seq(1, MID)
 					  ),
