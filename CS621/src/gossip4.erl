@@ -7,17 +7,7 @@
 sendPushMessage(Fragment_Id, Data_Values,VERSION , Neighbours_List, Delay , KCount ,Initialized,Infected,IsRunning,SentTimeStamp,NewNodePID2,MessageID,IS_PUSH,UpdateTuple) ->
 								   				
 	NewNodePID2 ! {push_request,self(),MessageID,UpdateTuple}, 
-	io:format("~p ~p ~p , KCount = ~p , ~p_ID ~p~n",[self(),IS_PUSH,NewNodePID2,KCount,IS_PUSH,MessageID]),
-	
-%	receive
-%		%% TODO milind -> decide if you really want to send responses or with stop message- but for N replicas, maybe not, or just let update propagate
-%		{response_push_request, Pid ,PUSH_ID_RESP} ->
-%			io:format("~p RESPONSE ~p , PUSH_ID= ~p~n",[self(),Pid,PUSH_ID_RESP])
-%	
-%	after (1*Delay*1000+1000) ->
-%			%%TODO do something?
-%			a
-%	end,		
+	io:format("~p ~p ~p , KCount = ~p , ~p_ID ~p~n",[self(),IS_PUSH,NewNodePID2,KCount,IS_PUSH,MessageID]),		
 
 	NOW_TS=maldi:getCurrentTS(),
 	{NOW_TS}. %I return the current timestamp always
@@ -86,9 +76,6 @@ myGossip(Fragment_Id, Data_Values,VERSION , Neighbours_List, Delay , KCount ,Ini
 			end;
 		
 		{push_request,Pid,PUSH_ID_IN,UpdateTuple_In} ->					
-
-			%%TODO if not initialized , then do something? Note that for these problems, initialize messages ONLY pass neighbour values, everything is there when spawned itself
-%			Pid ! { response_push_request,self(),PUSH_ID_IN},
 			if
 				tuple_size(UpdateTuple_In) == 0 ->
 					io:format("~p,EMPTY_UPDATE_TUPLE~n",[self()]);
@@ -109,12 +96,7 @@ myGossip(Fragment_Id, Data_Values,VERSION , Neighbours_List, Delay , KCount ,Ini
 					io:format("~p REQUEST ~p , PUSH_ID= ~p~n",[self(),Pid,PUSH_ID_IN]),
 					myGossip(Fragment_Id, NewDataList, NewVersion, Neighbours_List, Delay , KCount,1,1,1,SentTimeStamp,UpdateTuple_In)
 			end;
-			
-		
-%		{response_push_request, Pid ,PUSH_ID_RESP} ->
-%			io:format("~p RESPONSE ~p , PUSH_ID= ~p~n",[self(),Pid,PUSH_ID_RESP]),
-%			myGossip(Fragment_Id, Data_Values,VERSION , Neighbours_List, Delay , KCount ,1,1,1,SentTimeStamp,UpdateTuple);
-		
+
 		{exit} ->
 			io:format("~p,FINALSTATE,FragId=~p,KCount=~p,Data_Values=~p,VERSION=~p~n",[self(),Fragment_Id,KCount,Data_Values,VERSION]),
 			exit(no_reason)	

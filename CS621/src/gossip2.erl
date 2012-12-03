@@ -175,6 +175,9 @@ getGossip(N, TopologyId , K, Delay  ,KillTime) ->
 	%Values = lists:map(fun(T) -> [SeedValue + T , SeedValue + T +1] end, lists:seq(1, N)), % foreach 1,2,3,4...N
 	%Values = lists:map(fun(_) -> lists:map( fun(_) -> random:uniform(1000)+0.5 end  , lists:seq(1,random:uniform(3))) end, lists:seq(1,N)),
 	Values = lists:map(fun(_) -> lists:map( fun(_) ->random:uniform(10000)+0.5 end  , lists:seq(1,10)) end, lists:seq(1,N)),
+	FlatList = lists:flatten(Values),
+	io:format("~n~nMALDI: MIN=~p MAX=~p AVERAGE=~p MEDIAN=~p~n~n",[lists:min(FlatList),lists:max(FlatList),maldi:mean(FlatList),maldi:median(FlatList)]),
+	
 	%io:format("BOOTSTRAP: List of values: ~p~n~n~n", [Values]),
 	%%lists:foreach(fun(T) -> io:format("index ~p value ~p~n",[T,lists:nth(T,Values)]) end , lists:seq(1,N)).  %% io:format("~p~n~n~n",[Values]). %%This will print value of each line
 	
@@ -228,7 +231,7 @@ getGossip(N, TopologyId , K, Delay  ,KillTime) ->
 	
 	timer:sleep(KillTime*1000),
 
-	FlatList = lists:flatten(Values),
+	
 	io:format("~n~nMALDI: MIN=~p MAX=~p AVERAGE=~p MEDIAN=~p~n~n",[lists:min(FlatList),lists:max(FlatList),maldi:mean(FlatList),maldi:median(FlatList)]),
 	lists:foreach( fun(X) -> lists:nth(X,Pids) ! {exit} end , lists:seq(1, N) ),
 	timer:sleep(5000),
