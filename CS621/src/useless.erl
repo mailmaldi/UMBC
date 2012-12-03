@@ -328,3 +328,19 @@ testTuple() ->
 	Tuple = {test,hello},
 	{TEST,HELLO} = {},
 	io:format("TEST=~p,HELLO=~p~n",[TEST,HELLO]).
+
+getSums(List) ->
+	ReverseList = lists:reverse(List),
+	Length=length(List),
+	LeftOut = lists:foldl( fun(T,ACC) -> T + ACC end,			   
+			   0,
+			   lists:sublist(List,1,maldi:floor(Length / 2))
+			   ),
+	io:format("LeftSum=~p~n",[LeftOut]),
+	RightOut = lists:foldl( fun(T,ACC) -> T + ACC end,			   
+			   0,
+			   lists:sublist(ReverseList,1,maldi:floor(Length / 2))
+			   ),
+	io:format("RightSum=~p~n",[RightOut]),
+	{LeftOut,RightOut}.
+	

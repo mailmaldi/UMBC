@@ -15,12 +15,12 @@ sendPushMessage(Fragment_Id, Data_Values , Neighbours_List, Delay , KCount , MIN
 	end,% end of Average if
 							   				
 	%%  do a PUSH-PULL here. In the end this acts as both PUSH + PULL
-	NewNodePID2 ! {push_request,self(),NEW_TOTAL_SUM,NEW_TOTAL_NUM, MIN, MAX,MessageID,DataDict}, %%TODO remove Data_Values for min,max,avg
-	io:format("~p ~p ~p , KCount = ~p , ~p_ID ~p~n",[self(),IS_PUSH,NewNodePID2,KCount,IS_PUSH,MessageID]),
+	NewNodePID2 ! {push_request,self(),NEW_TOTAL_SUM,NEW_TOTAL_NUM, MIN, MAX,MessageID,DataDict,IS_PUSH}, %%TODO remove Data_Values for min,max,avg
+	%io:format("~p ~p ~p , KCount = ~p , ~p_ID ~p~n",[self(),IS_PUSH,NewNodePID2,KCount,IS_PUSH,MessageID]),
 	
 	receive
 		
-		{response_push_request, Pid ,TOTAL_SUM,TOTAL_NUMBERS , MIN_MESSAGE , MAX_MESSAGE,PUSH_ID_RESP,DataDict_In} ->
+		{response_push_request, Pid ,TOTAL_SUM,TOTAL_NUMBERS , MIN_MESSAGE , MAX_MESSAGE,PUSH_ID_RESP,DataDict_In,IS_PUSH_In} ->
 			NEW_MIN = maldi:getMinimum(MIN_MESSAGE,MIN),
 			NEW_MAX = maldi:getMaximum(MAX_MESSAGE,MAX),
 			My_Sum = SumSeen,
@@ -29,7 +29,8 @@ sendPushMessage(Fragment_Id, Data_Values , Neighbours_List, Delay , KCount , MIN
 			Response_Num = TOTAL_NUMBERS+ My_length,
 			MergedDict = maldi:mergeDicts(DataDict,DataDict_In),
 			Computed_Average = maldi:dictToSum(MergedDict) / maldi:dictToCount(MergedDict),
-			io:format("~p RESPONSE ~p , AVG= ~p , MIN=~p , MAX=~p , PUSH_ID= ~p~n",[self(),Pid,Computed_Average,NEW_MIN,NEW_MAX,PUSH_ID_RESP])
+			Prev_Average = maldi:dictToSum(DataDict) / maldi:dictToCount(DataDict),
+			io:format("~p ~p_RESPONSE ~p ,KCount=~p,AVGB=~p,AVGF=~p,MINB=~p,MINF=~p,MAXB=~p,MAXF=~p,~p_ID=~p~n",[Pid,IS_PUSH_In,self(),KCount,Prev_Average,Computed_Average,MIN,NEW_MIN,MAX,NEW_MAX,IS_PUSH_In,PUSH_ID_RESP])
 	
 	after (3*Delay*1000+1000) ->
 		NEW_MIN = MIN,
@@ -91,12 +92,12 @@ myGossip(Fragment_Id, Data_Values , Neighbours_List, Delay , KCount , MIN,MAX,Su
 			myGossip(Fragment_Id_in, Data_Values_in , Neighbours_List_in, Delay_in , KCount_in , IN_MIN ,IN_MAX,SumSeen,NumbersSeen,1,0,1,0,DataDict);
 
 		{initialize} ->
-			io:format("~p received initialized message.~n",[self()]),
+			io:format("~n~n~n~p received initialized message.~n~n~n",[self()]),
 			timer:sleep(10000), % sleep 10 seconds in hope that ALL nodes have received their inits
 			myGossip(Fragment_Id, Data_Values , Neighbours_List, Delay , KCount ,MIN,MAX,SumSeen,NumbersSeen,1,1,1,0,DataDict);
 		
 		{pull_request,Pid,PULL_ID} ->
-			%%io:format("~p PULL from ~p PULL_ID ~p~n",[self(),Pid,PULL_ID]),
+			io:format("~p pull ~p,pull_ID=~p~n",[Pid,self(),PULL_ID]),
 			%% TODO send a PUSH message for current computation.
 			if
 				Infected == 1,Initialized == 1 ->
@@ -106,7 +107,7 @@ myGossip(Fragment_Id, Data_Values , Neighbours_List, Delay , KCount , MIN,MAX,Su
 					myGossip(Fragment_Id, Data_Values , Neighbours_List, Delay , KCount , MIN,MAX,SumSeen,NumbersSeen,Initialized,Infected,IsRunning,SentTimeStamp,DataDict)
 			end;
 		
-		{push_request,Pid,TOTAL_SUM,TOTAL_NUMBERS, MIN_MESSAGE , MAX_MESSAGE,PUSH_ID_IN,DataDict_In2} ->					
+		{push_request,Pid,TOTAL_SUM,TOTAL_NUMBERS, MIN_MESSAGE , MAX_MESSAGE,PUSH_ID_IN,DataDict_In2,IS_PUSH} ->					
 
 			%%TODO if not initialized , then do something? Note that for these problems, initialize messages ONLY pass neighbour values, everything is there when spawned itself
 			NEW_MIN = maldi:getMinimum(MIN_MESSAGE,MIN), % if unintialized , calculate from data list
@@ -121,19 +122,21 @@ myGossip(Fragment_Id, Data_Values , Neighbours_List, Delay , KCount , MIN,MAX,Su
 			end,
 			MergedDicts = maldi:mergeDicts(DataDict,DataDict_In2),
 			NewDataDict = maldi:dictSubtract(DataDict,DataDict_In2), %% In response send back only values of difference
-			Pid ! { response_push_request,self(),My_Sum,My_length, NEW_MIN , NEW_MAX,PUSH_ID_IN,NewDataDict},
+			Pid ! { response_push_request,self(),My_Sum,My_length, NEW_MIN , NEW_MAX,PUSH_ID_IN,NewDataDict,IS_PUSH},
 			Computed_Average = maldi:dictToSum(MergedDicts) / maldi:dictToCount(MergedDicts),
-			io:format("~p REQUEST ~p , AVG= ~p, MIN=~p, MAX=~p, PUSH_ID= ~p~n",[self(),Pid,Computed_Average,NEW_MIN,NEW_MAX,PUSH_ID_IN]),
+			Prev_Average = maldi:dictToSum(DataDict) / maldi:dictToCount(DataDict),
+			io:format("~p ~p_REQUEST ~p ,KCount=~p,AVGB=~p,AVGF=~p,MINB=~p,MINF=~p,MAXB=~p,MAXF=~p,~p_ID=~p~n",[Pid,IS_PUSH,self(),KCount,Prev_Average,Computed_Average,MIN,NEW_MIN,MAX,NEW_MAX,IS_PUSH,PUSH_ID_IN]),
 			myGossip(Fragment_Id, Data_Values , Neighbours_List, Delay , KCount , NEW_MIN ,NEW_MAX ,My_Sum+TOTAL_SUM,TOTAL_NUMBERS+My_length,1,1,1,SentTimeStamp,MergedDicts);
 		
-		{response_push_request, Pid ,TOTAL_SUM,TOTAL_NUMBERS , MIN_MESSAGE , MAX_MESSAGE,PUSH_ID_RESP,DataDict_In2} ->
+		{response_push_request, Pid ,TOTAL_SUM,TOTAL_NUMBERS , MIN_MESSAGE , MAX_MESSAGE,PUSH_ID_RESP,DataDict_In2,IS_PUSH_In} ->
 			NEW_MIN = maldi:getMinimum(MIN_MESSAGE,MIN),
 			NEW_MAX = maldi:getMaximum(MAX_MESSAGE,MAX),
 			My_Sum = SumSeen,
 			My_length = NumbersSeen,
 			MergedDicts = maldi:mergeDicts(DataDict,DataDict_In2),
 			Computed_Average = maldi:dictToSum(MergedDicts) / maldi:dictToCount(MergedDicts),
-			io:format("~p RESPONSE ~p , AVG= ~p , MIN=~p , MAX=~p , PUSH_ID= ~p~n",[self(),Pid,Computed_Average,NEW_MIN,NEW_MAX,PUSH_ID_RESP]),
+			Prev_Average = maldi:dictToSum(DataDict) / maldi:dictToCount(DataDict),
+			io:format("~p ~p_RESPONSE ~p ,KCount=~p,AVGB=~p,AVGF=~p,MINB=~p,MINF=~p,MAXB=~p,MAXF=~p,~p_ID=~p~n",[Pid,IS_PUSH_In,self(),KCount,Prev_Average,Computed_Average,MIN,NEW_MIN,MAX,NEW_MAX,IS_PUSH_In,PUSH_ID_RESP]),
 			myGossip(Fragment_Id, Data_Values , Neighbours_List, Delay , KCount , NEW_MIN, NEW_MAX, TOTAL_SUM + My_Sum,TOTAL_NUMBERS+ My_length,1,1,1,SentTimeStamp,MergedDicts);
 		
 		{exit} ->
