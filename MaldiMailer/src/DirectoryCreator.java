@@ -24,7 +24,7 @@ public class DirectoryCreator
 		String[] nextLine;
 		while ((nextLine = reader.readNext()) != null)
 		{
-			File file = new File("C:\\Users\\Milind\\Downloads\\" + nextLine[0]);
+			File file = new File("C:\\Users\\Milind\\Downloads\\project2\\" + nextLine[0]);
 			file.mkdir();
 		}
 	}
