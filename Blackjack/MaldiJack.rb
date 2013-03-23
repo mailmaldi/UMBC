@@ -96,7 +96,7 @@ class Blackjack
 
     # Dealer gets 2 cards, we could do dealing cards in round-robin, but thats just additional work, doesnt really matter, just an extra block of code
     @dealer.hands[0].cards = [get_card, get_card]
-    puts "DEALER CARDS  #{@dealer.hands[0].cards[0]} #{@dealer.hands[0].cards[1]} " # Hide cards[1] later, this is for debugging
+    puts "DEALER CARDS  #{@dealer.hands[0].cards[0]}  [__]" ##### #{@dealer.hands[0].cards[1]} " # Hide cards[1] later, this is for debugging
 
     # get players bets & then give them 2 cards
     @players.each do | player|
@@ -260,7 +260,7 @@ class Blackjack
         puts "Player #{player.player_number} Bust and has #{player.amount} left in their account"
       elsif   player.hands[i].value < 21 and dealer_total == 21
         puts "Player #{player.player_number} lower than dealer and has #{player.amount} left in their account"
-      elsif p.hands[i].value() == dealer_total
+      elsif player.hands[i].value() == dealer_total
         player.amount += player.hands[i].bet
         puts "Player #{player.player_number} drew and has #{player.amount} left in their account"
       elsif player.hands[i].value() > dealer_total #  and player.hands[i].value() < 21 implied
