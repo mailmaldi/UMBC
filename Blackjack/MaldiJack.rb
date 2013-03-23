@@ -4,16 +4,16 @@ SUITE = [2, 3, 4, 5, 6, 7, 8, 9, 10, "J", "Q", "K", "A"]
 class Hand
   attr_accessor :cards, :bet , :is_playing, :hits
   def initialize(bet,cards)
-    @is_playing=true
+    @is_playing= true
     @bet = bet
     @cards = cards
     @hits = 0
   end
 
   def print_hand()
-    print "Hand :"
+    print "Hand : "
     @cards.each {|card| print "#{card} "}
-    puts "Value: #{value()}"
+    puts ", Value = #{value()}"
   end
 
   def blackjack()
@@ -46,10 +46,28 @@ class Hand
     return sum
   end #end value()
 
+  # gets the hardest value possible i.e. consider all Aces as 1
+  def hard_value()
+    sum = 0
+    numAces = 0
+    @cards.each do |i|
+      if ["Q", "J", "K"].include?(i)
+        sum += 10
+      elsif i == "A"
+        sum += 1
+      else
+        sum += i
+      end
+    end # end cards.each
+    return sum
+  end
+
 end #end class Hand
 
 class Player
   attr_accessor :hands, :amount , :is_playing,
+  # when player is initialized, we also initialize the first hand
+  # for splitting, I will have to break up the first hand into the 2nd hand and make the main game loop play proper
   def initialize(cards, bet,amount, player_number)
     @amount = amount
     @is_playing = true
@@ -67,11 +85,11 @@ end
 class Blackjack
   def initialize()
 
-    @players =  {} # Players array
+    @players =  {} # Players are held in an array
     @num_players = 0
     @num_decks = 4 # Number of card decks
     @cards = Array.new # Universal cards that are held with the dealer
-    @dealer = Player.new(0, Array.new, -1) # Dealer
+    @dealer = Player.new(0, Array.new, -1) # Dealer is a special kind of player
 
     init_game()
     play_game()
