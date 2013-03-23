@@ -73,7 +73,7 @@ class Player
     @is_playing = true
     @player_number = player_number
     @hands= Array.new
-    @hands[0] = Hand.new(0,cards)
+    @hands[0] = Hand.new(0,Array.new)
     has_split = false
   end
 
@@ -85,9 +85,11 @@ class Player
 end
 
 class Blackjack
+
+  attr_accessor :players, :num_decks , :deck, :deck_index, :max_deck_mod, :dealer , :cards
   def initialize()
 
-    @players =  {} # Players are held in an array
+    @players =  Array.new # Players are held in an array
     @num_decks = 1 # Number of card decks
 
     @deck = Array.new # Universal cards that are held with the dealer
@@ -106,23 +108,25 @@ class Blackjack
 
     ## Get the number of Players
     puts "How many Players ? :"
-    n = 0
-    while n <= 0 and n > 7
+    n = -1
+    while n <= 0 or n > 7
       print "Enter a positive number (1-7) please : "
       n = gets.to_i
     end
 
     ## Get the number of Decks we're playing with
     puts "How many Decks ? :"
-    decks = 0
-    while decks <= 0 and decks > 8
+    decks = -1
+    while decks <= 0 or decks > 8
       print "Enter a positive number (1-8) please : "
-      @num_decks = gets.to_i
+      decks = gets.to_i
+      @num_decks = decks
     end
 
     ## Initialize all the players with  $1000 , a player id
     for i in 0...n
       @players[i] = Player.new( 1000,  i)
+      #puts @players[i].to_s
     end
 
     ## Initializing the card deck
@@ -137,7 +141,7 @@ class Blackjack
     ## TODO, once deck_index is reaching max, we should reshuffle!!!
     temp_index = @deck_index
     @deck_index += 1
-    return cards[temp_index % @max_deck_mod]
+    return @cards[temp_index % @max_deck_mod]
   end # end get_card
 
   def play_maldijack()
@@ -174,13 +178,14 @@ class Blackjack
     # Dealer gets 2 cards
     @dealer.hands[0].cards = [get_card, get_card]
     # get players bets & then give them 2 cards
-    @players.each do | player|
+    @players.each do |player|
 
       player.hands[0].cards = [get_card, get_card]
 
       while (player.hands[0].bet <= 0 or player.hands[0].bet > player.amount)
         print "Player #{player.player_number}, enter bet amount between 1 & #{player.amount} : "
-        player.bet = gets.to_i
+        player.hands[0].bet = gets.to_i
+        player.amount = player.amount - player.hands[0].bet
       end
 
     end
@@ -192,7 +197,7 @@ class Blackjack
 
   def playing_round()
 
-    @players.each do |k, p|
+    @players.each do | p|
       puts "###### PLAYER #{p.player_number} ######"
       while p.is_playing
 
@@ -213,6 +218,7 @@ class Blackjack
   def play_internally(player,hand_index)
     p = player
     i = hand_index
+
     while p.hands[i].is_playing
       if p.hands[i].blackjack()
         puts "Blackjack was acheived!"
@@ -231,6 +237,7 @@ class Blackjack
         p.hands[i].is_playing = false
       elsif decision == "split"
         puts "Not implemented split functionality, sorry :("
+        ## create p.hands[1] here after checking if he can indeed split
       elsif decision == "double"
         if p.hands[i].bet * 2 <= p.amount and p.hands[i].cards.length == 2 ## can double after split so not putting that condition
           p.hands[i].bet *= 2
@@ -290,28 +297,34 @@ class Blackjack
 
     if dealer_value > 21
       puts "The dealer lost."
-      @players.each do |k, p|
-        if p.blackjack()
-          p.amount += (p.bet * 1.5)
-          puts "Player #{k} got blackjack and has #{p.amount} left in their account"
+      @players.each do | p|
+        if p.hands[0].blackjack()
+          #dealer bust, player blackjack
+          p.amount += (p.hands[0].bet * 1.5)
+          puts "Player #{p.player_number} got blackjack and has #{p.amount} left in their account"
+        elsif p.hands[0].value < 21
+          # dealer bust, player safe
+          p.amount += 2*p.hands[0].bet
+          puts "Player #{p.player_number} won and has #{p.amount} left in their account"
         else
-          p.amount += p.bet
-          puts "Player #{k} won and has #{p.amount} left in their account"
+          # both got busted, just return bet amount
+          p.amount += p.hands[0].bet
+          puts "Player #{p.player_number} bust with dealer and has #{p.amount} left in their account"
         end
       end
     else
-      @players.each do |k, p|
-        if p.blackjack()
-          p.amount += (p.bet * 1.5)
-          puts "Player #{k} got blackjack and has #{p.amount} left in their account"
-        elsif p.value() > dealer_value and p.value() <= 21
+      @players.each do | p|
+        if p.hands[0].blackjack()
+          p.amount += (p.hands[0].bet * 2.5)
+          puts "Player #{p.player_number} got blackjack and has #{p.amount} left in their account"
+        elsif p.hands[0].value() > dealer_value and p.hands[0].value() <= 21
+          p.amount += 2*p.bet
+          puts "Player #{p.player_number} won and has #{p.amount} left in their account"
+        elsif p.hands[0].value() == dealer_value
           p.amount += p.bet
-          puts "Player #{k} won and has #{p.amount} left in their account"
-        elsif p.value() == dealer_value
-          puts "Player #{k} drew and has #{p.amount} left in their account"
+          puts "Player #{p.player_number} drew and has #{p.amount} left in their account"
         else
-          p.amount -= p.bet
-          puts "Player #{k} lost and has #{p.amount} left in their account"
+          puts "Player #{p.player_number} lost and has #{p.amount} left in their account"
         end
 
       end
