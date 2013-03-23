@@ -161,7 +161,24 @@ class Blackjack
         p.hands[i].is_playing = false
         p.hands[i].print_hand
       elsif decision == "split"
-        puts "Not implemented split functionality, sorry :("
+        ## split is allowed if,
+        ## 1. player has equivalent bet amount
+        ## 2. has_split is false
+        ## 3. number of cards == 2
+        ## 4. the 2 cards are of same value if integer and if a String, then
+
+        if p.has_split == false and  i == 0  and p.hands[i].cards.length == 2 and p.hands[i].bet  <= p.amount and validate_split_cards(p.hands[i].cards[0],p.hands[i].cards[0])
+          p.hands[1] = Hand.new(p.hands[i].bet, Array.new)  # create new hand
+          p.hands[1].cards.push(p.hands[0].cards[0])      # push a card from 0 to 1
+          p.hands[0].cards.delete_at(0)                   # delete the card from hand 0
+          p.has_split = true                              # set split flag
+          p.hands[0].push(get_card)
+          p.hands[1].push(get_card)
+          p.hands[0].print_hand
+          p.hands[1].print_hand
+        else
+          puts "Player #{p.player_number} Split  call was denied on hand #{i}"
+        end
         ## create p.hands[1] here after checking if he can indeed split
       elsif decision == "double"
         ## for doubling, it is enough that player has bet amount left in amount & has taken no hit, i.e. length == 2
@@ -174,7 +191,7 @@ class Blackjack
           p.hands[i].print_hand()
           puts "Player #{p.player_number} has called Double on his hand #{i}"
         else
-          puts "Player #{p.player_number} Double call was denied"
+          puts "Player #{p.player_number} Double call was denied on hand #{i}"
         end
 
       end# end hit, stand, split, double if
@@ -240,9 +257,22 @@ class Blackjack
       end
     end
 
-  end
+  end # end distribute money
 
-end
+  def validate_split_cards(card1,card2)
+    arr = ["J","Q","K"]
+    if card1.is_a?Integer and card2.is_a?Integer
+      return (card1 == card2)
+    elsif card1 == 'A' and card2 == 'A'
+      return true
+    elsif arr.any? { |s| s.include?(card1) } and arr.any? { |s| s.include?(card2) }
+      return true
+    else
+      return false
+    end
+  end # end validate_splittable_cards
+
+end # End BlackJack class
 
 blackjack = Blackjack.new()
 blackjack.play_game()
