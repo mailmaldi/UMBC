@@ -1,94 +1,8 @@
 SUITE = [2, 3, 4, 5, 6, 7, 8, 9, 10, "J", "Q", "K", "A"]
 # simply *4 to get 1 full deck and *4*n to get n decks and then .shuffle a few times
 
-class Hand
-  attr_accessor :cards, :bet , :is_playing, :hits
-  def initialize(bet,cards)
-    @is_playing= true
-    @bet = bet
-    @cards = cards
-    @hits = 0
-  end
-
-  # Gets the value of the hand
-  def value()
-    sum = 0
-    numAces = 0
-    @cards.each do |i|
-      if [ "J", "Q", "K" ].include?(i)
-        sum += 10
-      elsif i == "A"
-        numAces += 1
-      else
-        sum += i
-      end
-    end # end cards.each
-    #now we have the hard sum, and number of aces, find the closest sum to 21
-    if numAces > 0
-      tempSum1 = 21 - (sum + 11 + numAces -1)
-      tempSum2 = 21 - (sum + numAces)
-      if tempSum1 < 0
-        sum = sum + numAces
-      else
-        sum = sum + 11 + numAces -1
-      end
-    end # end numAces>0
-    return sum
-  end #end value()
-
-  # gets the hardest value possible i.e. consider all Aces as 1
-  def hard_value()
-    sum = 0
-    numAces = 0
-    @cards.each do |i|
-      if ["Q", "J", "K"].include?(i)
-        sum += 10
-      elsif i == "A"
-        sum += 1
-      else
-        sum += i
-      end
-    end # end cards.each
-    return sum
-  end
-
-  def print_hand()
-    print "Hand : "
-    @cards.each {|card| print "#{card} "}
-    print ", Value = #{value()}\n"
-  end
-
-  def blackjack()
-    return (value() == 21)
-  end
-
-end #end class Hand
-
-class Player
-  attr_accessor :hands, :amount , :is_playing , :has_split, :player_number
-  # when player is initialized, we also initialize the first hand
-  # for splitting, I will have to break up the first hand into the 2nd hand and make the main game loop play proper
-  def initialize(amount, player_number)
-    @amount = amount
-    @is_playing = true
-    @player_number = player_number
-    @hands= Array.new
-    @hands[0] = Hand.new(0,Array.new)
-    has_split = false
-  end
-
-  def reset()
-    @hands = Array.new
-    @hands[0] = Hand.new(0,Array.new)
-    @is_playing = true
-    has_split = false
-  end
-
-  def print_Player()
-    print "Player : #{player_number} ,  Amount : #{amount} , "
-    hands[0].print_hand
-  end
-end
+require Hand
+require Player
 
 class Blackjack
 
@@ -103,10 +17,15 @@ class Blackjack
     @max_deck_mod = 52
     @dealer = Player.new(0, -1) # Dealer is a special kind of player with infinite money & a special player id
 
-    initialize_maldijack()
-    play_maldijack()
+  end # end initialize
 
-  end
+  def play_game()
+    initialize_maldijack() # get number of players & decks and initialize their classes & shoe!
+    while (true)
+      betting_round() # every player places a bet and gets 2 cards in return, we exit() if no more players left with any money
+      playing_round() # every player plays, then dealer plays & then money is doled out
+    end # end while
+  end # end play_game
 
   def initialize_maldijack()
 
@@ -142,6 +61,7 @@ class Blackjack
 
   end # end initializing the game
 
+  ### TODO this can be easily extended to add more decks if the current shoe is running below some threshold! Just add a function to refresh @cards & @deck_index
   # Gets a random card from the deck
   def get_card()
     ## TODO, once deck_index is reaching max, we should reshuffle!!!
@@ -150,24 +70,17 @@ class Blackjack
     return @cards[temp_index % @max_deck_mod]
   end # end get_card
 
-  def play_maldijack()
-    # game will continue until people have run out of money
-    while (true)
-      betting_round()
-      playing_round()
-    end
-  end
-
-  def bookkeeping_before_round()
+  def bookkeeping_before_betting()
     ### At the start of each betting round do the following
     ### reset players hands and other local variables
     ### check if they got the money to play -TODO future, check for mimimum bet
     ### if no money then remove the player & keep playing till no players are left on the table
     @players.each do | player|
       player.reset()
+      if player.amount <=0
+        @players.delete(player)
+      end
     end
-
-    @players.delete_if{| player| player.amount <= 0}
 
     if @players.size == 0
       puts "Go get some more Players"
@@ -178,45 +91,45 @@ class Blackjack
   def betting_round()
 
     # bookeeping resets players hands and removes players with no money
-    bookkeeping_before_round()
+    bookkeeping_before_betting()
     puts "#### THERE WE BEGIN ####"
 
-    # Dealer gets 2 cards
+    # Dealer gets 2 cards, we could do dealing cards in round-robin, but thats just additional work, doesnt really matter, just an extra block of code
     @dealer.hands[0].cards = [get_card, get_card]
-    puts "|        DEALER CARD  |#{@dealer.hands[0].cards[0]}|  | #{@dealer.hands[0].cards[1]} |"
+    puts "DEALER CARDS  #{@dealer.hands[0].cards[0]} #{@dealer.hands[0].cards[1]} " # Hide cards[1] later, this is for debugging
+
     # get players bets & then give them 2 cards
     @players.each do | player|
-
-      player.hands[0].cards = [get_card, get_card]
-
       while (player.hands[0].bet <= 0 or player.hands[0].bet > player.amount)
         print "Player #{player.player_number}, enter bet amount between 1 & #{player.amount} : "
         player.hands[0].bet = gets.to_i
       end
-      player.amount = player.amount - player.hands[0].bet
-      player.print_Player
+      player.amount = player.amount - player.hands[0].bet # reduce player's available amount by bet amount
+      player.hands[0].cards = [get_card, get_card] # give player 2 cards
+      player.print_Player # print player
 
-    end
+    end # end for each player, at this point we consider only players who still have money
 
-    # Print all the hands ( hide the dealers 2nd card???)
-    print_game()
-
-  end
+  end # end betting round
 
   def playing_round()
 
     @players.each do | p|
       puts "###### PLAYER #{p.player_number} ######"
-      while p.is_playing
 
-        ## first do all this for p.hands[0] then if necessary for p.hands[1] if split was true
-        play_internally(p,0)
+      ## first do all this for p.hands[0] then if necessary for p.hands[1] if split was true
+      puts "PLAYER #{p.player_number} Hand 0 START"
+      play_internally(p,0)
+      puts "PLAYER #{p.player_number} Hand 0 END"
 
-        if p.has_split
-          play_internally(p,1)
-        end
+      if p.has_split == true
+        puts "PLAYER #{p.player_number} Hand 1 START"
+        play_internally(p,1)
+        puts "PLAYER #{p.player_number} Hand 1 END"
+      end
 
-      end # end while player is playing
+      puts "PLAYER #{p.player_number} DONE Playing"
+
     end # end for each player
 
     distribute_money()
@@ -228,42 +141,46 @@ class Blackjack
     i = hand_index
 
     while p.hands[i].is_playing
+
+      #if blackjack, no need to play further, only a moron would hit more, they'd obviously stand.
       if p.hands[i].blackjack()
-        puts "Blackjack was acheived!"
+        puts "Blackjack!"
         p.hands[i].print_hand()
         p.hands[i].is_playing = false
         break
       end # end blackjack if
 
       p.hands[i].print_hand()
-      print "Please choose from the following {hit, stay, split, double}: "
+      print "Please choose from the following {hit, stand, split, double}: "
       decision = gets.chomp
 
       if decision == "hit"
         p.hands[i].cards.push(get_card)
-      elsif decision ==  "stay"
+        p.hands[i].print_hand
+      elsif decision ==  "stand"
         p.hands[i].is_playing = false
+        p.hands[i].print_hand
       elsif decision == "split"
         puts "Not implemented split functionality, sorry :("
         ## create p.hands[1] here after checking if he can indeed split
       elsif decision == "double"
-        if p.hands[i].bet * 2 <= p.amount and p.hands[i].cards.length == 2 ## can double after split so not putting that condition
-          p.hands[i].bet *= 2
-          p.hands[i].cards.push(get_card)
-          p.hands[i].is_playing = false
+        ## for doubling, it is enough that player has bet amount left in amount & has taken no hit, i.e. length == 2
+        ## Player can double his hand after splitting so not putting that condition
+        if p.hands[i].cards.length == 2 and p.hands[i].bet  <= p.amount
+          p.hands[i].bet *= 2 # double the bet
+          p.amount = p.amount - p.hands[i].bet # reduce the available amount
+          p.hands[i].cards.push(get_card) # take one more card
+          p.hands[i].is_playing = false # stand down
           p.hands[i].print_hand()
-          puts "Double was called"
+          puts "Player #{p.player_number} has called Double on his hand #{i}"
         else
-          puts "Double not allowed as not enough money in account or not first round"
+          puts "Player #{p.player_number} Double call was denied"
         end
 
-      end# end hit, stay, split, double if
+      end# end hit, stand, split, double if
 
-      if p.hands[i].value() == 21
-        puts "21 was acheived!"
-        p.hands[i].print_hand()
-        p.hands[i].is_playing = false
-      elsif p.hands[i].value() > 21
+      # If busted, can't play further
+      if p.hands[i].value() > 21
         puts "You got bust!"
         p.hands[i].print_hand()
         p.hands[i].is_playing = false
@@ -272,25 +189,6 @@ class Blackjack
     end # end while hand is being played out
 
   end # end playing internally
-
-  def print_game()
-
-    puts "+===========================+"
-    puts "|         GAME STATE        |"
-    puts "+===========================+"
-    puts "|        DEALER CARD  #{@dealer.hands[0].cards[0]}  #{@dealer.hands[0].cards[1]} "
-    puts "+===========================+"
-
-    @players.each do | player|
-      puts "|        PLAYER: #{player.player_number}   |"
-      player.hands[0].print_hand
-      if player.has_split
-        player.hands[1].print_hand
-      end
-      puts "+===========================+"
-    end
-
-  end
 
   def distribute_money()
 
@@ -347,3 +245,4 @@ class Blackjack
 end
 
 blackjack = Blackjack.new()
+blackjack.play_game()
