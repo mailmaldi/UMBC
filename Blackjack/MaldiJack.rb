@@ -146,27 +146,31 @@ class Blackjack
     end
   end
 
-  def betting_round()
-
-    @players.each do |k, p|
-      p.reset()
+  def bookkeeping_before_round()
+    ### At the start of each betting round do the following
+    ### reset players hands and other local variables
+    ### check if they got the money to play -TODO future, check for mimimum bet
+    ### if no money then remove the player & keep playing till no players are left on the table
+    @players.each do | player|
+      player.reset()
     end
 
-    @dealer.cards = [get_card, get_card]
-
-    # Check if players are bust
-    @players.delete_if{|k, p| p.amount <= 0}
+    @players.delete_if{| player| player.amount <= 0}
 
     if @players.size == 0
-      puts "Game Over"
+      puts "Go get some more Players"
       exit()
     end
+  end # end bookkeeping
 
-    puts "+===========================+"
-    puts "|         NEW ROUND         |"
-    puts "+===========================+"
+  def betting_round()
 
-    # give each player 2 initial cards and get their bets
+    bookkeeping_before_round()
+    puts "#### THERE WE BEGIN ####"
+
+    # Dealer gets 2 cards
+    @dealer.cards = [get_card, get_card]
+    # get players bets & then give them 2 cards
     @players.each do |k, p|
 
       p.cards = [get_card, get_card]
