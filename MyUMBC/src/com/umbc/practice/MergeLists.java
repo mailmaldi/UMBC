@@ -51,6 +51,56 @@ public class MergeLists
 			a[k--] = a[i--];
 	}
 
+	public static Node mergeListsNew(Node head1, Node head2)
+	{
+		if (head1 == null && head2 != null)
+			return head2;
+		if (head2 == null && head1 != null)
+			return head1;
+		if (head1 == null && head2 == null)
+			return null;
+
+		Node newHead = null;
+		Node iter1 = head1;
+		Node iter2 = head2;
+
+		if (head1.data > head2.data)
+		{
+			newHead = head2;
+			iter2 = head2.next;
+		}
+		else
+		{
+			newHead = head1;
+			iter1 = head1.next;
+		}
+		Node iter3 = newHead;
+
+		while (iter1 != null && iter2 != null)
+		{
+			if (iter1.data < iter2.data)
+			{
+				Node temp = iter1;
+				iter3.setNext(temp);
+				iter3 = iter3.next;
+				iter1 = iter1.next;
+			}
+			else
+			{
+				Node temp = iter2;
+				iter3.setNext(temp);
+				iter3 = iter3.next;
+				iter2 = iter2.next;
+			}
+		}
+		if (iter1 != null)
+			iter3.setNext(iter1);
+		if (iter2 != null)
+			iter3.setNext(iter2);
+
+		return newHead;
+	}
+
 	public static Node mergeLists(Node head1, Node head2)
 	{
 		if (head1 == null && head2 != null)
@@ -162,7 +212,7 @@ public class MergeLists
 		Node head2 = createList(5, 15);
 		printList(head1);
 		printList(head2);
-		Node head3 = mergeLists(null, null);
+		Node head3 = mergeListsNew(head1, head2);
 		printList(head3);
 
 		int[] a = new int[10];

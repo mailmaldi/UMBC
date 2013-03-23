@@ -739,7 +739,7 @@ class BTreeNode
 			}
 			else
 			{
-				break; // I dont think need this, level+1 with an empty list makes it easy to iterate
+				break; 
 			}
 			level++;
 		}
