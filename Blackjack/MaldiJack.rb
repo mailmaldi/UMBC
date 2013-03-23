@@ -25,7 +25,7 @@ class Hand
     sum = 0
     numAces = 0
     @cards.each do |i|
-      if ["Q", "J", "K"].include?(i)
+      if [ "J", "Q", "K" ].include?(i)
         sum += 10
       elsif i == "A"
         numAces += 1
@@ -65,7 +65,7 @@ class Hand
 end #end class Hand
 
 class Player
-  attr_accessor :hands, :amount , :is_playing,
+  attr_accessor :hands, :amount , :is_playing
   # when player is initialized, we also initialize the first hand
   # for splitting, I will have to break up the first hand into the 2nd hand and make the main game loop play proper
   def initialize(cards, bet,amount, player_number)
