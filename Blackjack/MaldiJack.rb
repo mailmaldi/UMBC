@@ -166,13 +166,13 @@ class Blackjack
         ## 2. has_split is false
         ## 3. number of cards == 2
         ## 4. the 2 cards are of same value if integer and if a String,
-        if p.has_split == false and  i == 0  and p.hands[i].cards.length == 2 and p.hands[i].bet  <= p.amount and validate_split_cards(p.hands[i].cards[0],p.hands[i].cards[0])
+        if p.has_split == false and  i == 0  and p.hands[i].cards.length == 2 and p.hands[i].bet  <= p.amount and validate_split_cards(p.hands[i].cards[0],p.hands[i].cards[1])
           p.hands[1] = Hand.new(p.hands[i].bet, Array.new)  # create new hand
           p.hands[1].cards.push(p.hands[0].cards[0])      # push a card from 0 to 1
           p.hands[0].cards.delete_at(0)                   # delete the card from hand 0
           p.has_split = true                              # set split flag
-          p.hands[0].push(get_card)                       # offer one more card
-          p.hands[1].push(get_card)                       # offer one more card
+          p.hands[0].cards.push(get_card)                       # offer one more card
+          p.hands[1].cards.push(get_card)                       # offer one more card
           p.hands[0].print_hand
           p.hands[1].print_hand
           puts "Player #{p.player_number} Split  call was done on hand #{i}"
