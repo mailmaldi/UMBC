@@ -65,7 +65,7 @@ class Hand
 end #end class Hand
 
 class Player
-  attr_accessor :hands, :amount , :is_playing , :has_split
+  attr_accessor :hands, :amount , :is_playing , :has_split, :player_number
   # when player is initialized, we also initialize the first hand
   # for splitting, I will have to break up the first hand into the 2nd hand and make the main game loop play proper
   def initialize(amount, player_number)
@@ -79,8 +79,14 @@ class Player
 
   def reset()
     @hands = Array.new
+    @hands[0] = Hand.new(0,Array.new)
     @is_playing = true
     has_split = false
+  end
+
+  def print_Player()
+    print "Player : #{player_number} ,  Amount : #{amount} , "
+    hands[0].print_hand
   end
 end
 
@@ -177,16 +183,18 @@ class Blackjack
 
     # Dealer gets 2 cards
     @dealer.hands[0].cards = [get_card, get_card]
+    puts "|        DEALER CARD  |#{@dealer.hands[0].cards[0]}|  | #{@dealer.hands[0].cards[1]} |"
     # get players bets & then give them 2 cards
-    @players.each do |player|
+    @players.each do | player|
 
       player.hands[0].cards = [get_card, get_card]
 
       while (player.hands[0].bet <= 0 or player.hands[0].bet > player.amount)
         print "Player #{player.player_number}, enter bet amount between 1 & #{player.amount} : "
         player.hands[0].bet = gets.to_i
-        player.amount = player.amount - player.hands[0].bet
       end
+      player.amount = player.amount - player.hands[0].bet
+      player.print_Player
 
     end
 
@@ -270,11 +278,15 @@ class Blackjack
     puts "+===========================+"
     puts "|         GAME STATE        |"
     puts "+===========================+"
-    puts "|        DEALER CARD  |#{@dealer.hands[0].cards[0]}|   #{@dealer.hands[0].cards[1]} |"
+    puts "|        DEALER CARD  #{@dealer.hands[0].cards[0]}  #{@dealer.hands[0].cards[1]} "
     puts "+===========================+"
 
-    @players.each do | p|
-      puts "|        PLAYER: #{p.player_number}   #{p.cards[0]}, #{p.cards[1]}   |"
+    @players.each do | player|
+      puts "|        PLAYER: #{player.player_number}   |"
+      player.hands[0].print_hand
+      if player.has_split
+        player.hands[1].print_hand
+      end
       puts "+===========================+"
     end
 
