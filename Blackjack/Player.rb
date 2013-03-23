@@ -19,7 +19,10 @@ class Player
   end
 
   def print_Player()
-    print "Player : #{player_number} ,  Amount : #{amount} , "
+    print "Player : #{player_number} ,  Amount : #{amount} , has_split : #{has_split}"
     hands[0].print_hand
+    if has_split
+      hands[1].print_hand
+    end
   end
 end

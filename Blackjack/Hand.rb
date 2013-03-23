@@ -52,7 +52,7 @@ class Hand
   def print_hand()
     print "Hand : "
     @cards.each {|card| print "#{card} "}
-    print ", Value = #{value()} , Hard-Value = #{hard_value()}\n"
+    print ",Bet = #{bet} , Value = #{value()} , Hard-Value = #{hard_value()}\n"
   end
 
   def blackjack()
