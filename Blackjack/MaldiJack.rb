@@ -1,8 +1,8 @@
+require 'Hand.rb'
+require 'Player.rb'
+
 SUITE = [2, 3, 4, 5, 6, 7, 8, 9, 10, "J", "Q", "K", "A"]
 # simply *4 to get 1 full deck and *4*n to get n decks and then .shuffle a few times
-
-require Hand
-require Player
 
 class Blackjack
 
@@ -165,17 +165,17 @@ class Blackjack
         ## 1. player has equivalent bet amount
         ## 2. has_split is false
         ## 3. number of cards == 2
-        ## 4. the 2 cards are of same value if integer and if a String, then
-
+        ## 4. the 2 cards are of same value if integer and if a String,
         if p.has_split == false and  i == 0  and p.hands[i].cards.length == 2 and p.hands[i].bet  <= p.amount and validate_split_cards(p.hands[i].cards[0],p.hands[i].cards[0])
           p.hands[1] = Hand.new(p.hands[i].bet, Array.new)  # create new hand
           p.hands[1].cards.push(p.hands[0].cards[0])      # push a card from 0 to 1
           p.hands[0].cards.delete_at(0)                   # delete the card from hand 0
           p.has_split = true                              # set split flag
-          p.hands[0].push(get_card)
-          p.hands[1].push(get_card)
+          p.hands[0].push(get_card)                       # offer one more card
+          p.hands[1].push(get_card)                       # offer one more card
           p.hands[0].print_hand
           p.hands[1].print_hand
+          puts "Player #{p.player_number} Split  call was done on hand #{i}"
         else
           puts "Player #{p.player_number} Split  call was denied on hand #{i}"
         end
@@ -184,10 +184,10 @@ class Blackjack
         ## for doubling, it is enough that player has bet amount left in amount & has taken no hit, i.e. length == 2
         ## Player can double his hand after splitting so not putting that condition
         if p.hands[i].cards.length == 2 and p.hands[i].bet  <= p.amount
-          p.hands[i].bet *= 2 # double the bet
-          p.amount = p.amount - p.hands[i].bet # reduce the available amount
-          p.hands[i].cards.push(get_card) # take one more card
-          p.hands[i].is_playing = false # stand down
+          p.amount = p.amount - p.hands[i].bet          # reduce the available amount
+          p.hands[i].bet *= 2                           # double the bet
+          p.hands[i].cards.push(get_card)                # take one more card
+          p.hands[i].is_playing = false                 # stand down
           p.hands[i].print_hand()
           puts "Player #{p.player_number} has called Double on his hand #{i}"
         else
@@ -209,55 +209,68 @@ class Blackjack
 
   def distribute_money()
 
-    puts "We reached the end of the round"
+    puts "ENTERED DEALER ROUND"
 
-    # Dealer sorts out their cards
-    while @dealer.value() < 17
-      @dealer.cards.push(get_card)
+    # Dealer takes hits mandatorily till 17
+    while @dealer.hands[0].value() < 17
+      @dealer.hands[0].cards.push(get_card)
     end
+    ### TODO : Ask dealer for more hits/stand
     puts "The dealer got the following hand:"
-    @dealer.print_hand()
+    @dealer.hands[0].print_hand()
 
-    dealer_value = @dealer.value()
+    dealer_total = @dealer.hands[0].value()
 
-    # Calculating the gains and losses for each player
-
-    if dealer_value > 21
-      puts "The dealer lost."
-      @players.each do | p|
-        if p.hands[0].blackjack()
-          #dealer bust, player blackjack
-          p.amount += (p.hands[0].bet * 1.5)
-          puts "Player #{p.player_number} got blackjack and has #{p.amount} left in their account"
-        elsif p.hands[0].value < 21
-          # dealer bust, player safe
-          p.amount += 2*p.hands[0].bet
-          puts "Player #{p.player_number} won and has #{p.amount} left in their account"
-        else
-          # both got busted, just return bet amount
-          p.amount += p.hands[0].bet
-          puts "Player #{p.player_number} bust with dealer and has #{p.amount} left in their account"
-        end
+    @players.each do |player|
+      # do for hand 0
+      distribute_money_internal(dealer_total,player,0)
+      # if split is true, then do for hand 1
+      if player.has_split
+        distribute_money_internal(dealer_total,player,1)
       end
-    else
-      @players.each do | p|
-        if p.hands[0].blackjack()
-          p.amount += (p.hands[0].bet * 2.5)
-          puts "Player #{p.player_number} got blackjack and has #{p.amount} left in their account"
-        elsif p.hands[0].value() > dealer_value and p.hands[0].value() <= 21
-          p.amount += 2*p.bet
-          puts "Player #{p.player_number} won and has #{p.amount} left in their account"
-        elsif p.hands[0].value() == dealer_value
-          p.amount += p.bet
-          puts "Player #{p.player_number} drew and has #{p.amount} left in their account"
-        else
-          puts "Player #{p.player_number} lost and has #{p.amount} left in their account"
-        end
-
-      end
-    end
+    end # end for each player
 
   end # end distribute money
+
+  def distribute_money_internal(dealer_total, player , hand_index)
+    i = hand_index
+    if dealer_total > 21
+      puts "Dealer got Busted"
+      if player.hands[i].blackjack()
+        #dealer bust, player blackjack
+        player.amount += (player.hands[i].bet * 2.5)
+        puts "Player #{player.player_number} got blackjack and has #{player.amount} left in their account"
+      elsif player.hands[i].value < 21
+        # dealer bust, player safe
+        player.amount += 2*player.hands[i].bet
+        puts "Player #{player.player_number} won and has #{player.amount} left in their account"
+      else
+        # both got busted, just return bet amount
+        player.amount += player.hands[i].bet
+        puts "Player #{player.player_number} bust with dealer and has #{player.amount} left in their account"
+      end
+    else
+      if player.hands[i].blackjack() and dealer_total == 21
+        player.amount += (player.hands[i].bet * 1)
+        puts "Player #{player.player_number} got blackjack But Dealer too and has #{player.amount} left in their account"
+      elsif player.hands[i].blackjack() # and dealer_total < 21 implied
+        player.amount += (player.hands[i].bet * 2.5)
+        puts "Player #{player.player_number} got blackjack and has #{player.amount} left in their account"
+      elsif player.hands[i].value > 21 # and dealer_total <= 21 implied
+        puts "Player #{player.player_number} Bust and has #{player.amount} left in their account"
+      elsif   player.hands[i].value < 21 and dealer_total == 21
+        puts "Player #{player.player_number} lower than dealer and has #{player.amount} left in their account"
+      elsif p.hands[i].value() == dealer_total
+        player.amount += player.hands[i].bet
+        puts "Player #{player.player_number} drew and has #{player.amount} left in their account"
+      elsif player.hands[i].value() > dealer_total #  and player.hands[i].value() < 21 implied
+        player.amount += 2*player.hands[i].bet
+        puts "Player #{player.player_number} won and has #{player.amount} left in their account"
+      else # player < dealer implied
+        puts "Player #{player.player_number} lost and has #{player.amount} left in their account"
+      end
+    end # end large if
+  end # end distribute internal
 
   def validate_split_cards(card1,card2)
     arr = ["J","Q","K"]
