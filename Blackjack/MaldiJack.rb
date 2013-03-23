@@ -10,16 +10,6 @@ class Hand
     @hits = 0
   end
 
-  def print_hand()
-    print "Hand : "
-    @cards.each {|card| print "#{card} "}
-    puts ", Value = #{value()}"
-  end
-
-  def blackjack()
-    return (value() == 21)
-  end
-
   # Gets the value of the hand
   def value()
     sum = 0
@@ -60,6 +50,16 @@ class Hand
       end
     end # end cards.each
     return sum
+  end
+
+  def print_hand()
+    print "Hand : "
+    @cards.each {|card| print "#{card} "}
+    print ", Value = #{value()}\n"
+  end
+
+  def blackjack()
+    return (value() == 21)
   end
 
 end #end class Hand
