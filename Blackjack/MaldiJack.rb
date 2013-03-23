@@ -65,7 +65,7 @@ class Hand
 end #end class Hand
 
 class Player
-  attr_accessor :hands, :amount , :is_playing
+  attr_accessor :hands, :amount , :is_playing , :has_split
   # when player is initialized, we also initialize the first hand
   # for splitting, I will have to break up the first hand into the 2nd hand and make the main game loop play proper
   def initialize(amount, player_number)
@@ -73,12 +73,14 @@ class Player
     @is_playing = true
     @player_number = player_number
     @hands= Array.new
-    @hands[0] = Hand.new(bet,cards)
+    @hands[0] = Hand.new(0,cards)
+    has_split = false
   end
 
   def reset()
     @hands = Array.new
     @is_playing = true
+    has_split = false
   end
 end
 
@@ -119,7 +121,7 @@ class Blackjack
     end
 
     ## Initialize all the players with  $1000 , a player id
-    for i in 1...n+1
+    for i in 0...n
       @players[i] = Player.new( 1000,  i)
     end
 
@@ -165,23 +167,25 @@ class Blackjack
 
   def betting_round()
 
+    # bookeeping resets players hands and removes players with no money
     bookkeeping_before_round()
     puts "#### THERE WE BEGIN ####"
 
     # Dealer gets 2 cards
-    @dealer.cards = [get_card, get_card]
+    @dealer.hands[0].cards = [get_card, get_card]
     # get players bets & then give them 2 cards
-    @players.each do |k, p|
+    @players.each do | player|
 
-      p.cards = [get_card, get_card]
+      player.hands[0].cards = [get_card, get_card]
 
-      while (p.bet <=0 or p.bet > p.amount)
-        print "Player #{k}, please enter your bet, a number less than or equal to #{p.amount}: "
-        p.bet = gets.to_i
+      while (player.hands[0].bet <= 0 or player.hands[0].bet > player.amount)
+        print "Player #{player.player_number}, enter bet amount between 1 & #{player.amount} : "
+        player.bet = gets.to_i
       end
 
     end
 
+    # Print all the hands ( hide the dealers 2nd card???)
     print_game()
 
   end
@@ -189,65 +193,81 @@ class Blackjack
   def playing_round()
 
     @players.each do |k, p|
-      puts "###### PLAYER #{k} ######"
+      puts "###### PLAYER #{p.player_number} ######"
       while p.is_playing
 
-        if p.blackjack()
-          puts "Blackjack was acheived!"
-          p.print_hand()
-          p.is_playing = false
-          break
+        ## first do all this for p.hands[0] then if necessary for p.hands[1] if split was true
+        play_internally(p,0)
+
+        if p.has_split
+          play_internally(p,1)
         end
 
-        p.print_hand()
-        print "Please choose from the following {hit, stay, split, double}: "
-        decision = gets.chomp
-
-        if decision == "hit"
-          p.cards.push(get_card)
-        elsif decision ==  "stay"
-          p.is_playing = false
-        elsif decision == "split"
-          puts "Not implemented split functionality, sorry :("
-        elsif decision == "double"
-          if p.bet * 2 <= p.amount and p.cards.length == 2
-            p.bet *= 2
-            p.cards.push(get_card)
-            p.is_playing = false
-            p.print_hand()
-            puts "Double was called"
-          else
-            puts "Double not allowed as not enough money in account or not first round"
-          end
-
-        end
-
-        if p.value() == 21
-          puts "21 was acheived!"
-          p.print_hand()
-          p.is_playing = false
-        elsif p.value() > 21
-          puts "You got bust!"
-          p.print_hand()
-          p.is_playing = false
-        end
-
-      end
-    end
+      end # end while player is playing
+    end # end for each player
 
     distribute_money()
-  end
+  end # end playing round
+
+  # generic function that handles common stuff for both hands[0] & [1]
+  def play_internally(player,hand_index)
+    p = player
+    i = hand_index
+    while p.hands[i].is_playing
+      if p.hands[i].blackjack()
+        puts "Blackjack was acheived!"
+        p.hands[i].print_hand()
+        p.hands[i].is_playing = false
+        break
+      end # end blackjack if
+
+      p.hands[i].print_hand()
+      print "Please choose from the following {hit, stay, split, double}: "
+      decision = gets.chomp
+
+      if decision == "hit"
+        p.hands[i].cards.push(get_card)
+      elsif decision ==  "stay"
+        p.hands[i].is_playing = false
+      elsif decision == "split"
+        puts "Not implemented split functionality, sorry :("
+      elsif decision == "double"
+        if p.hands[i].bet * 2 <= p.amount and p.hands[i].cards.length == 2 ## can double after split so not putting that condition
+          p.hands[i].bet *= 2
+          p.hands[i].cards.push(get_card)
+          p.hands[i].is_playing = false
+          p.hands[i].print_hand()
+          puts "Double was called"
+        else
+          puts "Double not allowed as not enough money in account or not first round"
+        end
+
+      end# end hit, stay, split, double if
+
+      if p.hands[i].value() == 21
+        puts "21 was acheived!"
+        p.hands[i].print_hand()
+        p.hands[i].is_playing = false
+      elsif p.hands[i].value() > 21
+        puts "You got bust!"
+        p.hands[i].print_hand()
+        p.hands[i].is_playing = false
+      end
+
+    end # end while hand is being played out
+
+  end # end playing internally
 
   def print_game()
 
     puts "+===========================+"
     puts "|         GAME STATE        |"
     puts "+===========================+"
-    puts "|        DEALER CARD  |#{@dealer.cards[0]}|    |"
+    puts "|        DEALER CARD  |#{@dealer.hands[0].cards[0]}|   #{@dealer.hands[0].cards[1]} |"
     puts "+===========================+"
 
-    @players.each do |k, p|
-      puts "|        PLAYER: #{k}   #{p.cards[0]}, #{p.cards[1]}   |"
+    @players.each do | p|
+      puts "|        PLAYER: #{p.player_number}   #{p.cards[0]}, #{p.cards[1]}   |"
       puts "+===========================+"
     end
 
