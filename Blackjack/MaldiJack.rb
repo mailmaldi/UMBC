@@ -107,13 +107,13 @@ class Blackjack
       player.print_Player # print player
 
     end # end for each player, at this point we consider only players who still have money
-
+    puts "==========================================="
   end # end betting round
 
   def playing_round()
 
     @players.each do | p|
-      puts "###### PLAYER #{p.player_number} ######"
+      puts "===================== PLAYER #{p.player_number} ====================="
 
       ## first do all this for p.hands[0] then if necessary for p.hands[1] if split was true
       puts "PLAYER #{p.player_number} Hand 0 START"
@@ -158,7 +158,7 @@ class Blackjack
       elsif decision ==  "stand"
         p.hands[i].is_playing = false
         p.hands[i].print_hand
-      elsif decision == "split"
+      elsif decision == "split" and p.player_number >=0
         ## split is allowed if,
         ## 1. player has equivalent bet amount
         ## 2. has_split is false
@@ -175,11 +175,12 @@ class Blackjack
           p.hands[0].print_hand
           p.hands[1].print_hand
           puts "Player #{p.player_number} Split  call was done on hand #{i}"
+          p.print_Player
         else
           puts "Player #{p.player_number} Split  call was denied on hand #{i}"
         end
         ## create p.hands[1] here after checking if he can indeed split
-      elsif decision == "double"
+      elsif decision == "double" and p.player_number >=0
         ## for doubling, it is enough that player has bet amount left in amount & has taken no hit, i.e. length == 2
         ## Player can double his hand after splitting so not putting that condition
         if p.hands[i].cards.length == 2 and p.hands[i].bet  <= p.amount
@@ -189,6 +190,7 @@ class Blackjack
           p.hands[i].is_playing = false                 # stand down
           p.hands[i].print_hand()
           puts "Player #{p.player_number} has called Double on his hand #{i}"
+          p.print_Player
         else
           puts "Player #{p.player_number} Double call was denied on hand #{i}"
         end
@@ -215,6 +217,7 @@ class Blackjack
       @dealer.hands[0].cards.push(get_card)
     end
     ### TODO : Ask dealer for more hits/stand
+    play_internally(@dealer,0)
     puts "The dealer got the following hand:"
     @dealer.hands[0].print_hand()
 
