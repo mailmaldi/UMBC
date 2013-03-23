@@ -75,11 +75,9 @@ class Blackjack
     ### reset players hands and other local variables
     ### check if they got the money to play -TODO future, check for mimimum bet
     ### if no money then remove the player & keep playing till no players are left on the table
+    @players.delete_if{|player| player.amount <= 0}
     @players.each do | player|
       player.reset()
-      if player.amount <=0
-        @players.delete(player)
-      end
     end
 
     if @players.size == 0
@@ -167,6 +165,7 @@ class Blackjack
         ## 3. number of cards == 2
         ## 4. the 2 cards are of same value if integer and if a String,
         if p.has_split == false and  i == 0  and p.hands[i].cards.length == 2 and p.hands[i].bet  <= p.amount and validate_split_cards(p.hands[i].cards[0],p.hands[i].cards[1])
+          p.amount = p.amount - p.hands[i].bet          # reduce the available amount
           p.hands[1] = Hand.new(p.hands[i].bet, Array.new)  # create new hand
           p.hands[1].cards.push(p.hands[0].cards[0])      # push a card from 0 to 1
           p.hands[0].cards.delete_at(0)                   # delete the card from hand 0
