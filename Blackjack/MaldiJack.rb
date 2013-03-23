@@ -68,7 +68,7 @@ class Player
   attr_accessor :hands, :amount , :is_playing
   # when player is initialized, we also initialize the first hand
   # for splitting, I will have to break up the first hand into the 2nd hand and make the main game loop play proper
-  def initialize(cards, bet,amount, player_number)
+  def initialize(amount, player_number)
     @amount = amount
     @is_playing = true
     @player_number = player_number
@@ -86,29 +86,67 @@ class Blackjack
   def initialize()
 
     @players =  {} # Players are held in an array
-    @num_players = 0
-    @num_decks = 4 # Number of card decks
-    @cards = Array.new # Universal cards that are held with the dealer
-    @dealer = Player.new(0, Array.new, -1) # Dealer is a special kind of player
+    @num_decks = 1 # Number of card decks
 
-    init_game()
-    play_game()
+    @deck = Array.new # Universal cards that are held with the dealer
+    @deck_index = 0
+    @max_deck_mod = 52
+    @dealer = Player.new(0, -1) # Dealer is a special kind of player with infinite money & a special player id
+
+    initialize_maldijack()
+    play_maldijack()
 
   end
 
-  def play_game()
+  def initialize_maldijack()
+
+    puts "### Welcome to Maldi's BlackJack! ###"
+
+    ## Get the number of Players
+    puts "How many Players ? :"
+    n = 0
+    while n <= 0 and n > 7
+      print "Enter a positive number (1-7) please : "
+      n = gets.to_i
+    end
+
+    ## Get the number of Decks we're playing with
+    puts "How many Decks ? :"
+    decks = 0
+    while decks <= 0 and decks > 8
+      print "Enter a positive number (1-8) please : "
+      @num_decks = gets.to_i
+    end
+
+    ## Initialize all the players with  $1000 , a player id
+    for i in 1...n+1
+      @players[i] = Player.new( 1000,  i)
+    end
+
+    ## Initializing the card deck
+    @cards = SUITE * @num_decks * 4
+    @max_deck_mod = @max_deck_mod * @num_decks
+    5.times {@cards.shuffle! }
+
+  end # end initializing the game
+
+  # Gets a random card from the deck
+  def get_card()
+    ## TODO, once deck_index is reaching max, we should reshuffle!!!
+    temp_index = @deck_index
+    @deck_index += 1
+    return cards[temp_index % @max_deck_mod]
+  end # end get_card
+
+  def play_maldijack()
     # game will continue until people have run out of money
     while (true)
-      init_round()
-      round()
+      betting_round()
+      playing_round()
     end
   end
 
-  def init_round()
-
-    # Initializing the card deck
-    deck_size = @num_decks * 4
-    deck_size.times {@cards += SUITE}
+  def betting_round()
 
     @players.each do |k, p|
       p.reset()
@@ -144,7 +182,7 @@ class Blackjack
 
   end
 
-  def round()
+  def playing_round()
 
     @players.each do |k, p|
       puts "###### PLAYER #{k} ######"
@@ -193,7 +231,7 @@ class Blackjack
       end
     end
 
-    end_round()
+    distribute_money()
   end
 
   def print_game()
@@ -211,7 +249,7 @@ class Blackjack
 
   end
 
-  def end_round()
+  def distribute_money()
 
     puts "We reached the end of the round"
 
@@ -255,32 +293,6 @@ class Blackjack
       end
     end
 
-  end
-
-  def init_game()
-
-    puts "+===========================+"
-    puts "|         BLACKJACK         |"
-    puts "+===========================+"
-
-    puts "Please enter the number of players for the game:"
-    n = 0
-
-    # We mush get atleast one player at the table
-    while n <= 0
-      print "Enter a number greater than 0: "
-      n = gets.to_i
-    end
-
-    # Initializing the players
-    for i in 1...n+1
-      @players[i] = Player.new(1000, Array.new, i)
-    end
-  end
-
-  # Gets a random card from the deck
-  def get_card()
-    return @cards.delete_at(rand(@cards.length))
   end
 
 end
