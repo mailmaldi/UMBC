@@ -59,6 +59,8 @@ class Blackjack
     @max_deck_mod = @max_deck_mod * @num_decks
     5.times {@cards.shuffle! }
 
+    print "\n\n\nSHOE: #{@cards.inspect}\n\n\n"
+
   end # end initializing the game
 
   ### TODO this can be easily extended to add more decks if the current shoe is running below some threshold! Just add a function to refresh @cards & @deck_index
@@ -75,6 +77,8 @@ class Blackjack
     ### reset players hands and other local variables
     ### check if they got the money to play -TODO future, check for mimimum bet
     ### if no money then remove the player & keep playing till no players are left on the table
+    
+    @dealer.reset()
     @players.delete_if{|player| player.amount <= 0}
     @players.each do | player|
       player.reset()
@@ -90,11 +94,11 @@ class Blackjack
 
     # bookeeping resets players hands and removes players with no money
     bookkeeping_before_betting()
-    puts "#### THERE WE BEGIN ####"
+    puts "\n\n\n#### THERE WE BEGIN ####\n\n"
 
     # Dealer gets 2 cards, we could do dealing cards in round-robin, but thats just additional work, doesnt really matter, just an extra block of code
     @dealer.hands[0].cards = [get_card, get_card]
-    puts "DEALER CARDS  #{@dealer.hands[0].cards[0]}  [__]" ##### #{@dealer.hands[0].cards[1]} " # Hide cards[1] later, this is for debugging
+    puts "*************** DEALER CARDS  #{@dealer.hands[0].cards[0]}  [__] *********************" ##### #{@dealer.hands[0].cards[1]} " # Hide cards[1] later, this is for debugging
 
     # get players bets & then give them 2 cards
     @players.each do | player|
@@ -107,7 +111,7 @@ class Blackjack
       player.print_Player # print player
 
     end # end for each player, at this point we consider only players who still have money
-    puts "==========================================="
+    puts "================================================================="
   end # end betting round
 
   def playing_round()
@@ -130,7 +134,25 @@ class Blackjack
 
     end # end for each player
 
-    distribute_money()
+    puts "=================== ENTERED DEALER ROUND ====================================="
+
+    @dealer.print_Player
+    # Dealer will always hit until at least 17
+    while @dealer.hands[0].value() < 17
+      @dealer.hands[0].cards.push(get_card)
+    end
+    ### TODO : Ask dealer for more hits/stand
+    play_internally(@dealer,0)
+    puts "================== FINAL DEALER HAND:======================"
+    @dealer.hands[0].print_hand()
+
+    @players.each do | p|
+      puts "===================== PLAYER #{p.player_number} ====================="
+      p.print_Player
+    end
+
+    distribute_money() #### now check every player with the dealer & distribute winnings
+
   end # end playing round
 
   # generic function that handles common stuff for both hands[0] & [1]
@@ -142,7 +164,7 @@ class Blackjack
 
       #if blackjack, no need to play further, only a moron would hit more, they'd obviously stand.
       if p.hands[i].blackjack()
-        puts "Blackjack!"
+        puts "***Blackjack!!!!"
         p.hands[i].print_hand()
         p.hands[i].is_playing = false
         break
@@ -199,7 +221,7 @@ class Blackjack
 
       # If busted, can't play further
       if p.hands[i].value() > 21
-        puts "You got bust!"
+        puts "***BUST!!!!"
         p.hands[i].print_hand()
         p.hands[i].is_playing = false
       end
@@ -210,17 +232,7 @@ class Blackjack
 
   def distribute_money()
 
-    puts "ENTERED DEALER ROUND"
-
-    # Dealer takes hits mandatorily till 17
-    while @dealer.hands[0].value() < 17
-      @dealer.hands[0].cards.push(get_card)
-    end
-    ### TODO : Ask dealer for more hits/stand
-    play_internally(@dealer,0)
-    puts "The dealer got the following hand:"
-    @dealer.hands[0].print_hand()
-
+    puts "================= DISTRIBUTING WINNINGS =================="
     dealer_total = @dealer.hands[0].value()
 
     @players.each do |player|
