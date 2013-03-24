@@ -143,7 +143,10 @@ class Blackjack
       @dealer.hands[0].cards.push(get_card)
     end
     ### TODO : Ask dealer for more hits/stand
-    play_internally(@dealer,0)
+    #### NOTE: comment this block if dealer needs to stop automatically at 17
+    if @dealer.hands[0].value() < 21
+      play_internally(@dealer,0)
+    end
     puts "================== FINAL DEALER HAND:======================"
     @dealer.hands[0].print_hand()
 
@@ -187,16 +190,11 @@ class Blackjack
         ## 2. has_split is false
         ## 3. number of cards == 2
         ## 4. the 2 cards are of same value if integer and if a String,
-        if p.has_split == false and  i == 0  and p.hands[i].cards.length == 2 and p.hands[i].bet  <= p.amount and validate_split_cards(p.hands[i].cards[0],p.hands[i].cards[1])
-          p.amount = p.amount - p.hands[i].bet          # reduce the available amount
-          p.hands[1] = Hand.new(p.hands[i].bet, Array.new)  # create new hand
-          p.hands[1].cards.push(p.hands[0].cards[0])      # push a card from 0 to 1
-          p.hands[0].cards.delete_at(0)                   # delete the card from hand 0
-          p.has_split = true                              # set split flag
+        ## NOTE: this entire condition can be encapsulated in a single function call for cleanliness, but mfuture
+        if i == 0  and p.can_split()
+          p.create_new_hand_for_split()                         # create new hands
           p.hands[0].cards.push(get_card)                       # offer one more card
           p.hands[1].cards.push(get_card)                       # offer one more card
-          #p.hands[0].print_hand
-          #p.hands[1].print_hand
           puts "Player #{p.player_number} Split  call was done on hand #{i}"
           p.print_Player
         else
@@ -206,12 +204,9 @@ class Blackjack
       elsif decision == "double" and p.player_number >=0 #dealer cant double
         ## for doubling, it is enough that player has bet amount left in amount & has taken no hit, i.e. length == 2
         ## Player can double his hand after splitting so not putting that condition
-        if p.hands[i].cards.length == 2 and p.hands[i].bet  <= p.amount
-          p.amount = p.amount - p.hands[i].bet          # reduce the available amount
-          p.hands[i].bet *= 2                           # double the bet
+        if p.can_double(i)
+          p.modify_for_double(i)
           p.hands[i].cards.push(get_card)                # take one more card
-          p.hands[i].is_playing = false                 # stand down
-          #p.hands[i].print_hand()
           puts "Player #{p.player_number} has called Double on his hand #{i}"
           p.print_Player
         else
@@ -287,20 +282,6 @@ class Blackjack
       end
     end # end large if
   end # end distribute internal
-
-  # Again, am sure I can write a better fn than this, but I dont have time to research ruby
-  def validate_split_cards(card1,card2)
-    arr = ["J","Q","K"]
-    if card1.is_a?Integer and card2.is_a?Integer
-      return (card1 == card2)
-    elsif card1 == 'A' and card2 == 'A'
-      return true
-    elsif arr.any? { |s| s.include?(card1) } and arr.any? { |s| s.include?(card2) }
-      return true
-    else
-      return false
-    end
-  end # end validate_splittable_cards
 
 end # End BlackJack class
 
