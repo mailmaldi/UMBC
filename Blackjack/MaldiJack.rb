@@ -12,14 +12,13 @@ class Blackjack
     @players =  Array.new # Players are held in an array
     @num_decks = 1 # Number of card decks
 
-    @deck = Array.new # Universal cards that are held with the dealer
-    @deck_index = 0
-    @max_deck_mod = 52
-    @dealer = Player.new(0, -1) # Dealer is a special kind of player with infinite money & a special player id
+    @deck_index = 0 # starting index of shoe
+    @max_deck_mod = 52 # ending index  modulo of shoe with just the 1 deck
+    @dealer = Player.new(0, -1) # Dealer is a special kind of player with infinite money & a special player id, we use id in the play_internally later to prevent dealer from double, etc
 
   end # end initialize
 
-  def play_game()
+  def play_maldijack()
     initialize_maldijack() # get number of players & decks and initialize their classes & shoe!
     while (true)
       betting_round() # every player places a bet and gets 2 cards in return, we exit() if no more players left with any money
@@ -45,8 +44,8 @@ class Blackjack
     while decks <= 0 or decks > 8
       print "Enter a positive number (1-8) please : "
       decks = gets.to_i
-      @num_decks = decks
     end
+    @num_decks = decks
 
     ## Initialize all the players with  $1000 , a player id
     for i in 0...n
@@ -55,9 +54,9 @@ class Blackjack
     end
 
     ## Initializing the card deck
-    @cards = SUITE * @num_decks * 4
-    @max_deck_mod = @max_deck_mod * @num_decks
-    5.times {@cards.shuffle! }
+    @cards = SUITE * @num_decks * 4 ## replicate the suite 4 times to form 1 deck, and replicate 1 dec num times to form num decks in the shoe
+    @max_deck_mod = @max_deck_mod * @num_decks ## figure out the max modulo, in this impl , i will just repeat cards from 0 ... modulo-1 , 0 ...
+    10.times {@cards.shuffle! } ## Shuffle the shoe 10 times
 
     print "\n\n\nSHOE: #{@cards.inspect}\n\n\n"
 
@@ -72,28 +71,11 @@ class Blackjack
     return @cards[temp_index % @max_deck_mod]
   end # end get_card
 
-  def bookkeeping_before_betting()
-    ### At the start of each betting round do the following
-    ### reset players hands and other local variables
-    ### check if they got the money to play -TODO future, check for mimimum bet
-    ### if no money then remove the player & keep playing till no players are left on the table
-    
-    @dealer.reset()
-    @players.delete_if{|player| player.amount <= 0}
-    @players.each do | player|
-      player.reset()
-    end
-
-    if @players.size == 0
-      puts "Go get some more Players"
-      exit()
-    end
-  end # end bookkeeping
-
   def betting_round()
 
     # bookeeping resets players hands and removes players with no money
     bookkeeping_before_betting()
+
     puts "\n\n\n#### THERE WE BEGIN ####\n\n"
 
     # Dealer gets 2 cards, we could do dealing cards in round-robin, but thats just additional work, doesnt really matter, just an extra block of code
@@ -104,7 +86,7 @@ class Blackjack
     @players.each do | player|
       while (player.hands[0].bet <= 0 or player.hands[0].bet > player.amount)
         print "Player #{player.player_number}, enter bet amount between 1 & #{player.amount} : "
-        player.hands[0].bet = gets.to_i
+        player.hands[0].bet = gets.to_i # get a bet from player which he can afford
       end
       player.amount = player.amount - player.hands[0].bet # reduce player's available amount by bet amount
       player.hands[0].cards = [get_card, get_card] # give player 2 cards
@@ -114,8 +96,27 @@ class Blackjack
     puts "================================================================="
   end # end betting round
 
+  def bookkeeping_before_betting()
+    ### At the start of each betting round do the following
+    ### reset players hands and other local variables
+    ### check if they got the money to play -TODO future, check for mimimum bet
+    ### if no money then remove the player & keep playing till no players are left on the table
+
+    @dealer.reset() ## very important to reset dealer
+    @players.delete_if{|player| player.amount <= 0} ## remove broke players
+    if @players.size == 0
+      puts "**********WE NEED MORE PLAYERS**************"
+      exit() # exit if no more players left
+    end
+    @players.each do | player|
+      player.reset()  ## reset remaining players
+    end
+
+  end # end bookkeeping
+
   def playing_round()
 
+    ## NOW play for each player and each of their hands
     @players.each do | p|
       puts "===================== PLAYER #{p.player_number} ====================="
 
@@ -164,9 +165,9 @@ class Blackjack
 
       #if blackjack, no need to play further, only a moron would hit more, they'd obviously stand.
       if p.hands[i].blackjack()
-        puts "***Blackjack!!!!"
-        p.hands[i].print_hand()
         p.hands[i].is_playing = false
+        p.hands[i].print_hand()
+        puts "***Blackjack!!!!"
         break
       end # end blackjack if
 
@@ -180,7 +181,7 @@ class Blackjack
       elsif decision ==  "stand"
         p.hands[i].is_playing = false
         p.hands[i].print_hand
-      elsif decision == "split" and p.player_number >=0
+      elsif decision == "split" and p.player_number >=0 # dealer cant split
         ## split is allowed if,
         ## 1. player has equivalent bet amount
         ## 2. has_split is false
@@ -194,15 +195,15 @@ class Blackjack
           p.has_split = true                              # set split flag
           p.hands[0].cards.push(get_card)                       # offer one more card
           p.hands[1].cards.push(get_card)                       # offer one more card
-          p.hands[0].print_hand
-          p.hands[1].print_hand
+          #p.hands[0].print_hand
+          #p.hands[1].print_hand
           puts "Player #{p.player_number} Split  call was done on hand #{i}"
           p.print_Player
         else
           puts "Player #{p.player_number} Split  call was denied on hand #{i}"
         end
         ## create p.hands[1] here after checking if he can indeed split
-      elsif decision == "double" and p.player_number >=0
+      elsif decision == "double" and p.player_number >=0 #dealer cant double
         ## for doubling, it is enough that player has bet amount left in amount & has taken no hit, i.e. length == 2
         ## Player can double his hand after splitting so not putting that condition
         if p.hands[i].cards.length == 2 and p.hands[i].bet  <= p.amount
@@ -210,7 +211,7 @@ class Blackjack
           p.hands[i].bet *= 2                           # double the bet
           p.hands[i].cards.push(get_card)                # take one more card
           p.hands[i].is_playing = false                 # stand down
-          p.hands[i].print_hand()
+          #p.hands[i].print_hand()
           puts "Player #{p.player_number} has called Double on his hand #{i}"
           p.print_Player
         else
@@ -246,6 +247,7 @@ class Blackjack
 
   end # end distribute money
 
+  ### THIS can be a whole lot cleaner, but I dont have time to clean it up, too much homework left!
   def distribute_money_internal(dealer_total, player , hand_index)
     i = hand_index
     if dealer_total > 21
@@ -286,6 +288,7 @@ class Blackjack
     end # end large if
   end # end distribute internal
 
+  # Again, am sure I can write a better fn than this, but I dont have time to research ruby
   def validate_split_cards(card1,card2)
     arr = ["J","Q","K"]
     if card1.is_a?Integer and card2.is_a?Integer
@@ -302,4 +305,4 @@ class Blackjack
 end # End BlackJack class
 
 blackjack = Blackjack.new()
-blackjack.play_game()
+blackjack.play_maldijack()
