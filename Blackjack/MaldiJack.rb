@@ -232,55 +232,36 @@ class Blackjack
     # For every player, distribute money for each Hand individually.
     @players.each do |player|
       # do for hand 0
-      distribute_money_internal(dealer_total,player,0)
+      distribute_money_internal_2(dealer_total,player,0)
       # if split is true, then do for hand 1
       if player.has_split
-        distribute_money_internal(dealer_total,player,1)
+        distribute_money_internal_2(dealer_total,player,1)
       end
     end # end for each player
 
   end # end distribute money
 
-  ### THIS can be a whole lot cleaner, but I dont have time to clean it up, too much homework left!
-  def distribute_money_internal(dealer_total, player , hand_index)
+  def distribute_money_internal_2(dealer_total, player , hand_index)
     i = hand_index
-    if dealer_total > 21
-      puts "Dealer got Busted"
-      if player.hands[i].blackjack()
-        #dealer bust, player blackjack
-        player.amount += (player.hands[i].bet * 2.5)
-        puts "Player #{player.player_number} Blackjack - Dealer Bust , Amount= #{player.amount}"
-      elsif player.hands[i].value < 21
-        # dealer bust, player safe
-        player.amount += 2*player.hands[i].bet
-        puts "Player #{player.player_number} Won - Dealer Bust , Amount= #{player.amount}"
-      else
-        # both got busted, just return bet amount
-        player.amount += player.hands[i].bet
-        puts "Player #{player.player_number} Bust - Dealer Bust , Amount= #{player.amount}"
-      end
+    dt = dealer_total
+    hv = player.hands[i].value
+    bet = player.hands[i].bet
+    pn = player.player_number
+
+    if (hv == 21 and (dt > 21 or dt < 21) )
+      player.amount += (bet * 2.5)
+      puts "Player #{pn} H#{i} #{hv} Blackjack - Dealer #{dt} , Amount= #{player.amount}"
+    elsif (hv < 21 and dt > 21) or (dt <= 21 and hv <= 21 and hv > dt)
+      player.amount += (bet * 2)
+      puts "Player #{pn} H#{i} #{hv} - Dealer #{dt} , Amount= #{player.amount}"
+    elsif (dt > 21 and hv > 21) or ((hv == 21) and dt == 21 ) or (hv == dealer_total and dt <= 21 and hv <= 21)
+      player.amount += (bet * 1)
+      puts "Player #{pn} H#{i} #{hv} - Dealer #{dt} , Amount= #{player.amount}"
     else
-      if player.hands[i].blackjack() and dealer_total == 21
-        player.amount += (player.hands[i].bet * 1)
-        puts "Player #{player.player_number} Blackjack - Dealer Blackjack , Amount= #{player.amount}"
-      elsif player.hands[i].blackjack() # and dealer_total < 21 implied
-        player.amount += (player.hands[i].bet * 2.5)
-        puts "Player #{player.player_number} Blackjack - Dealer Less , Amount= #{player.amount}"
-      elsif player.hands[i].value > 21 # and dealer_total <= 21 implied
-        puts "Player #{player.player_number} Bust - Dealer Safe , Amount= #{player.amount}"
-      elsif   player.hands[i].value < 21 and dealer_total == 21
-        puts "Player #{player.player_number} Safe - Dealer Blackjack , Amount= #{player.amount}"
-      elsif player.hands[i].value() == dealer_total
-        player.amount += player.hands[i].bet
-        puts "Player #{player.player_number} Dealer Equal , Amount= #{player.amount}"
-      elsif player.hands[i].value() > dealer_total #  and player.hands[i].value() < 21 implied
-        player.amount += 2*player.hands[i].bet
-        puts "Player #{player.player_number} Won , Dealer Safe , Amount= #{player.amount}"
-      else # player < dealer implied
-        puts "Player #{player.player_number} Lost, Dealer Safe , Amount= #{player.amount}"
-      end
-    end # end large if
-  end # end distribute internal
+      puts "Player #{pn} H#{i} #{hv} - Dealer #{dt} , Amount= #{player.amount}"
+    end
+
+  end # end distribute internal_2
 
 end # End BlackJack class
 
