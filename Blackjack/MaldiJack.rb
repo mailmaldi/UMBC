@@ -220,6 +220,7 @@ class Blackjack
     bet = player.hands[i].bet
     pn = player.player_number
 
+    # instead of modifiying amount directly, should use a function call to increment player amount by payoff factor
     if (hv == 21 and (dt > 21 or dt < 21) )
       player.amount += (bet * 2.5)
       puts "Player #{pn} H#{i} #{hv} Blackjack - Dealer #{dt} , Amount= #{player.amount}"
