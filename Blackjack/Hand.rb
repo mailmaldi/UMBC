@@ -48,8 +48,8 @@ class Hand
     return sum
   end
 
-  def print_hand()
-    print "Hand : "
+  def print_hand(i)
+    print "Hand #{i} : "
     @cards.each {|card| print "#{card} "}
     print ",Bet = #{bet} , Value = #{value()} , Hard-Value = #{hard_value()}\n"
   end

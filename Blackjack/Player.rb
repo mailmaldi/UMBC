@@ -20,9 +20,9 @@ class Player
 
   def print_Player()
     print "Player : #{player_number} ,  Amount : #{amount} , has_split : #{has_split} \n"
-    hands[0].print_hand
+    hands[0].print_hand(0)
     if has_split
-      hands[1].print_hand
+      hands[1].print_hand(1)
     end
   end
 
