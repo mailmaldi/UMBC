@@ -94,12 +94,13 @@ class Blackjack
     # get players bets & then give them 2 cards
     # TODO if player bets 0 or less, maybe exit them from the game? code is short, just puts "PLAYER exiting" and delete it from the @players array
     @players.each do | player|
+      player.hands[0].cards = [get_card, get_card] # give player 2 cards
+      player.hands[0].print_hand(0)
       while (player.hands[0].bet <= 0 or player.hands[0].bet > player.amount)
         print "Player #{player.player_number}, enter bet amount between 1 & #{player.amount} : "
         player.hands[0].bet = gets.to_i # get a bet from player which he can afford
       end
       player.amount = player.amount - player.hands[0].bet # reduce player's available amount by bet amount
-      player.hands[0].cards = [get_card, get_card] # give player 2 cards
       player.print_Player # print player
       puts ""
 
