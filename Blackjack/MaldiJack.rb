@@ -8,14 +8,32 @@ class Blackjack
 
   attr_accessor :players, :num_decks , :deck, :deck_index, :max_deck_mod, :dealer , :cards
   def initialize()
-
     @players =  Array.new # Players are held in an array
     @num_decks = 1 # Number of card decks
     @deck_index = 0 # starting index of shoe
     @max_deck_mod = 52 # ending index  modulo of shoe with just the 1 deck
     @dealer = Player.new(0, -1) # Dealer is a special kind of player with infinite money & a special player id, we use id in the play_internally later to prevent dealer from double, etc
-
   end # end initialize
+
+  # create_deck & get_card can be put in their own class called Shoe
+  def create_deck()
+    ## Initializing the card deck
+    @cards = SUITE * @num_decks * 4 ## replicate the suite 4 times to form 1 deck, and replicate 1 dec num times to form num decks in the shoe
+    @max_deck_mod = @max_deck_mod * @num_decks ## figure out the max modulo, in this impl , i will just repeat cards from 0 ... modulo-1 , 0 ...
+    10.times {@cards.shuffle! } ## Shuffle the shoe 10 times
+    @deck_index = 0
+  end # end create_deck
+
+  # Gets a random card from the deck
+  def get_card()
+    card =  @cards[@deck_index % @max_deck_mod]
+    @deck_index += 1
+    if @deck_index == @max_deck_mod
+      #recreate shoe
+      create_deck()
+    end
+    return card
+  end # end get_card
 
   ## the main game play is simple. initialize and then the betting & playing rounds loop infinitely.
   def play_maldijack()
@@ -27,7 +45,6 @@ class Blackjack
   end # end play_game
 
   def initialize_maldijack()
-
     puts "### Welcome to Maldi's BlackJack! ###"
 
     ## Get the number of Players
@@ -54,35 +71,11 @@ class Blackjack
     end
 
     create_deck()
-
     puts "\n\n\nCOMMENT THIS OUT IN ACTUAL RUNS, ITS FOR DEBUGGING ONLY"
     print "SHOE: #{@cards.inspect}\n\n\n"
-
   end # end initializing the game
 
-  # create_deck & get_card can be put in their own class called Shoe
-  def create_deck()
-    ## Initializing the card deck
-    @cards = SUITE * @num_decks * 4 ## replicate the suite 4 times to form 1 deck, and replicate 1 dec num times to form num decks in the shoe
-    @max_deck_mod = @max_deck_mod * @num_decks ## figure out the max modulo, in this impl , i will just repeat cards from 0 ... modulo-1 , 0 ...
-    10.times {@cards.shuffle! } ## Shuffle the shoe 10 times
-    @deck_index = 0
-  end # end create_deck
-
-  # Gets a random card from the deck
-  def get_card()
-    card =  @cards[@deck_index % @max_deck_mod]
-    @deck_index += 1
-    if @deck_index == @max_deck_mod
-      #recreate shoe
-      create_deck()
-    end
-    return card
-  end # end get_card
-
   def betting_round()
-
-    # bookeeping resets players hands and removes players with no money
     bookkeeping_before_betting()
 
     puts "\n\n\n#### THERE WE BEGIN ####\n\n"
@@ -103,13 +96,13 @@ class Blackjack
       player.amount = player.amount - player.hands[0].bet # reduce player's available amount by bet amount
       player.print_Player # print player
       puts ""
-
     end # end for each player
     puts "================================================================="
   end # end betting round
 
+  # TODO future, check for mimimum bet
+  # bookeeping resets players hands and removes players with no money
   def bookkeeping_before_betting()
-    # TODO future, check for mimimum bet
     @dealer.reset() ## very important to reset dealer
     @players.delete_if{|player| player.amount <= 0} ## remove broke players
     if @players.size == 0
@@ -118,8 +111,7 @@ class Blackjack
     end
     @players.each do | player|
       player.reset()  ## reset remaining players
-    end
-
+    end # end reset
   end # end bookkeeping
 
   def playing_round()
@@ -225,7 +217,6 @@ class Blackjack
   end # end playing internally
 
   def distribute_money()
-
     puts "================= DISTRIBUTING WINNINGS =================="
     dealer_total = @dealer.hands[0].value()
 
@@ -238,9 +229,10 @@ class Blackjack
         distribute_money_internal_2(dealer_total,player,1)
       end
     end # end for each player
-
   end # end distribute money
 
+  # for explanation of conditions, I've a payoff matrix on paper :)
+  # Haven't considered the case of Hard blackjack vs normal
   def distribute_money_internal_2(dealer_total, player , hand_index)
     i = hand_index
     dt = dealer_total
