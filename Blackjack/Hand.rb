@@ -1,13 +1,12 @@
 class Hand
-  attr_accessor :cards, :bet , :is_playing, :hits
+  attr_accessor :cards, :bet , :is_playing
   def initialize(bet,cards)
     @is_playing= true
     @bet = bet
     @cards = cards
-    @hits = 0
   end
 
-  # Gets the value of the hand
+  # Gets the value of the hand that the player has
   def value()
     sum = 0
     numAces = 0

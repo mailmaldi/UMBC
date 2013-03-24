@@ -185,12 +185,7 @@ class Blackjack
         p.hands[i].is_playing = false
         p.hands[i].print_hand
       elsif decision == "split" and p.player_number >=0 # dealer cant split
-        ## split is allowed if,
-        ## 1. player has equivalent bet amount
-        ## 2. has_split is false
-        ## 3. number of cards == 2
-        ## 4. the 2 cards are of same value if integer and if a String,
-        ## NOTE: this entire condition can be encapsulated in a single function call for cleanliness, but mfuture
+
         if i == 0  and p.can_split()
           p.create_new_hand_for_split()                         # create new hands
           p.hands[0].cards.push(get_card)                       # offer one more card
