@@ -18,6 +18,7 @@ class Blackjack
 
   end # end initialize
 
+  ## the main game play is simple. initialize and then the betting & playing rounds loop infinitely.
   def play_maldijack()
     initialize_maldijack() # get number of players & decks and initialize their classes & shoe!
     while (true)
@@ -142,8 +143,7 @@ class Blackjack
     while @dealer.hands[0].value() < 17
       @dealer.hands[0].cards.push(get_card)
     end
-    ### TODO : Ask dealer for more hits/stand
-    #### NOTE: comment this block if dealer needs to stop automatically at 17
+    #### NOTE: comment this block if dealer needs to stop automatically at 17 , i.e. auto-stand at 17.
     if @dealer.hands[0].value() < 21
       play_internally(@dealer,0)
     end
@@ -185,7 +185,6 @@ class Blackjack
         p.hands[i].is_playing = false
         p.hands[i].print_hand
       elsif decision == "split" and p.player_number >=0 # dealer cant split
-
         if i == 0  and p.can_split()
           p.create_new_hand_for_split()                         # create new hands
           p.hands[0].cards.push(get_card)                       # offer one more card
@@ -195,7 +194,6 @@ class Blackjack
         else
           puts "Player #{p.player_number} Split  call was denied on hand #{i}"
         end
-        ## create p.hands[1] here after checking if he can indeed split
       elsif decision == "double" and p.player_number >=0 #dealer cant double
         ## for doubling, it is enough that player has bet amount left in amount & has taken no hit, i.e. length == 2
         ## Player can double his hand after splitting so not putting that condition
