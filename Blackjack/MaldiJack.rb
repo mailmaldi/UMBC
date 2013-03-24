@@ -1,38 +1,19 @@
 require 'Hand.rb'
 require 'Player.rb'
-
-SUITE = [2, 3, 4, 5, 6, 7, 8, 9, 10, "J", "Q", "K", "A"]
-# simply *4 to get 1 full deck and *4*n to get n decks and then .shuffle a few times
+require 'Shoe.rb'
 
 class Blackjack
 
-  attr_accessor :players, :num_decks , :deck, :deck_index, :max_deck_mod, :dealer , :cards
+  attr_accessor :players, :dealer  , :shoe
   def initialize()
     @players =  Array.new # Players are held in an array
-    @num_decks = 1 # Number of card decks
-    @deck_index = 0 # starting index of shoe
-    @max_deck_mod = 52 # ending index  modulo of shoe with just the 1 deck
     @dealer = Player.new(0, -1) # Dealer is a special kind of player with infinite money & a special player id, we use id in the play_internally later to prevent dealer from double, etc
+    @shoe = Shoe.new()
   end # end initialize
 
-  # create_deck & get_card can be put in their own class called Shoe
-  def create_deck()
-    ## Initializing the card deck
-    @cards = SUITE * @num_decks * 4 ## replicate the suite 4 times to form 1 deck, and replicate 1 dec num times to form num decks in the shoe
-    @max_deck_mod = @max_deck_mod * @num_decks ## figure out the max modulo, in this impl , i will just repeat cards from 0 ... modulo-1 , 0 ...
-    10.times {@cards.shuffle! } ## Shuffle the shoe 10 times
-    @deck_index = 0
-  end # end create_deck
-
-  # Gets a random card from the deck
+  # Gets a random card from the shoe
   def get_card()
-    card =  @cards[@deck_index % @max_deck_mod]
-    @deck_index += 1
-    if @deck_index == @max_deck_mod
-      #recreate shoe
-      create_deck()
-    end
-    return card
+    @shoe.get_card()
   end # end get_card
 
   ## the main game play is simple. initialize and then the betting & playing rounds loop infinitely.
@@ -62,7 +43,6 @@ class Blackjack
       print "Enter a positive number (1-8) please : "
       decks = gets.to_i
     end
-    @num_decks = decks
 
     ## Initialize all the players with  $1000 , a player id
     for i in 0...n
@@ -70,9 +50,9 @@ class Blackjack
       #puts @players[i].to_s
     end
 
-    create_deck()
+    @shoe.create_deck(decks)
     puts "\n\n\nCOMMENT THIS OUT IN ACTUAL RUNS, ITS FOR DEBUGGING ONLY"
-    print "SHOE: #{@cards.inspect}\n\n\n"
+    @shoe.print_shoe()
   end # end initializing the game
 
   def betting_round()
