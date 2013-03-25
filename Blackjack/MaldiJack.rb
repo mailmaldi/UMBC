@@ -20,8 +20,10 @@ class Blackjack
   def play_maldijack()
     initialize_maldijack() # get number of players & decks and initialize their classes & shoe!
     while (true)
+      bookkeeping_before_betting()  # do some bookkeeping
       betting_round() # every player places a bet and gets 2 cards in return, we exit() if no more players left with any money
       playing_round() # every player plays, then dealer plays & then money is doled out
+      distribute_money() # now check every player with the dealer & distribute winnings
     end # end while
   end # end play_game
 
@@ -56,18 +58,20 @@ class Blackjack
   end # end initializing the game
 
   def betting_round()
-    bookkeeping_before_betting()
-
     puts "\n\n\n#### THERE WE BEGIN ####\n\n"
 
     # Dealer gets 2 cards, we could do dealing cards in round-robin, but thats just additional work, doesnt really matter, just an extra block of code
-    @dealer.hands[0].cards = [get_card, get_card]
+    #@dealer.hands[0].cards = [get_card, get_card]
+    @dealer.push_card(0,get_card)
+    @dealer.push_card(0,get_card)
     puts "*************** DEALER CARDS  [#{@dealer.hands[0].cards[0]}]  [__] *********************" # {@dealer.hands[0].cards[1]}
 
     # get players bets & then give them 2 cards
     # TODO if player bets 0 or less, maybe exit them from the game? code is short, just puts "PLAYER exiting" and delete it from the @players array
     @players.each do | player|
-      player.hands[0].cards = [get_card, get_card] # give player 2 cards
+      #player.hands[0].cards = [get_card, get_card] # give player 2 cards
+      player.push_card(0,get_card)
+      player.push_card(0,get_card)
       player.hands[0].print_hand(0)
       while (player.hands[0].bet <= 0 or player.hands[0].bet > player.amount)
         print "Player #{player.player_number}, enter bet amount between 1 & #{player.amount} : "
@@ -121,7 +125,8 @@ class Blackjack
     @dealer.print_Player
     # Dealer will always hit until at least 17
     while @dealer.hands[0].value() < 17
-      @dealer.hands[0].cards.push(get_card)
+      #@dealer.hands[0].cards.push(get_card)
+      @dealer.push_card(0,get_card)
     end
     #### NOTE: comment this block if dealer needs to stop automatically at 17 , i.e. auto-stand at 17.
     if @dealer.hands[0].value() < 21
@@ -134,8 +139,6 @@ class Blackjack
       puts "===================== PLAYER #{p.player_number} ====================="
       p.print_Player
     end
-
-    distribute_money() #### now check every player with the dealer & distribute winnings
 
   end # end playing round
 
@@ -160,14 +163,17 @@ class Blackjack
       decision = gets.chomp
 
       if decision == "hit"
-        p.hands[i].cards.push(get_card) # hit a new card
+        #p.hands[i].cards.push(get_card) # hit a new card
+        p.push_card(i,get_card)
       elsif decision ==  "stand"
         p.hands[i].is_playing = false  # just finish this hand
       elsif decision == "split" and p.player_number >=0         # dealer cant split
         if i == 0  and p.can_split()                            # i==0 is redundant actually. p.can_split() just checks
           p.create_new_hand_for_split()                         # create new hands
-          p.hands[0].cards.push(get_card)                       # offer one more card for Hand 0
-          p.hands[1].cards.push(get_card)                       # offer one more card for Hand 1
+          #p.hands[0].cards.push(get_card)                       # offer one more card for Hand 0
+          #p.hands[1].cards.push(get_card)                       # offer one more card for Hand 1
+          p.push_card(0,get_card)
+          p.push_card(1,get_card)
           puts "Player #{p.player_number} Split  call was done on hand #{i}"
           p.print_Player                                        # print the players new set of Hands
         else
@@ -177,7 +183,8 @@ class Blackjack
         ## Player can double his hand after splitting so not putting that condition
         if p.can_double(i)                              # check if its ok to double, note that a split hand can indeed be doubled
           p.modify_for_double(i)                        # modify bet for doubling
-          p.hands[i].cards.push(get_card)                # take one more card & stand down
+          #p.hands[i].cards.push(get_card)                # take one more card & stand down
+          p.push_card(i,get_card)
           puts "Player #{p.player_number} has called Double on his hand #{i}"
           p.print_Player
         else

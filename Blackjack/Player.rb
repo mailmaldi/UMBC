@@ -28,6 +28,12 @@ class Player
     end
   end
 
+  # wrapper function to push card to the hand indicated by index
+  def push_card(hand_index , card)
+    ## TODO error checking if hand_index indeed exists in the hands array
+    @hands[hand_index].cards.push(card)
+  end
+
   ## split is allowed if,
   ## 1. player has equivalent bet amount
   ## 2. has_split is false

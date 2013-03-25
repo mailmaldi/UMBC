@@ -8,7 +8,7 @@ Enter a positive number (1-8) please : 4
 
 
 COMMENT THIS OUT IN ACTUAL RUNS, ITS FOR DEBUGGING ONLY
-SHOE: ["A", 7, "J", "A", 9, 10, 6, 3, 7, 2, 2, 2, "K", 10, "K", "Q", 8, 4, "K", "Q", 7, "K", 8, 2, 9, 10, 2, 10, 5, 6, "Q", 2, 9, "A", 10, 10, 4, 4, 4, "A", 6, 5, 8, "J", 8, 5, 2, "K", "Q", 7, 5, 4, 3, 2, "J", "J", 3, 6, "J", 7, 6, 3, "Q", 4, 8, "Q", 2, 3, 3, 10, 4, 8, 6, 5, 7, 8, 3, 2, "K", 9, 2, 8, 4, 10, 6, "Q", 6, "J", 3, 5, "K", 4, 8, 4, 8, 6, 9, 9, "K", 5, "A", 4, 7, "Q", "Q", 7, 5, 8, 3, "A", "J", 5, 10, "A", 6, 5, 8, 5, "K", 3, 2, 9, "Q", 4, "Q", "Q", 3, 6, 5, "J", "Q", "A", "K", "J", "J", 8, 3, "J", 7, 10, 7, "A", 7, "J", 3, "J", 10, 10, 9, 5, 2, "A", "K", 6, "A", 3, 5, 4, "A", 8, "K", 3, 2, "J", "K", 6, 9, 7, 9, 7, 9, 9, 3, 9, "Q", 6, 9, 8, "J", "J", 6, 6, 4, "A", 4, "A", 9, 10, "A", 7, 10, 2, 8, "Q", 7, 5, 9, "Q", 7, "K", 5, 2, 10, 10, "K", "A", 4, "K"]
+SHOE: ["A", "K", 7, 9, 4, 8, 9, "A", "Q", "A", 7, "K", "Q", 6, 2, 3, 10, 5, 3, "Q", 8, 3, 2, 4, "A", "Q", 2, 3, 3, "A", "J", 8, 10, 10, 5, "Q", "Q", 3, "J", "Q", "Q", "A", 9, 4, 3, 5, 5, 3, 9, "J", 6, 3, 6, 7, "J", "Q", "A", 2, 5, 9, "K", 4, "K", "Q", 6, 9, 10, 2, 8, 2, 6, "Q", "J", 7, 3, 9, "A", 10, 7, 8, 2, 7, "J", 9, 4, 5, 3, "K", 5, 3, 2, 5, 3, "K", 2, 4, 10, "Q", 8, 6, 5, 7, 5, 9, 10, 3, 7, 8, "K", 5, 7, 2, "A", 2, 7, "A", 7, 9, 10, "J", "K", "K", 6, "J", 10, "Q", 3, 9, "Q", "J", 10, "J", 7, "Q", 6, "K", 5, "J", 6, "A", 5, 9, "K", 2, 5, 5, 4, 10, 7, 4, 7, 4, 2, 2, "J", 10, 10, 10, 6, 2, 3, 5, 8, 9, "Q", 7, 4, 8, "K", "A", "A", 9, "K", 10, "A", "A", 4, "K", 8, 8, 2, 8, 8, 8, "K", 8, 9, "J", 4, "K", 10, 7, 4, "A", 6, 4, 9, 6, 8, "J", "J", 6, 6, 6, 4, 4, 6, "J"]
 
 
 
@@ -17,264 +17,285 @@ SHOE: ["A", 7, "J", "A", 9, 10, 6, 3, 7, 2, 2, 2, "K", 10, "K", "Q", 8, 4, "K", 
 #### THERE WE BEGIN ####
 
 *************** DEALER CARDS  [A]  [__] *********************
-Hand 0 : J A ,Bet = 0 , Value = 21 , Hard-Value = 11
-Player 0, enter bet amount between 1 & 1000 : 1000
-Player : 0 ,  Amount : 0 , has_split : false 
-Hand 0 : J A ,Bet = 1000 , Value = 21 , Hard-Value = 11
+Hand 0 : 7 9 ,Bet = 0 , Value = 16 , Hard-Value = 16
+Player 0, enter bet amount between 1 & 1000 : 100
+Player : 0 ,  Amount : 900 , has_split : false 
+Hand 0 : 7 9 ,Bet = 100 , Value = 16 , Hard-Value = 16
 
-Hand 0 : 9 10 ,Bet = 0 , Value = 19 , Hard-Value = 19
-Player 1, enter bet amount between 1 & 1000 : 400
-Player : 1 ,  Amount : 600 , has_split : false 
-Hand 0 : 9 10 ,Bet = 400 , Value = 19 , Hard-Value = 19
+Hand 0 : 4 8 ,Bet = 0 , Value = 12 , Hard-Value = 12
+Player 1, enter bet amount between 1 & 1000 : 100
+Player : 1 ,  Amount : 900 , has_split : false 
+Hand 0 : 4 8 ,Bet = 100 , Value = 12 , Hard-Value = 12
 
-Hand 0 : 6 3 ,Bet = 0 , Value = 9 , Hard-Value = 9
+Hand 0 : 9 A ,Bet = 0 , Value = 20 , Hard-Value = 10
 Player 2, enter bet amount between 1 & 1000 : 100
 Player : 2 ,  Amount : 900 , has_split : false 
-Hand 0 : 6 3 ,Bet = 100 , Value = 9 , Hard-Value = 9
+Hand 0 : 9 A ,Bet = 100 , Value = 20 , Hard-Value = 10
 
-Hand 0 : 7 2 ,Bet = 0 , Value = 9 , Hard-Value = 9
+Hand 0 : Q A ,Bet = 0 , Value = 21 , Hard-Value = 11
 Player 3, enter bet amount between 1 & 1000 : 100
 Player : 3 ,  Amount : 900 , has_split : false 
-Hand 0 : 7 2 ,Bet = 100 , Value = 9 , Hard-Value = 9
+Hand 0 : Q A ,Bet = 100 , Value = 21 , Hard-Value = 11
 
 =================================================================
 ===================== PLAYER 0 =====================
 PLAYER 0 Hand 0 START
-Hand 0 : J A ,Bet = 1000 , Value = 21 , Hard-Value = 11
-***Blackjack!!! No need to play further!
+Hand 0 : 7 9 ,Bet = 100 , Value = 16 , Hard-Value = 16
+Please choose from the following {hit, stand, split, double, surrender}: hit
+Hand 0 : 7 9 7 ,Bet = 100 , Value = 23 , Hard-Value = 23
+***BUST!!! Can't Play Further!
 PLAYER 0 Hand 0 END
 PLAYER 0 DONE Playing
 ===================== PLAYER 1 =====================
 PLAYER 1 Hand 0 START
-Hand 0 : 9 10 ,Bet = 400 , Value = 19 , Hard-Value = 19
-Please choose from the following {hit, stand, split, double}: stand
+Hand 0 : 4 8 ,Bet = 100 , Value = 12 , Hard-Value = 12
+Please choose from the following {hit, stand, split, double, surrender}: hit
+Hand 0 : 4 8 K ,Bet = 100 , Value = 22 , Hard-Value = 22
+***BUST!!! Can't Play Further!
 PLAYER 1 Hand 0 END
 PLAYER 1 DONE Playing
 ===================== PLAYER 2 =====================
 PLAYER 2 Hand 0 START
-Hand 0 : 6 3 ,Bet = 100 , Value = 9 , Hard-Value = 9
-Please choose from the following {hit, stand, split, double}: hit
-Hand 0 : 6 3 2 ,Bet = 100 , Value = 11 , Hard-Value = 11
-Please choose from the following {hit, stand, split, double}: hit
-Hand 0 : 6 3 2 2 ,Bet = 100 , Value = 13 , Hard-Value = 13
-Please choose from the following {hit, stand, split, double}: hit
-Hand 0 : 6 3 2 2 K ,Bet = 100 , Value = 23 , Hard-Value = 23
-***BUST!!! Can't Play Further!
+Hand 0 : 9 A ,Bet = 100 , Value = 20 , Hard-Value = 10
+Please choose from the following {hit, stand, split, double, surrender}: hit
+Hand 0 : 9 A Q ,Bet = 100 , Value = 20 , Hard-Value = 20
+Please choose from the following {hit, stand, split, double, surrender}: stand
 PLAYER 2 Hand 0 END
 PLAYER 2 DONE Playing
 ===================== PLAYER 3 =====================
 PLAYER 3 Hand 0 START
-Hand 0 : 7 2 ,Bet = 100 , Value = 9 , Hard-Value = 9
-Please choose from the following {hit, stand, split, double}: hit
-Hand 0 : 7 2 10 ,Bet = 100 , Value = 19 , Hard-Value = 19
-Please choose from the following {hit, stand, split, double}: stand
+Hand 0 : Q A ,Bet = 100 , Value = 21 , Hard-Value = 11
+***Blackjack!!! No need to play further!
 PLAYER 3 Hand 0 END
 PLAYER 3 DONE Playing
 =================== ENTERED DEALER ROUND =====================================
 Player : -1 ,  Amount : 0 , has_split : false 
-Hand 0 : A 7 ,Bet = 0 , Value = 18 , Hard-Value = 8
-Hand 0 : A 7 ,Bet = 0 , Value = 18 , Hard-Value = 8
-Please choose from the following {hit, stand, split, double}: hit
-Hand 0 : A 7 K ,Bet = 0 , Value = 18 , Hard-Value = 18
-Please choose from the following {hit, stand, split, double}: hit
-Hand 0 : A 7 K Q ,Bet = 0 , Value = 28 , Hard-Value = 28
-***BUST!!! Can't Play Further!
+Hand 0 : A K ,Bet = 0 , Value = 21 , Hard-Value = 11
 ================== FINAL DEALER HAND:======================
-Hand 0 : A 7 K Q ,Bet = 0 , Value = 28 , Hard-Value = 28
+Hand 0 : A K ,Bet = 0 , Value = 21 , Hard-Value = 11
 ===================== PLAYER 0 =====================
-Player : 0 ,  Amount : 0 , has_split : false 
-Hand 0 : J A ,Bet = 1000 , Value = 21 , Hard-Value = 11
+Player : 0 ,  Amount : 900 , has_split : false 
+Hand 0 : 7 9 7 ,Bet = 100 , Value = 23 , Hard-Value = 23
 ===================== PLAYER 1 =====================
-Player : 1 ,  Amount : 600 , has_split : false 
-Hand 0 : 9 10 ,Bet = 400 , Value = 19 , Hard-Value = 19
+Player : 1 ,  Amount : 900 , has_split : false 
+Hand 0 : 4 8 K ,Bet = 100 , Value = 22 , Hard-Value = 22
 ===================== PLAYER 2 =====================
 Player : 2 ,  Amount : 900 , has_split : false 
-Hand 0 : 6 3 2 2 K ,Bet = 100 , Value = 23 , Hard-Value = 23
+Hand 0 : 9 A Q ,Bet = 100 , Value = 20 , Hard-Value = 20
 ===================== PLAYER 3 =====================
 Player : 3 ,  Amount : 900 , has_split : false 
-Hand 0 : 7 2 10 ,Bet = 100 , Value = 19 , Hard-Value = 19
+Hand 0 : Q A ,Bet = 100 , Value = 21 , Hard-Value = 11
 ================= DISTRIBUTING WINNINGS ==================
-Player 0 H0 21 Blackjack - Dealer 28 , Amount= 2500.0
-Player 1 H0 19 - Dealer 28 , Amount= 1400
-Player 2 H0 23 - Dealer 28 , Amount= 1000
-Player 3 H0 19 - Dealer 28 , Amount= 1100
+Player 0 H0 23 - Dealer 21 , Amount= 900
+Player 1 H0 22 - Dealer 21 , Amount= 900
+Player 2 H0 20 - Dealer 21 , Amount= 900
+Player 3 H0 21 - Dealer 21 , Amount= 1000
 
 
 
 #### THERE WE BEGIN ####
 
-*************** DEALER CARDS  [8]  [__] *********************
-Hand 0 : K Q ,Bet = 0 , Value = 20 , Hard-Value = 20
-Player 0, enter bet amount between 1 & 2500.0 : 500
-Player : 0 ,  Amount : 2000.0 , has_split : false 
-Hand 0 : K Q ,Bet = 500 , Value = 20 , Hard-Value = 20
+*************** DEALER CARDS  [6]  [__] *********************
+Hand 0 : 3 10 ,Bet = 0 , Value = 13 , Hard-Value = 13
+Player 0, enter bet amount between 1 & 900 : 100
+Player : 0 ,  Amount : 800 , has_split : false 
+Hand 0 : 3 10 ,Bet = 100 , Value = 13 , Hard-Value = 13
 
-Hand 0 : 7 K ,Bet = 0 , Value = 17 , Hard-Value = 17
-Player 1, enter bet amount between 1 & 1400 : 400
-Player : 1 ,  Amount : 1000 , has_split : false 
-Hand 0 : 7 K ,Bet = 400 , Value = 17 , Hard-Value = 17
+Hand 0 : 5 3 ,Bet = 0 , Value = 8 , Hard-Value = 8
+Player 1, enter bet amount between 1 & 900 : 100
+Player : 1 ,  Amount : 800 , has_split : false 
+Hand 0 : 5 3 ,Bet = 100 , Value = 8 , Hard-Value = 8
 
-Hand 0 : 8 2 ,Bet = 0 , Value = 10 , Hard-Value = 10
-Player 2, enter bet amount between 1 & 1000 : 100
-Player : 2 ,  Amount : 900 , has_split : false 
-Hand 0 : 8 2 ,Bet = 100 , Value = 10 , Hard-Value = 10
+Hand 0 : Q 8 ,Bet = 0 , Value = 18 , Hard-Value = 18
+Player 2, enter bet amount between 1 & 900 : 100
+Player : 2 ,  Amount : 800 , has_split : false 
+Hand 0 : Q 8 ,Bet = 100 , Value = 18 , Hard-Value = 18
 
-Hand 0 : 9 10 ,Bet = 0 , Value = 19 , Hard-Value = 19
-Player 3, enter bet amount between 1 & 1100 : 600
-Player : 3 ,  Amount : 500 , has_split : false 
-Hand 0 : 9 10 ,Bet = 600 , Value = 19 , Hard-Value = 19
+Hand 0 : 3 2 ,Bet = 0 , Value = 5 , Hard-Value = 5
+Player 3, enter bet amount between 1 & 1000 : 100
+Player : 3 ,  Amount : 900 , has_split : false 
+Hand 0 : 3 2 ,Bet = 100 , Value = 5 , Hard-Value = 5
 
 =================================================================
 ===================== PLAYER 0 =====================
 PLAYER 0 Hand 0 START
-Hand 0 : K Q ,Bet = 500 , Value = 20 , Hard-Value = 20
-Please choose from the following {hit, stand, split, double}: stand
+Hand 0 : 3 10 ,Bet = 100 , Value = 13 , Hard-Value = 13
+Please choose from the following {hit, stand, split, double, surrender}: surrender
+Player 0 Surrender on hand 0
 PLAYER 0 Hand 0 END
 PLAYER 0 DONE Playing
 ===================== PLAYER 1 =====================
 PLAYER 1 Hand 0 START
-Hand 0 : 7 K ,Bet = 400 , Value = 17 , Hard-Value = 17
-Please choose from the following {hit, stand, split, double}: stand
+Hand 0 : 5 3 ,Bet = 100 , Value = 8 , Hard-Value = 8
+Please choose from the following {hit, stand, split, double, surrender}: hit
+Hand 0 : 5 3 4 ,Bet = 100 , Value = 12 , Hard-Value = 12
+Please choose from the following {hit, stand, split, double, surrender}: hit
+Hand 0 : 5 3 4 A ,Bet = 100 , Value = 13 , Hard-Value = 13
+Please choose from the following {hit, stand, split, double, surrender}: hit
+Hand 0 : 5 3 4 A Q ,Bet = 100 , Value = 23 , Hard-Value = 23
+***BUST!!! Can't Play Further!
 PLAYER 1 Hand 0 END
 PLAYER 1 DONE Playing
 ===================== PLAYER 2 =====================
 PLAYER 2 Hand 0 START
-Hand 0 : 8 2 ,Bet = 100 , Value = 10 , Hard-Value = 10
-Please choose from the following {hit, stand, split, double}: hit
-Hand 0 : 8 2 2 ,Bet = 100 , Value = 12 , Hard-Value = 12
-Please choose from the following {hit, stand, split, double}: hit
-Hand 0 : 8 2 2 10 ,Bet = 100 , Value = 22 , Hard-Value = 22
-***BUST!!! Can't Play Further!
+Hand 0 : Q 8 ,Bet = 100 , Value = 18 , Hard-Value = 18
+Please choose from the following {hit, stand, split, double, surrender}: stand
 PLAYER 2 Hand 0 END
 PLAYER 2 DONE Playing
 ===================== PLAYER 3 =====================
 PLAYER 3 Hand 0 START
-Hand 0 : 9 10 ,Bet = 600 , Value = 19 , Hard-Value = 19
-Please choose from the following {hit, stand, split, double}: stand
+Hand 0 : 3 2 ,Bet = 100 , Value = 5 , Hard-Value = 5
+Please choose from the following {hit, stand, split, double, surrender}: hit
+Hand 0 : 3 2 2 ,Bet = 100 , Value = 7 , Hard-Value = 7
+Please choose from the following {hit, stand, split, double, surrender}: hit
+Hand 0 : 3 2 2 3 ,Bet = 100 , Value = 10 , Hard-Value = 10
+Please choose from the following {hit, stand, split, double, surrender}: hit
+Hand 0 : 3 2 2 3 3 ,Bet = 100 , Value = 13 , Hard-Value = 13
+Please choose from the following {hit, stand, split, double, surrender}: hit
+Hand 0 : 3 2 2 3 3 A ,Bet = 100 , Value = 14 , Hard-Value = 14
+Please choose from the following {hit, stand, split, double, surrender}: hit
+Hand 0 : 3 2 2 3 3 A J ,Bet = 100 , Value = 24 , Hard-Value = 24
+***BUST!!! Can't Play Further!
 PLAYER 3 Hand 0 END
 PLAYER 3 DONE Playing
 =================== ENTERED DEALER ROUND =====================================
 Player : -1 ,  Amount : 0 , has_split : false 
-Hand 0 : 8 4 ,Bet = 0 , Value = 12 , Hard-Value = 12
-Hand 0 : 8 4 5 ,Bet = 0 , Value = 17 , Hard-Value = 17
-Please choose from the following {hit, stand, split, double}: hit
-Hand 0 : 8 4 5 6 ,Bet = 0 , Value = 23 , Hard-Value = 23
-***BUST!!! Can't Play Further!
+Hand 0 : 6 2 ,Bet = 0 , Value = 8 , Hard-Value = 8
 ================== FINAL DEALER HAND:======================
-Hand 0 : 8 4 5 6 ,Bet = 0 , Value = 23 , Hard-Value = 23
+Hand 0 : 6 2 8 10 ,Bet = 0 , Value = 26 , Hard-Value = 26
 ===================== PLAYER 0 =====================
-Player : 0 ,  Amount : 2000.0 , has_split : false 
-Hand 0 : K Q ,Bet = 500 , Value = 20 , Hard-Value = 20
+Player : 0 ,  Amount : 850.0 , has_split : false 
+Hand 0 : 3 10 ,Bet = 100 , Value = 13 , Hard-Value = 13
 ===================== PLAYER 1 =====================
-Player : 1 ,  Amount : 1000 , has_split : false 
-Hand 0 : 7 K ,Bet = 400 , Value = 17 , Hard-Value = 17
+Player : 1 ,  Amount : 800 , has_split : false 
+Hand 0 : 5 3 4 A Q ,Bet = 100 , Value = 23 , Hard-Value = 23
 ===================== PLAYER 2 =====================
-Player : 2 ,  Amount : 900 , has_split : false 
-Hand 0 : 8 2 2 10 ,Bet = 100 , Value = 22 , Hard-Value = 22
+Player : 2 ,  Amount : 800 , has_split : false 
+Hand 0 : Q 8 ,Bet = 100 , Value = 18 , Hard-Value = 18
 ===================== PLAYER 3 =====================
-Player : 3 ,  Amount : 500 , has_split : false 
-Hand 0 : 9 10 ,Bet = 600 , Value = 19 , Hard-Value = 19
+Player : 3 ,  Amount : 900 , has_split : false 
+Hand 0 : 3 2 2 3 3 A J ,Bet = 100 , Value = 24 , Hard-Value = 24
 ================= DISTRIBUTING WINNINGS ==================
-Player 0 H0 20 - Dealer 23 , Amount= 3000.0
-Player 1 H0 17 - Dealer 23 , Amount= 1800
-Player 2 H0 22 - Dealer 23 , Amount= 1000
-Player 3 H0 19 - Dealer 23 , Amount= 1700
+Player 1 H0 23 - Dealer 26 , Amount= 900
+Player 2 H0 18 - Dealer 26 , Amount= 1000
+Player 3 H0 24 - Dealer 26 , Amount= 1000
 
 
 
 #### THERE WE BEGIN ####
 
-*************** DEALER CARDS  [Q]  [__] *********************
-Hand 0 : 9 A ,Bet = 0 , Value = 20 , Hard-Value = 10
-Player 0, enter bet amount between 1 & 3000.0 : 100
-Player : 0 ,  Amount : 2900.0 , has_split : false 
-Hand 0 : 9 A ,Bet = 100 , Value = 20 , Hard-Value = 10
+*************** DEALER CARDS  [10]  [__] *********************
+Hand 0 : Q Q ,Bet = 0 , Value = 20 , Hard-Value = 20
+Player 0, enter bet amount between 1 & 850.0 : 100
+Player : 0 ,  Amount : 750.0 , has_split : false 
+Hand 0 : Q Q ,Bet = 100 , Value = 20 , Hard-Value = 20
 
-Hand 0 : 10 10 ,Bet = 0 , Value = 20 , Hard-Value = 20
-Player 1, enter bet amount between 1 & 1800 : 100
-Player : 1 ,  Amount : 1700 , has_split : false 
-Hand 0 : 10 10 ,Bet = 100 , Value = 20 , Hard-Value = 20
+Hand 0 : 3 J ,Bet = 0 , Value = 13 , Hard-Value = 13
+Player 1, enter bet amount between 1 & 900 : 100
+Player : 1 ,  Amount : 800 , has_split : false 
+Hand 0 : 3 J ,Bet = 100 , Value = 13 , Hard-Value = 13
 
-Hand 0 : 4 4 ,Bet = 0 , Value = 8 , Hard-Value = 8
+Hand 0 : Q Q ,Bet = 0 , Value = 20 , Hard-Value = 20
 Player 2, enter bet amount between 1 & 1000 : 100
 Player : 2 ,  Amount : 900 , has_split : false 
-Hand 0 : 4 4 ,Bet = 100 , Value = 8 , Hard-Value = 8
+Hand 0 : Q Q ,Bet = 100 , Value = 20 , Hard-Value = 20
 
-Hand 0 : 4 A ,Bet = 0 , Value = 15 , Hard-Value = 5
-Player 3, enter bet amount between 1 & 1700 : 100
-Player : 3 ,  Amount : 1600 , has_split : false 
-Hand 0 : 4 A ,Bet = 100 , Value = 15 , Hard-Value = 5
+Hand 0 : A 9 ,Bet = 0 , Value = 20 , Hard-Value = 10
+Player 3, enter bet amount between 1 & 1000 : 100
+Player : 3 ,  Amount : 900 , has_split : false 
+Hand 0 : A 9 ,Bet = 100 , Value = 20 , Hard-Value = 10
 
 =================================================================
 ===================== PLAYER 0 =====================
 PLAYER 0 Hand 0 START
-Hand 0 : 9 A ,Bet = 100 , Value = 20 , Hard-Value = 10
-Please choose from the following {hit, stand, split, double}: hit
-Hand 0 : 9 A 6 ,Bet = 100 , Value = 16 , Hard-Value = 16
-Please choose from the following {hit, stand, split, double}: hit
-Hand 0 : 9 A 6 5 ,Bet = 100 , Value = 21 , Hard-Value = 21
-***Blackjack!!! No need to play further!
+Hand 0 : Q Q ,Bet = 100 , Value = 20 , Hard-Value = 20
+Please choose from the following {hit, stand, split, double, surrender}: split
+Player 0 Split  call was done on hand 0
+Player : 0 ,  Amount : 650.0 , has_split : true 
+Hand 0 : Q 4 ,Bet = 100 , Value = 14 , Hard-Value = 14
+Hand 1 : Q 3 ,Bet = 100 , Value = 13 , Hard-Value = 13
+Hand 0 : Q 4 ,Bet = 100 , Value = 14 , Hard-Value = 14
+Please choose from the following {hit, stand, split, double, surrender}: hit
+Hand 0 : Q 4 5 ,Bet = 100 , Value = 19 , Hard-Value = 19
+Please choose from the following {hit, stand, split, double, surrender}: stand
 PLAYER 0 Hand 0 END
+PLAYER 0 Hand 1 START
+Hand 1 : Q 3 ,Bet = 100 , Value = 13 , Hard-Value = 13
+Please choose from the following {hit, stand, split, double, surrender}: hit
+Hand 1 : Q 3 5 ,Bet = 100 , Value = 18 , Hard-Value = 18
+Please choose from the following {hit, stand, split, double, surrender}: stand
+PLAYER 0 Hand 1 END
 PLAYER 0 DONE Playing
 ===================== PLAYER 1 =====================
 PLAYER 1 Hand 0 START
-Hand 0 : 10 10 ,Bet = 100 , Value = 20 , Hard-Value = 20
-Please choose from the following {hit, stand, split, double}: stand
+Hand 0 : 3 J ,Bet = 100 , Value = 13 , Hard-Value = 13
+Please choose from the following {hit, stand, split, double, surrender}: hit
+Hand 0 : 3 J 3 ,Bet = 100 , Value = 16 , Hard-Value = 16
+Please choose from the following {hit, stand, split, double, surrender}: hit
+Hand 0 : 3 J 3 9 ,Bet = 100 , Value = 25 , Hard-Value = 25
+***BUST!!! Can't Play Further!
 PLAYER 1 Hand 0 END
 PLAYER 1 DONE Playing
 ===================== PLAYER 2 =====================
 PLAYER 2 Hand 0 START
-Hand 0 : 4 4 ,Bet = 100 , Value = 8 , Hard-Value = 8
-Please choose from the following {hit, stand, split, double}: hit
-Hand 0 : 4 4 8 ,Bet = 100 , Value = 16 , Hard-Value = 16
-Please choose from the following {hit, stand, split, double}: hit
-Hand 0 : 4 4 8 J ,Bet = 100 , Value = 26 , Hard-Value = 26
-***BUST!!! Can't Play Further!
+Hand 0 : Q Q ,Bet = 100 , Value = 20 , Hard-Value = 20
+Please choose from the following {hit, stand, split, double, surrender}: split
+Player 2 Split  call was done on hand 0
+Player : 2 ,  Amount : 800 , has_split : true 
+Hand 0 : Q J ,Bet = 100 , Value = 20 , Hard-Value = 20
+Hand 1 : Q 6 ,Bet = 100 , Value = 16 , Hard-Value = 16
+Hand 0 : Q J ,Bet = 100 , Value = 20 , Hard-Value = 20
+Please choose from the following {hit, stand, split, double, surrender}: stand
 PLAYER 2 Hand 0 END
+PLAYER 2 Hand 1 START
+Hand 1 : Q 6 ,Bet = 100 , Value = 16 , Hard-Value = 16
+Please choose from the following {hit, stand, split, double, surrender}: surrender
+Player 2 Surrender call was denied on hand 1
+Hand 1 : Q 6 ,Bet = 100 , Value = 16 , Hard-Value = 16
+Please choose from the following {hit, stand, split, double, surrender}: double
+Player 2 has called Double on his hand 1
+Player : 2 ,  Amount : 700 , has_split : true 
+Hand 0 : Q J ,Bet = 100 , Value = 20 , Hard-Value = 20
+Hand 1 : Q 6 3 ,Bet = 200 , Value = 19 , Hard-Value = 19
+PLAYER 2 Hand 1 END
 PLAYER 2 DONE Playing
 ===================== PLAYER 3 =====================
 PLAYER 3 Hand 0 START
-Hand 0 : 4 A ,Bet = 100 , Value = 15 , Hard-Value = 5
-Please choose from the following {hit, stand, split, double}: hit
-Hand 0 : 4 A 8 ,Bet = 100 , Value = 13 , Hard-Value = 13
-Please choose from the following {hit, stand, split, double}: hit
-Hand 0 : 4 A 8 5 ,Bet = 100 , Value = 18 , Hard-Value = 18
-Please choose from the following {hit, stand, split, double}: stand
+Hand 0 : A 9 ,Bet = 100 , Value = 20 , Hard-Value = 10
+Please choose from the following {hit, stand, split, double, surrender}: surrender
+Player 3 Surrender on hand 0
 PLAYER 3 Hand 0 END
 PLAYER 3 DONE Playing
 =================== ENTERED DEALER ROUND =====================================
 Player : -1 ,  Amount : 0 , has_split : false 
-Hand 0 : Q 2 ,Bet = 0 , Value = 12 , Hard-Value = 12
+Hand 0 : 10 5 ,Bet = 0 , Value = 15 , Hard-Value = 15
 ================== FINAL DEALER HAND:======================
-Hand 0 : Q 2 2 K ,Bet = 0 , Value = 24 , Hard-Value = 24
+Hand 0 : 10 5 6 ,Bet = 0 , Value = 21 , Hard-Value = 21
 ===================== PLAYER 0 =====================
-Player : 0 ,  Amount : 2900.0 , has_split : false 
-Hand 0 : 9 A 6 5 ,Bet = 100 , Value = 21 , Hard-Value = 21
+Player : 0 ,  Amount : 650.0 , has_split : true 
+Hand 0 : Q 4 5 ,Bet = 100 , Value = 19 , Hard-Value = 19
+Hand 1 : Q 3 5 ,Bet = 100 , Value = 18 , Hard-Value = 18
 ===================== PLAYER 1 =====================
-Player : 1 ,  Amount : 1700 , has_split : false 
-Hand 0 : 10 10 ,Bet = 100 , Value = 20 , Hard-Value = 20
+Player : 1 ,  Amount : 800 , has_split : false 
+Hand 0 : 3 J 3 9 ,Bet = 100 , Value = 25 , Hard-Value = 25
 ===================== PLAYER 2 =====================
-Player : 2 ,  Amount : 900 , has_split : false 
-Hand 0 : 4 4 8 J ,Bet = 100 , Value = 26 , Hard-Value = 26
+Player : 2 ,  Amount : 700 , has_split : true 
+Hand 0 : Q J ,Bet = 100 , Value = 20 , Hard-Value = 20
+Hand 1 : Q 6 3 ,Bet = 200 , Value = 19 , Hard-Value = 19
 ===================== PLAYER 3 =====================
-Player : 3 ,  Amount : 1600 , has_split : false 
-Hand 0 : 4 A 8 5 ,Bet = 100 , Value = 18 , Hard-Value = 18
+Player : 3 ,  Amount : 950.0 , has_split : false 
+Hand 0 : A 9 ,Bet = 100 , Value = 20 , Hard-Value = 10
 ================= DISTRIBUTING WINNINGS ==================
-Player 0 H0 21 Blackjack - Dealer 24 , Amount= 3150.0
-Player 1 H0 20 - Dealer 24 , Amount= 1900
-Player 2 H0 26 - Dealer 24 , Amount= 1000
-Player 3 H0 18 - Dealer 24 , Amount= 1800
+Player 0 H0 19 - Dealer 21 , Amount= 650.0
+Player 0 H1 18 - Dealer 21 , Amount= 650.0
+Player 1 H0 25 - Dealer 21 , Amount= 800
+Player 2 H0 20 - Dealer 21 , Amount= 700
+Player 2 H1 19 - Dealer 21 , Amount= 700
 
 
 
 #### THERE WE BEGIN ####
 
-*************** DEALER CARDS  [Q]  [__] *********************
-Hand 0 : 5 4 ,Bet = 0 , Value = 9 , Hard-Value = 9
-Player 0, enter bet amount between 1 & 3150.0 : ^CMaldiJack.rb:74:in `gets': Interrupt
-	from MaldiJack.rb:74:in `betting_round'
-	from MaldiJack.rb:69:in `each'
-	from MaldiJack.rb:69:in `betting_round'
-	from MaldiJack.rb:23:in `play_maldijack'
-	from MaldiJack.rb:241
-
+*************** DEALER CARDS  [7]  [__] *********************
+Hand 0 : Q A ,Bet = 0 , Value = 21 , Hard-Value = 11
+Player 0, enter bet amount between 1 & 650.0 : 
