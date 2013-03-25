@@ -1,5 +1,5 @@
 class Player
-  attr_accessor :hands, :amount , :is_playing , :has_split, :player_number
+  attr_accessor :hands, :amount , :is_playing , :has_split, :player_number , :has_surrendered
   # when player is initialized, we also initialize the first hand
   # for splitting, I will have to break up the first hand into the 2nd hand and make the main game loop play proper
   def initialize(amount, player_number)
@@ -9,6 +9,7 @@ class Player
     @hands= Array.new
     @hands[0] = Hand.new(0,Array.new)
     @has_split = false
+    @has_surrendered = false
   end
 
   def reset()
@@ -16,6 +17,7 @@ class Player
     @hands[0] = Hand.new(0,Array.new)
     @is_playing = true
     @has_split = false
+    @has_surrendered = false
   end
 
   def print_Player()
@@ -40,7 +42,8 @@ class Player
   def create_new_hand_for_split()
     if can_split()
       @hands[1] = Hand.new(@hands[0].bet, Array.new)  # create new hand
-      @amount = @amount - @hands[0].bet          # reduce the available amount
+      #@amount = @amount - @hands[0].bet          # reduce the available amount
+      modify_account(@hands[0].bet,-1)       # reduce the available amount
       @hands[1].cards.push(@hands[0].cards[0])      # push a card from 0 to 1
       @hands[0].cards.delete_at(0)                   # delete the card from hand 0
       @has_split = true                              # set split flag
@@ -54,11 +57,35 @@ class Player
 
   def modify_for_double(i)
     if can_double(i)                              # only if i can double currently will i double
-      @amount = @amount - @hands[i].bet           # reduce the available amount
+      #@amount = @amount - @hands[i].bet           # reduce the available amount
+      modify_account(@hands[i].bet,-1)            # reduce the available amount
       @hands[i].bet *= 2                           # double the bet
       @hands[i].is_playing = false                 # stand down
     end
   end # end modify for double
+
+  # return true only if the hand's length is 2 i.e. has taken no hits till now & also has not split, surrender is the first call
+  def can_surrender()
+    return (@hands[0].cards.length == 2 and @has_split  == false)
+  end # end can surrender
+
+  def has_surendered()
+    return (@has_surrendered == true)
+  end
+
+  # when surrendering, player gets half of his bet back
+  def surrender()
+    if can_surrender()
+      @hands[0].is_playing = false            # stop playing the hand
+      #@amount = @amount + @hands[0].bet / 2   # return half the bet money
+      modify_account(@hands[0].bet,0.5)       # return half the bet money
+      @has_surrendered = true                 # set surrendered flag
+    end
+  end # end can surrender
+
+  def modify_account(bet , mod_factor)
+    @amount += (bet * mod_factor)
+  end # end modify amount
 
 end # end class
 

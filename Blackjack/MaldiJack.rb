@@ -73,7 +73,8 @@ class Blackjack
         print "Player #{player.player_number}, enter bet amount between 1 & #{player.amount} : "
         player.hands[0].bet = gets.to_i # get a bet from player which he can afford
       end
-      player.amount = player.amount - player.hands[0].bet # reduce player's available amount by bet amount
+      #player.amount = player.amount - player.hands[0].bet # reduce player's available amount by bet amount
+      player.modify_account(player.hands[0].bet,-1)
       player.print_Player # print player
       puts ""
     end # end for each player
@@ -155,7 +156,7 @@ class Blackjack
         break
       end # end blackjack if
 
-      print "Please choose from the following {hit, stand, split, double}: "
+      print "Please choose from the following {hit, stand, split, double, surrender}: "
       decision = gets.chomp
 
       if decision == "hit"
@@ -182,7 +183,13 @@ class Blackjack
         else
           puts "Player #{p.player_number} Double call was denied on hand #{i}"
         end
-
+      elsif decision == "surrender" and p.player_number >=0 #dealer cant surrnder
+        if p.can_surrender()
+          p.surrender()
+          puts "Player #{p.player_number} Surrender on hand #{i}"
+        else
+          puts "Player #{p.player_number} Surrender call was denied on hand #{i}"
+        end
       end# end hit, stand, split, double if
 
       # If busted, can't play further
@@ -202,12 +209,14 @@ class Blackjack
 
     # For every player, distribute money for each Hand individually.
     @players.each do |player|
-      # do for hand 0
-      distribute_money_internal_2(dealer_total,player,0)
-      # if split is true, then do for hand 1
-      if player.has_split
-        distribute_money_internal_2(dealer_total,player,1)
-      end
+      unless player.has_surrendered()
+        # do for hand 0
+        distribute_money_internal_2(dealer_total,player,0)
+        # if split is true, then do for hand 1
+        if player.has_split
+          distribute_money_internal_2(dealer_total,player,1)
+        end # end check if player split
+      end # end unless
     end # end for each player
   end # end distribute money
 
@@ -222,13 +231,16 @@ class Blackjack
 
     # instead of modifiying amount directly, should use a function call to increment player amount by payoff factor
     if (hv == 21 and (dt > 21 or dt < 21) )
-      player.amount += (bet * 2.5)
+      #player.amount += (bet * 2.5)
+      player.modify_account(bet,2.5)
       puts "Player #{pn} H#{i} #{hv} Blackjack - Dealer #{dt} , Amount= #{player.amount}"
     elsif (hv < 21 and dt > 21) or (dt <= 21 and hv <= 21 and hv > dt)
-      player.amount += (bet * 2)
+      #player.amount += (bet * 2)
+      player.modify_account(bet,2)
       puts "Player #{pn} H#{i} #{hv} - Dealer #{dt} , Amount= #{player.amount}"
     elsif (dt > 21 and hv > 21) or ((hv == 21) and dt == 21 ) or (hv == dealer_total and dt <= 21 and hv <= 21)
-      player.amount += (bet * 1)
+      #player.amount += (bet * 1)
+      player.modify_account(bet,1)
       puts "Player #{pn} H#{i} #{hv} - Dealer #{dt} , Amount= #{player.amount}"
     else
       puts "Player #{pn} H#{i} #{hv} - Dealer #{dt} , Amount= #{player.amount}"
