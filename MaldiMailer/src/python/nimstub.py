@@ -112,7 +112,7 @@ PLAYER = {'me':query_player, 'random':random_player}
 
 def make_alphabeta_player(N):
     """ returns a player function that uses alpha_beta search to depth N """
-    return lambda game, state: alphabeta_search(state, game , d = N)
+    return lambda game, state: alphabeta_full_search(state, game )
 
 # add to the PLAYER dictionary player function named ab1,ab2,...ab20
 # that use alpha_beta search with depth cutoffs between 1 and 20

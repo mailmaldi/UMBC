@@ -10,10 +10,11 @@ public class DirectoryCreator
 {
 	public static void main(String[] args) throws IOException
 	{
+		String path = "C:\\Users\\Milind\\Downloads\\project2\\lawrence\\";
 		CSVReader reader;
 		try
 		{
-			reader = new CSVReader(new FileReader("C:\\Users\\Milind\\Downloads\\421roster.csv"));
+			reader = new CSVReader(new FileReader(path + "roster.csv"));
 		}
 		catch (FileNotFoundException e)
 		{
@@ -24,7 +25,7 @@ public class DirectoryCreator
 		String[] nextLine;
 		while ((nextLine = reader.readNext()) != null)
 		{
-			File file = new File("C:\\Users\\Milind\\Downloads\\project2\\" + nextLine[0]);
+			File file = new File(path + nextLine[0].trim());
 			file.mkdir();
 		}
 	}
