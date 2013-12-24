@@ -71,6 +71,58 @@ public class MergeSort
 
 	}
 
+	public static int[] Iterative(int[] array)
+	{
+		for (int i = 1; i <= array.length / 2 + 1; i *= 2)
+		{
+			for (int j = i; j < array.length; j += 2 * i)
+			{
+				merge(array, j - i, j, Math.min(j + i, array.length));
+			}
+		}
+
+		return array;
+	}
+
+	private static void merge(int[] array, int low, int middle, int high)
+	{
+		int[] helper = new int[array.length];
+
+		// Copy both parts into the helper array
+		for (int i = low; i <= high; i++)
+		{
+			helper[i] = array[i];
+		}
+
+		int i = low;
+		int j = middle + 1;
+		int k = low;
+		// Copy the smallest values from either the left or the right side back
+		// to the original array
+		while (i <= middle && j <= high)
+		{
+			if (helper[i] <= helper[j])
+			{
+				array[k] = helper[i];
+				i++;
+			}
+			else
+			{
+				array[k] = helper[j];
+				j++;
+			}
+			k++;
+		}
+		// Copy the rest of the left side of the array into the target array
+		while (i <= middle)
+		{
+			array[k] = helper[i];
+			k++;
+			i++;
+		}
+
+	}
+
 	public static void myMergeSort(int array[], int start, int end)
 	{
 		int low = start;

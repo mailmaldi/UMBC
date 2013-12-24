@@ -6,6 +6,24 @@ class Hand
     @cards = cards
   end
 
+  def get_card(card_index)
+    #TODO raise exception if OOB
+    return @cards[card_index]
+  end
+
+  def delete_card(card_index)
+    #TODO raise exception if OOB
+    @cards.delete_at(card_index)
+  end
+
+  def push_card(card)
+    @cards.push(card)
+  end
+
+  def cards_length()
+    return @cards.length
+  end
+
   # Gets the value of the hand that the player has
   def value()
     sum = 0

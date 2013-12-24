@@ -49,7 +49,6 @@ class Blackjack
     ## Initialize all the players with  $1000 , a player id
     for i in 0...n
       @players[i] = Player.new( 1000,  i)
-      #puts @players[i].to_s
     end
 
     @shoe.create_deck(decks)
@@ -61,10 +60,9 @@ class Blackjack
     puts "\n\n\n#### THERE WE BEGIN ####\n\n"
 
     # Dealer gets 2 cards, we could do dealing cards in round-robin, but thats just additional work, doesnt really matter, just an extra block of code
-    #@dealer.hands[0].cards = [get_card, get_card]
     @dealer.push_card(0,get_card)
     @dealer.push_card(0,get_card)
-    puts "*************** DEALER CARDS  [#{@dealer.hands[0].cards[0]}]  [__] *********************" # {@dealer.hands[0].cards[1]}
+    puts "*************** DEALER CARDS  [#{@dealer.hands[0].get_card(0)}]  [__] *********************" # {@dealer.hands[0].cards[1]}
 
     # get players bets & then give them 2 cards
     # TODO if player bets 0 or less, maybe exit them from the game? code is short, just puts "PLAYER exiting" and delete it from the @players array
@@ -72,13 +70,13 @@ class Blackjack
       #player.hands[0].cards = [get_card, get_card] # give player 2 cards
       player.push_card(0,get_card)
       player.push_card(0,get_card)
-      player.hands[0].print_hand(0)
-      while (player.hands[0].bet <= 0 or player.hands[0].bet > player.amount)
+      player.print_hand(0)
+      while (player.get_bet(0) <= 0 or player.get_bet(0) > player.amount)
         print "Player #{player.player_number}, enter bet amount between 1 & #{player.amount} : "
-        player.hands[0].bet = gets.to_i # get a bet from player which he can afford
+        player.set_bet(0,gets.to_i) # get a bet from player which he can afford
       end
       #player.amount = player.amount - player.hands[0].bet # reduce player's available amount by bet amount
-      player.modify_account(player.hands[0].bet,-1)
+      player.modify_account(player.get_bet(0),-1)
       player.print_Player # print player
       puts ""
     end # end for each player
@@ -100,7 +98,6 @@ class Blackjack
   end # end bookkeeping
 
   def playing_round()
-
     ## NOW play for each player and each of their hands
     @players.each do | p|
       puts "===================== PLAYER #{p.player_number} ====================="
@@ -124,16 +121,16 @@ class Blackjack
 
     @dealer.print_Player
     # Dealer will always hit until at least 17
-    while @dealer.hands[0].value() < 17
+    while @dealer.get_value(0) < 17
       #@dealer.hands[0].cards.push(get_card)
       @dealer.push_card(0,get_card)
     end
     #### NOTE: comment this block if dealer needs to stop automatically at 17 , i.e. auto-stand at 17.
-    if @dealer.hands[0].value() < 21
+    if @dealer.get_value(0) < 21
       play_internally(@dealer,0)
     end
     puts "================== FINAL DEALER HAND:======================"
-    @dealer.hands[0].print_hand(0)
+    @dealer.print_hand(0)
 
     @players.each do | p|
       puts "===================== PLAYER #{p.player_number} ====================="
@@ -147,14 +144,12 @@ class Blackjack
     p = player
     i = hand_index
 
-    while p.hands[i].is_playing
-
-      p.hands[i].print_hand(i) # print the current hand
+    while p.is_playing(i)
+      p.print_hand(i) # print the current hand
 
       #if blackjack, no need to play further, only a moron would hit more, they'd obviously stand.
-      if p.hands[i].blackjack()
-        p.hands[i].is_playing = false
-        #p.hands[i].print_hand(i)
+      if p.blackjack(i)
+        p.disable_playing(i)
         puts "***Blackjack!!! No need to play further!" # TODO maybe play for a hard blackjack, in which case just comment out this BLOCK! code will be shorter
         break
       end # end blackjack if
@@ -163,17 +158,14 @@ class Blackjack
       decision = gets.chomp
 
       if decision == "hit"
-        #p.hands[i].cards.push(get_card) # hit a new card
         p.push_card(i,get_card)
       elsif decision ==  "stand"
-        p.hands[i].is_playing = false  # just finish this hand
+        p.disable_playing(i)  # just finish this hand
       elsif decision == "split" and p.player_number >=0         # dealer cant split
         if i == 0  and p.can_split()                            # i==0 is redundant actually. p.can_split() just checks
           p.create_new_hand_for_split()                         # create new hands
-          #p.hands[0].cards.push(get_card)                       # offer one more card for Hand 0
-          #p.hands[1].cards.push(get_card)                       # offer one more card for Hand 1
-          p.push_card(0,get_card)
-          p.push_card(1,get_card)
+          p.push_card(0,get_card)                                 # offer one more card for Hand 0
+          p.push_card(1,get_card)                                 # offer one more card for Hand 1
           puts "Player #{p.player_number} Split  call was done on hand #{i}"
           p.print_Player                                        # print the players new set of Hands
         else
@@ -183,8 +175,7 @@ class Blackjack
         ## Player can double his hand after splitting so not putting that condition
         if p.can_double(i)                              # check if its ok to double, note that a split hand can indeed be doubled
           p.modify_for_double(i)                        # modify bet for doubling
-          #p.hands[i].cards.push(get_card)                # take one more card & stand down
-          p.push_card(i,get_card)
+          p.push_card(i,get_card)                       # take one more card & stand down
           puts "Player #{p.player_number} has called Double on his hand #{i}"
           p.print_Player
         else
@@ -200,10 +191,10 @@ class Blackjack
       end# end hit, stand, split, double if
 
       # If busted, can't play further
-      if p.hands[i].value() > 21
-        p.hands[i].print_hand(i)
+      if p.get_value(i) > 21
+        p.print_hand(i)
         puts "***BUST!!! Can't Play Further!"
-        p.hands[i].is_playing = false
+        p.disable_playing(i)
       end
 
     end # end while hand is being played out
@@ -232,8 +223,8 @@ class Blackjack
   def distribute_money_internal_2(dealer_total, player , hand_index)
     i = hand_index
     dt = dealer_total
-    hv = player.hands[i].value
-    bet = player.hands[i].bet
+    hv = player.get_value(i)
+    bet = player.get_bet(i)
     pn = player.player_number
 
     # instead of modifiying amount directly, should use a function call to increment player amount by payoff factor

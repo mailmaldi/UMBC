@@ -200,6 +200,8 @@ public class QuickSortNaive
 	 */
 	public static void main(String[] args)
 	{
+		printGCStatus();
+
 		List<Integer> inputList = new LinkedList<Integer>();
 		inputList.addAll(Arrays.asList(1, 3, 2, 4, 3, 5, 4, 5, 6, 7, 8, 9, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1));
 		Collections.shuffle(inputList);
@@ -267,5 +269,17 @@ public class QuickSortNaive
 			System.out.print(arr[i] + " ");
 		System.out.println();
 		System.out.println("sum=" + sumArray(arr));
+	}
+
+	public static void printGCStatus()
+	{
+		long freeMemory = Runtime.getRuntime().freeMemory(); 
+		long totalMemory = Runtime.getRuntime().totalMemory(); 
+		long maxMemory = Runtime.getRuntime().maxMemory(); 
+
+		System.out.println("JVM freeMemory: " + freeMemory);
+		System.out.println("JVM totalMemory also equals to initial heap size of JVM : " + totalMemory);
+		System.out.println("JVM maxMemory also equals to maximum heap size of JVM: " + maxMemory);
+
 	}
 }
