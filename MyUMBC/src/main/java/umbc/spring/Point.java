@@ -1,4 +1,4 @@
-package main.java.spring;
+package umbc.spring;
 
 public class Point
 {

@@ -1,4 +1,4 @@
-package main.java.lucene;
+package umbc.lucene;
 
 import java.io.File;
 import java.io.FileInputStream;

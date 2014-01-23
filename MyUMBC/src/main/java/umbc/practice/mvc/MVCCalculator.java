@@ -1,4 +1,4 @@
-package main.java.umbc.practice.mvc;
+package umbc.practice.mvc;
 
 public class MVCCalculator
 {

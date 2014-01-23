@@ -1,4 +1,4 @@
-package main.java.umbc.practice.junit;
+package umbc.practice.junit;
 
 import org.junit.*;
 import java.util.Date;

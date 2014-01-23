@@ -1,4 +1,4 @@
-package main.java.umbc.practice;
+package umbc.practice;
 
 public class MaximumSubarray
 {

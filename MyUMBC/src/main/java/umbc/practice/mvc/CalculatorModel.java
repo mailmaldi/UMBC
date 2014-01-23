@@ -1,4 +1,4 @@
-package main.java.umbc.practice.mvc;
+package umbc.practice.mvc;
 
 //The Model performs all the calculations needed
 //and that is it. It doesn't know the View 

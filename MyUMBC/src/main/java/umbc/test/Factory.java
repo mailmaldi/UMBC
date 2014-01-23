@@ -1,4 +1,4 @@
-package main.java.test;
+package umbc.test;
 
 //Read more: http://javarevisited.blogspot.com/2011/12/factory-design-pattern-java-example.html
 

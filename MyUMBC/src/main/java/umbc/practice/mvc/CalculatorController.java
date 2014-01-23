@@ -1,4 +1,4 @@
-package main.java.umbc.practice.mvc;
+package umbc.practice.mvc;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;

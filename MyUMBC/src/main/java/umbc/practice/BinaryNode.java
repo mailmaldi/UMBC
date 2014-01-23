@@ -1,4 +1,4 @@
-package main.java.umbc.practice;
+package umbc.practice;
 
 // Basic node stored in unbalanced binary search trees
 // Note that this class is not accessible outside

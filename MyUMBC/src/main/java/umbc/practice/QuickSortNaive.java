@@ -1,4 +1,4 @@
-package main.java.umbc.practice;
+package umbc.practice;
 
 import java.util.Arrays;
 import java.util.Collections;

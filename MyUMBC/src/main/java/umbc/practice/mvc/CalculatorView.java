@@ -1,4 +1,4 @@
-package main.java.umbc.practice.mvc;
+package umbc.practice.mvc;
 
 //This is the View
 //Its only job is to display what the user sees

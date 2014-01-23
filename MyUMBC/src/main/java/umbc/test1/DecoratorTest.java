@@ -1,4 +1,4 @@
-package main.java.test1;
+package umbc.test1;
 
 //Read more: http://javarevisited.blogspot.com/2011/11/decorator-design-pattern-java-example.html#ixzz2PFovNzvm
 
