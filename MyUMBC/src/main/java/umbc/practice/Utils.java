@@ -52,4 +52,33 @@ public class Utils
         System.out.println();
     }
 
+    public static void printCharArray(char[] array)
+    {
+        for (int i = 0; i < array.length; i++)
+            System.out.print(array[i] + " ");
+        System.out.println();
+    }
+
+    public static <T> void printCharArray(T[] array)
+    {
+        for (int i = 0; i < array.length; i++)
+            System.out.print(array[i] + " ");
+        System.out.println();
+    }
+
+    public static Character[] toCharacterArray(String s)
+    {
+        if (s == null)
+        {
+            return null;
+        }
+        Character[] array = new Character[s.length()];
+        for (int i = 0; i < s.length(); i++)
+        {
+            array[i] = new Character(s.charAt(i));
+        }
+
+        return array;
+    }
+
 }

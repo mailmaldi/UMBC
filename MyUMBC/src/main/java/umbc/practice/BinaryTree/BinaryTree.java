@@ -2,6 +2,8 @@ package umbc.practice.BinaryTree;
 
 import java.util.Stack;
 
+import umbc.practice.MutableInt;
+
 public class BinaryTree
 {
 
@@ -155,6 +157,7 @@ public class BinaryTree
         }
         System.out.println();
     }
+
     /*
      * End of Iterative Traversals
      */
@@ -163,4 +166,122 @@ public class BinaryTree
     // use just pre-order, pre+in , level based approach
 
     // implement compare two trees are same or not, to test
+
+    /*
+     * Check if the tree is a BST
+     */
+
+    public boolean isBSTIterative()
+    {
+        Node node = this.root;
+        Stack<Node> stack = new Stack<Node>();
+
+        int prev = Integer.MIN_VALUE;
+
+        while (!stack.isEmpty() || node != null)
+        {
+            if (node != null)
+            {
+                stack.push(node);
+                node = node.left;
+            }
+            else
+            {
+                node = stack.pop();
+                // inorder
+                if (node.data < prev)
+                    return false;
+                else
+                    prev = node.data;
+                node = node.right;
+            }
+        }
+        return true;
+    }
+
+    /*
+     * this is probably not correct
+     */
+    public boolean isBSTrecursive()
+    {
+        MutableInt prev = new MutableInt(Integer.MIN_VALUE);
+
+        return isBSTRecursive(this.root, prev);
+    }
+
+    private boolean isBSTRecursive(Node node, MutableInt prev)
+    {
+        if (node == null)
+            return true;
+
+        boolean left = isBSTRecursive(node.left, prev);
+        boolean check;
+        if (node.data < prev.value)
+        {
+            check = false;
+        }
+        else
+        {
+            prev.value = node.data;
+            check = true;
+        }
+        // This implementation is probably not very correct
+
+        boolean right = check ? isBSTRecursive(node.right, prev) : false;
+
+        return left && check && right;
+    }
+
+    public boolean isBSTrecursive2()
+    {
+        MutableInt prev = new MutableInt(Integer.MIN_VALUE);
+
+        return isBSTRecursive2(this.root, prev);
+    }
+
+    private boolean isBSTRecursive2(Node node, MutableInt prev)
+    {
+        if (node == null)
+            return true;
+
+        if (isBSTRecursive(node.left, prev))
+        {
+            if (node.data < prev.value)
+            {
+                return false;
+            }
+            else
+            {
+                prev.value = node.data;
+                return isBSTRecursive2(node.right, prev);
+            }
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    public boolean isBSTRecursive3()
+    {
+        return isBSTRecursive3(this.root, Integer.MIN_VALUE, Integer.MAX_VALUE);
+    }
+
+    private boolean isBSTRecursive3(Node root, int minValue, int maxValue)
+    {
+        if (root == null)
+            return true;
+
+        if (root.data > minValue && root.data < maxValue)
+        {
+            return isBSTRecursive3(root.left, minValue, root.data)
+                    && isBSTRecursive3(root, root.data, maxValue);
+        }
+        else
+            return false;
+    }
+
+    /*
+     * End of BST
+     */
 }

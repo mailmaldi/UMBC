@@ -1,4 +1,4 @@
-package umbc.practice.BST;
+package umbc.practice.BinaryTree.BST;
 
 public class SearchPractice
 {

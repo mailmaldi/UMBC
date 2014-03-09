@@ -1,4 +1,4 @@
-package umbc.practice.BST;
+package umbc.practice.BinaryTree.BST;
 
 // Basic node stored in unbalanced binary search trees
 // Note that this class is not accessible outside
