@@ -4,29 +4,33 @@ public class TrinaryTree
 {
     TNode root;
 
+    /**
+     * Constructors, make empty, initialize with some key
+     */
     public TrinaryTree()
     {
         this(null);
     }
 
-    public TrinaryTree(TNode root)
+    private TrinaryTree(TNode root)
     {
         this.root = root;
     }
 
-    public TrinaryTree(int data)
+    public TrinaryTree(int key)
     {
-        this(new TNode(data));
+        this(new TNode(key));
     }
 
     /**
+     * Recursive version of insert
      * 
-     * @param data
+     * @param key
      *            to be inserted
      */
-    public void insert(int data)
+    public void insert(int key)
     {
-        TNode node = new TNode(data);
+        TNode node = new TNode(key);
         if (root == null)
             root = node;
         else
@@ -36,7 +40,7 @@ public class TrinaryTree
     private void insert(TNode root, TNode node)
     {
         // trinary, so check for middle here
-        if (root.data == node.data)
+        if (root.key == node.key)
         {
             if (root.middle == null)
                 root.middle = node;
@@ -44,7 +48,7 @@ public class TrinaryTree
                 insert(root.middle, node);
         }
         // insert in left subtree
-        else if (root.data > node.data)
+        else if (root.key > node.key)
         {
             if (root.left == null)
                 root.left = node;
@@ -61,9 +65,38 @@ public class TrinaryTree
         }
     }
 
-    public void insertIterative(int data)
+    /**
+     * another recursive implementation
+     * 
+     * @param key
+     */
+    public void insertRecursive(int key)
     {
-        TNode node = new TNode(data);
+        this.root = insertRecursive(key, root);
+    }
+
+    private TNode insertRecursive(int key, TNode current)
+    {
+        if (current == null)
+            current = new TNode(key);
+        else if (key == current.key)
+            current.middle = insertRecursive(key, current.middle);
+        else if (key < current.key)
+            current.left = insertRecursive(key, current.left);
+        else
+            current.right = insertRecursive(key, current.right);
+
+        return current;
+    }
+
+    /**
+     * iterative version of insert
+     * 
+     * @param key
+     */
+    public void insertIterative(int key)
+    {
+        TNode node = new TNode(key);
         if (root == null)
         {
             root = node;
@@ -73,7 +106,7 @@ public class TrinaryTree
 
         while (current != null)
         {
-            if (data == current.data)
+            if (key == current.key)
             {
                 if (current.middle == null)
                 {
@@ -82,7 +115,7 @@ public class TrinaryTree
                 }
                 current = current.middle;
             }
-            else if (data < current.data)
+            else if (key < current.key)
             {
                 if (current.left == null)
                 {
@@ -103,6 +136,20 @@ public class TrinaryTree
         }
     }
 
+    /**
+     * Deleting is a complicated affair. This is assuming deleting a key only
+     * removes 1 instance from tree, and not all its middle instances. The main
+     * logic of deleting in a tree remains same. If key to be deleted has non
+     * null middle, then simply replace itself by one of the middle ones. For
+     * leaf, just remove, For 1 child, replace by child, for 2 child replace by
+     * largest in left subtree or smallest in right subtree, i.e. in order
+     * predecessor or successor
+     */
+
+    /**
+     * printing tree in order, because middle cant have left & right, this is
+     * uncomplicated
+     */
     public void inOrder()
     {
         if (root == null)
@@ -119,46 +166,46 @@ public class TrinaryTree
         {
             inOrderRecursive(current.left);
             inOrderRecursive(current.middle);
-            System.out.print(current.data + " ");
+            System.out.print(current.key + " ");
             inOrderRecursive(current.right);
         }
     }
 
     /**
-     * 
+     * main
      */
     public static void main(String[] args)
     {
         TrinaryTree tree = new TrinaryTree();
-        tree.insert(5);
-        tree.insert(5);
-        tree.insert(2);
-        tree.insert(8);
-        tree.insert(2);
-        tree.insert(8);
-        tree.insert(3);
-        tree.insert(1);
-        tree.insert(7);
-        tree.insert(9);
+        tree.insertRecursive(5);
+        tree.insertRecursive(5);
+        tree.insertRecursive(2);
+        tree.insertRecursive(8);
+        tree.insertRecursive(2);
+        tree.insertRecursive(8);
+        tree.insertRecursive(3);
+        tree.insertRecursive(1);
+        tree.insertRecursive(7);
+        tree.insertRecursive(9);
         tree.inOrder();
     }
 }
 
 class TNode
 {
-    int   data;
+    int   key;
     TNode left;
     TNode right;
     TNode middle;
 
-    public TNode(int data)
+    public TNode(int key)
     {
-        this(data, null, null, null);
+        this(key, null, null, null);
     }
 
-    public TNode(int data, TNode left, TNode right, TNode middle)
+    public TNode(int key, TNode left, TNode right, TNode middle)
     {
-        this.data = data;
+        this.key = key;
         this.left = left;
         this.right = right;
         this.middle = middle;
