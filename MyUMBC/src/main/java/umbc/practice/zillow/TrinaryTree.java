@@ -145,6 +145,60 @@ public class TrinaryTree
      * largest in left subtree or smallest in right subtree, i.e. in order
      * predecessor or successor
      */
+    public void delete(int key)
+    {
+        this.root = delete(key, this.root);
+    }
+
+    public TNode delete(int key, TNode current)
+    {
+        if (current == null)
+        {
+            // couldnt find key in the tree,
+            // either raise exception or do nothing
+            return current;
+        }
+        // delete in my left subtree
+        else if (key < current.key)
+            current.left = delete(key, current.left);
+        // delete in my right subtree
+        else if (key > current.key)
+            current.right = delete(key, current.right);
+
+        // now we've found what we were looking for case key == current.key
+
+        // if the deleting key has middle, then simply remove one of them
+        else if (current.middle != null)
+        {
+            current.middle = delete(key, current.middle);
+        }
+
+        // now we have to delete an item that has both left & right children
+        else if (current.left != null && current.right != null)
+        {
+            TNode temp = getMiniMumFromNode(current.right);
+            current.key = temp.key;
+            current.middle = temp.middle;
+            temp.middle = null;
+            current.right = delete(current.key, current.right);
+        }
+        // if one of or both are null
+        // if middle exists, then replace itself with middle
+        else
+        {
+            current = (current.left != null) ? current.left : current.right;
+        }
+        return current;
+    }
+
+    public TNode getMiniMumFromNode(TNode current)
+    {
+        if (current == null)
+            return null;
+        while (current.left != null)
+            current = current.left;
+        return current;
+    }
 
     /**
      * printing tree in order, because middle cant have left & right, this is
@@ -177,17 +231,14 @@ public class TrinaryTree
     public static void main(String[] args)
     {
         TrinaryTree tree = new TrinaryTree();
-        tree.insertRecursive(5);
-        tree.insertRecursive(5);
-        tree.insertRecursive(2);
-        tree.insertRecursive(8);
-        tree.insertRecursive(2);
-        tree.insertRecursive(8);
-        tree.insertRecursive(3);
-        tree.insertRecursive(1);
-        tree.insertRecursive(7);
-        tree.insertRecursive(9);
+        int[] data = new int[]
+        { 5, 5, 2, 8, 2, 8, 3, 1, 7, 9 };
+        for (int i : data)
+        {
+            tree.insertRecursive(data[i]);
+        }
         tree.inOrder();
+
     }
 }
 

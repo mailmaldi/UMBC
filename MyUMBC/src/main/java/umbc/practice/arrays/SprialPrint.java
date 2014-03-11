@@ -12,19 +12,19 @@ public class SprialPrint
 
         for (int i = 0; i < spirals - 1; i++)
         {
-            int elements_in_spiral = (array.length - 1 - 2 * i);
-            for (int j = i; j < elements_in_spiral + i; j++)
+            int elements_in_spiral = (array.length - 1 - i);
+            for (int j = i; j < elements_in_spiral; j++)
                 System.out.print(array[i][j] + " ");
 
-            for (int j = i; j < elements_in_spiral + i; j++)
+            for (int j = i; j < elements_in_spiral; j++)
                 System.out.print(array[j][(array.length - 1 - i)] + " ");
 
-            for (int j = i; j < elements_in_spiral + i; j++)
+            for (int j = i; j < elements_in_spiral; j++)
                 System.out
                         .print(array[(array.length - 1 - i)][(array.length - 1 - j)]
                                 + " ");
 
-            for (int j = i; j < elements_in_spiral + i; j++)
+            for (int j = i; j < elements_in_spiral; j++)
                 System.out.print(array[(array.length - 1 - j)][i] + " ");
         }
 
