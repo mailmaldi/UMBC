@@ -235,9 +235,28 @@ public class TrinaryTree
         { 5, 5, 2, 8, 2, 8, 3, 1, 7, 9 };
         for (int i : data)
         {
-            tree.insertRecursive(data[i]);
+            tree.insert(i);
         }
         tree.inOrder();
+
+        TrinaryTree tree2 = new TrinaryTree();
+        int[] data2 = new int[]
+        { 5, 2, 1, 3, 8, 7, 9, 5, 5, 2, 2, 8, 3, 4, 4 ,7};
+        for (int i : data2)
+        {
+            tree2.insert(i);
+        }
+        tree2.inOrder();
+        tree2.delete(2);
+        tree2.delete(2);
+        tree2.delete(2);
+        tree2.inOrder();
+        tree2.delete(4);
+        tree2.inOrder();
+        tree2.delete(5);
+        tree2.delete(5);
+        tree2.delete(5);
+        tree2.inOrder();
 
     }
 }
