@@ -155,7 +155,7 @@ public class TrinaryTree
         if (current == null)
         {
             // couldnt find key in the tree,
-            // either raise exception or do nothing
+            // either raise exception or do nothing, i do nothing
             return current;
         }
         // delete in my left subtree
@@ -168,6 +168,8 @@ public class TrinaryTree
         // now we've found what we were looking for case key == current.key
 
         // if the deleting key has middle, then simply remove one of them
+        // if we had a logic based on deleting one of values,this would be
+        // different
         else if (current.middle != null)
         {
             current.middle = delete(key, current.middle);
@@ -176,16 +178,22 @@ public class TrinaryTree
         // now we have to delete an item that has both left & right children
         else if (current.left != null && current.right != null)
         {
+            // find the minimum node in the right subtree (or max from left)
             TNode temp = getMiniMumFromNode(current.right);
+            // update my current node's key from the temp
             current.key = temp.key;
+            // now play with the middle pointers
+            // current already has NO middle
             current.middle = temp.middle;
             temp.middle = null;
+            // now delete the min node's key from right subtree
+            // we already know that the min node now has no middle.
             current.right = delete(current.key, current.right);
         }
-        // if one of or both are null
-        // if middle exists, then replace itself with middle
+        // if one of or both child are null, then replace itself with that child
         else
         {
+            // this also takes care of the case when one middle is to be deleted
             current = (current.left != null) ? current.left : current.right;
         }
         return current;
@@ -241,7 +249,7 @@ public class TrinaryTree
 
         TrinaryTree tree2 = new TrinaryTree();
         int[] data2 = new int[]
-        { 5, 2, 1, 3, 8, 7, 9, 5, 5, 2, 2, 8, 3, 4, 4 ,7};
+        { 5, 2, 1, 3, 8, 7, 9, 5, 5, 2, 2, 8, 3, 4, 4, 7 };
         for (int i : data2)
         {
             tree2.insert(i);
