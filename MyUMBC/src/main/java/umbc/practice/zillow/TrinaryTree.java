@@ -1,5 +1,27 @@
 package umbc.practice.zillow;
 
+
+class TNode
+{
+    int   key;
+    TNode left;
+    TNode right;
+    TNode middle;
+
+    public TNode(int key)
+    {
+        this(key, null, null, null);
+    }
+
+    public TNode(int key, TNode left, TNode right, TNode middle)
+    {
+        this.key = key;
+        this.left = left;
+        this.right = right;
+        this.middle = middle;
+    }
+}
+
 public class TrinaryTree
 {
     TNode root;
@@ -139,11 +161,11 @@ public class TrinaryTree
     /**
      * Deleting is a complicated affair. This is assuming deleting a key only
      * removes 1 instance from tree, and not all its middle instances. The main
-     * logic of deleting in a tree remains same. If key to be deleted has non
-     * null middle, then simply replace itself by one of the middle ones. For
-     * leaf, just remove, For 1 child, replace by child, for 2 child replace by
-     * largest in left subtree or smallest in right subtree, i.e. in order
-     * predecessor or successor
+     * logic of deleting in a tree remains same as in a regular BST. If key to
+     * be deleted has non null middle, then simply replace itself by one of the
+     * middle ones. For leaf, just remove, For 1 child, replace by child, for 2
+     * child replace by largest in left subtree or smallest in right subtree,
+     * i.e. in order predecessor or successor
      */
     public void delete(int key)
     {
@@ -267,25 +289,5 @@ public class TrinaryTree
         tree2.inOrder();
 
     }
-}
 
-class TNode
-{
-    int   key;
-    TNode left;
-    TNode right;
-    TNode middle;
-
-    public TNode(int key)
-    {
-        this(key, null, null, null);
-    }
-
-    public TNode(int key, TNode left, TNode right, TNode middle)
-    {
-        this.key = key;
-        this.left = left;
-        this.right = right;
-        this.middle = middle;
-    }
 }
