@@ -81,15 +81,18 @@ public class ConfigParser
                 break;
 
             case "main memory":
-                ConfigManager.instance.MemoryLatency = Integer.parseInt(s[1].trim());
+                ConfigManager.instance.MemoryLatency = Integer.parseInt(s[1]
+                        .trim());
                 break;
 
             case "i-cache":
-                ConfigManager.instance.ICacheLatency = Integer.parseInt(s[1].trim());
+                ConfigManager.instance.ICacheLatency = Integer.parseInt(s[1]
+                        .trim());
                 break;
 
             case "d-cache":
-                ConfigManager.instance.DCacheLatency = Integer.parseInt(s[1].trim());
+                ConfigManager.instance.DCacheLatency = Integer.parseInt(s[1]
+                        .trim());
                 break;
         }
 

@@ -5,7 +5,7 @@ import java.io.File;
 import java.io.FileReader;
 
 // NOTE I break out of parsing after encountering the first empty line or file finishes
-public class MemoryFileParser
+public class DataMemoryFileParser
 {
     public static void parseMemoryFile(String fileName) throws Exception
     {
@@ -26,8 +26,8 @@ public class MemoryFileParser
                     break; // break on the first empty line
                 int value = Integer.parseInt(line, 2);
 
-                MemoryManager.instace
-                        .setValueToAddress(initialAddress++, value);
+                DataMemoryManager.instance.setValueToAddress(initialAddress++,
+                        value);
 
                 count++;
             }

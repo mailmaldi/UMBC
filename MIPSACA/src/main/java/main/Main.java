@@ -1,13 +1,13 @@
 package main;
 
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.Map;
 
-import config.ConfigManager;
-import config.ConfigParser;
-import memory.MemoryFileParser;
-import memory.MemoryManager;
+import memory.DataMemoryFileParser;
+import memory.DataMemoryManager;
 import registers.RegisterFileParser;
 import registers.RegisterManager;
+import config.ConfigManager;
+import config.ConfigParser;
 
 public class Main
 {
@@ -23,12 +23,17 @@ public class Main
         RegisterManager.instance.setRegisterBusy("R0");
         RegisterManager.instance.dumpAllRegisters();
 
-        MemoryFileParser.parseMemoryFile(args[1]);
-        MemoryManager.instace.dumpAllMemory();
+        DataMemoryFileParser.parseMemoryFile(args[1]);
+        DataMemoryManager.instance.dumpAllMemory();
 
         ConfigParser.parseConfigFile(args[3]);
 
         ConfigManager.instance.dumpConfiguration();
+
+        Map<Integer, Integer> map = DataMemoryManager.instance
+                .getMemoryBlockOfAddress(289, 16);
+        for (Integer key : map.keySet())
+            System.out.println(key + " " + map.get(key));
 
     }
 }

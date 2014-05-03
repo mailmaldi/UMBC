@@ -1,5 +1,9 @@
 package umbc.practice.arrays;
 
+/*
+ * http://www.careercup.com/question?id=5766595435560960
+ */
+
 public class FindWordInMatrix
 {
     public static void main(String[] args)
@@ -10,7 +14,7 @@ public class FindWordInMatrix
         { 'f', 'g', 'h', 'i', 'j' },
         { 'a', 'b', 'c', 'd', 'e' },
         { 'f', 'g', 'h', 'i', 'j' } };
-        String word1 = "abc", word2 = "gci", word3 = "je", word4 = "gcia";
+        String word1 = "abc", word2 = "gci", word3 = "je", word4 = "gcia", word5 = "h";
 
         findword(arr, word1);
         findword(arr, word2);
@@ -19,6 +23,7 @@ public class FindWordInMatrix
 
     }
 
+    // this is a straightforward unoptimized solution
     public static void findword(int[][] arr, String word)
     {
         int M = arr.length;
@@ -47,6 +52,10 @@ public class FindWordInMatrix
     {
         int origx = i;
         int origy = j;
+        int length = word.length();
+        if (!valid(M, N, i + (length - 1) * di, j + (length - 1) * dj))
+            return;
+        // 1 optimization check if valid(M,N,i+(length-1)*di,j+(length-1)*dj)
         for (int l = 0; l < word.length(); l++)
         {
             if (!valid(M, N, i, j) || (word.charAt(l) != arr[i][j]))
