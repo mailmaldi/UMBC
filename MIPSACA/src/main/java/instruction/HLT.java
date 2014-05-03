@@ -16,14 +16,14 @@ public class HLT extends Instruction
     }
 
     @Override
-    public List<String> getSourceRegister()
+    public List<SourceObject> getSourceRegister()
     {
         // TODO Auto-generated method stub
         return null;
     }
 
     @Override
-    public String getDestinationRegister()
+    public WriteBackObject getDestinationRegister()
     {
         // TODO Auto-generated method stub
         return null;
@@ -40,20 +40,6 @@ public class HLT extends Instruction
     {
         // Do nothing here
 
-    }
-
-    @Override
-    public void decodeInstruction()
-    {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public WriteBackObject getWriteBackObject()
-    {
-        // TODO Auto-generated method stub
-        return null;
     }
 
 }

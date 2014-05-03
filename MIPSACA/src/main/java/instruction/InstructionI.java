@@ -4,9 +4,15 @@ import java.util.List;
 
 public interface InstructionI
 {
-    public List<String> getSourceRegister();
+    /*
+     * need list to check if not busy also need to set values in ID
+     */
+    public List<SourceObject> getSourceRegister();
 
-    public String getDestinationRegister();
+    /*
+     * Need to check for WAW hazards, WB & set dest busy
+     */
+    public WriteBackObject getDestinationRegister();
 
     /*
      * All execute does is locally do arithmetic operations or calculate target
@@ -15,16 +21,7 @@ public interface InstructionI
     public void executeInstruction();
 
     /*
-     * 
+     * For Decode Instruction we need the following
      */
-    public void decodeInstruction();
 
-    /*
-     * For WB, Instruction needs to return dest register label & its value
-     */
-    /**
-     * 
-     * @return null if instruction doesnt WB, an object else.
-     */
-    public WriteBackObject getWriteBackObject();
 }

@@ -5,79 +5,57 @@ import java.util.List;
 
 public class SUBD extends Instruction
 {
-
-    String sourceLabel1;
-    String sourceLabel2;
-    String destinationLabel;
-
-    long   source1;
-    long   source2;
-    long   destination;
+    SourceObject    src1, src2;
+    WriteBackObject dest;
 
     public SUBD(String sourceLabel1, String sourceLabel2,
             String destinationLabel)
     {
         super();
-        this.sourceLabel1 = sourceLabel1;
-        this.sourceLabel2 = sourceLabel2;
-        this.destinationLabel = destinationLabel;
+        src1 = new SourceObject(sourceLabel1, 0);
+        src2 = new SourceObject(sourceLabel2, 0);
+        dest = new WriteBackObject(destinationLabel, 0);
     }
 
     public SUBD(SUBD obj)
     {
         super(obj);
         setPrintableInstruction(obj.printableInstruction);
-        sourceLabel1 = obj.sourceLabel1;
-        sourceLabel2 = obj.sourceLabel2;
-        destinationLabel = obj.destinationLabel;
-        source1 = obj.source1;
-        source2 = obj.source2;
-        destination = obj.destination;
+
+        src1 = new SourceObject(obj.src1);
+        src2 = new SourceObject(obj.src2);
+        dest = new WriteBackObject(obj.dest);
+
     }
 
     @Override
-    public List<String> getSourceRegister()
+    public List<SourceObject> getSourceRegister()
     {
-        List<String> sourceRegisterList = new ArrayList<String>();
+        List<SourceObject> sourceRegisterList = new ArrayList<SourceObject>();
 
-        sourceRegisterList.add(this.sourceLabel1);
-        sourceRegisterList.add(this.sourceLabel2);
+        sourceRegisterList.add(this.src1);
+        sourceRegisterList.add(this.src2);
 
         return sourceRegisterList;
     }
 
     @Override
-    public String getDestinationRegister()
+    public WriteBackObject getDestinationRegister()
     {
-
-        return destinationLabel;
+        return dest;
     }
 
     @Override
     public String toString()
     {
-        return "SUBD " + destinationLabel + " " + sourceLabel1 + " "
-                + sourceLabel2;
+        return "SUBD " + dest.getDestinationLabel() + ", "
+                + src1.getSourceLabel() + ", " + src2.getSourceLabel();
     }
 
     @Override
     public void executeInstruction()
     {
-
-        destination = source1 - source2;
-
+        dest.setDestination(src1.getSource() - src2.getSource());
     }
 
-    @Override
-    public void decodeInstruction()
-    {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public WriteBackObject getWriteBackObject()
-    {
-        return new WriteBackObject(destinationLabel, destination);
-    }
 }

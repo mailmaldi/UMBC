@@ -21,13 +21,18 @@ public class J extends Instruction
     }
 
     @Override
-    public List<String> getSourceRegister()
+    public List<SourceObject> getSourceRegister()
     {
         return null;
     }
 
     @Override
-    public String getDestinationRegister()
+    public WriteBackObject getDestinationRegister()
+    {
+        return null;
+    }
+
+    public String getDestinationLabel()
     {
         return destinationLabel;
     }
@@ -44,19 +49,4 @@ public class J extends Instruction
         // Do nothing here
 
     }
-
-    @Override
-    public void decodeInstruction()
-    {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public WriteBackObject getWriteBackObject()
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
 }

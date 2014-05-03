@@ -5,20 +5,15 @@ import java.util.List;
 
 public class BNE extends Instruction
 {
+    SourceObject src1, src2;
 
-    String leftLabel;
-    String rightLabel;
+    String       destinationLabel;
 
-    long   left;
-    long   right;
-
-    String destinationLabel;
-
-    public BNE(String leftLabel, String rightLabel, String destinationLabel)
+    public BNE(String sourceLabel1, String sourceLabel2, String destinationLabel)
     {
         super();
-        this.leftLabel = leftLabel;
-        this.rightLabel = rightLabel;
+        src1 = new SourceObject(sourceLabel1, 0);
+        src2 = new SourceObject(sourceLabel2, 0);
         this.destinationLabel = destinationLabel;
     }
 
@@ -26,28 +21,25 @@ public class BNE extends Instruction
     {
         super(obj);
         setPrintableInstruction(obj.printableInstruction);
-        leftLabel = obj.leftLabel;
-        rightLabel = obj.rightLabel;
-        left = obj.left;
-        right = obj.right;
+        src1 = new SourceObject(obj.src1);
+        src2 = new SourceObject(obj.src2);
         destinationLabel = obj.destinationLabel;
     }
 
     @Override
-    public List<String> getSourceRegister()
+    public List<SourceObject> getSourceRegister()
     {
-        List<String> sourceRegisterList = new ArrayList<String>();
+        List<SourceObject> sourceRegisterList = new ArrayList<SourceObject>();
 
-        sourceRegisterList.add(this.leftLabel);
-        sourceRegisterList.add(this.rightLabel);
+        sourceRegisterList.add(src1);
+        sourceRegisterList.add(src2);
 
         return sourceRegisterList;
     }
 
     @Override
-    public String getDestinationRegister()
+    public WriteBackObject getDestinationRegister()
     {
-
         return null;
     }
 
@@ -59,8 +51,8 @@ public class BNE extends Instruction
     @Override
     public String toString()
     {
-        return "BNE " + " " + leftLabel + " " + rightLabel + " "
-                + destinationLabel;
+        return "BNE " + " " + src1.getSourceLabel() + ", "
+                + src2.getSourceLabel() + ", " + destinationLabel;
     }
 
     @Override
@@ -68,20 +60,6 @@ public class BNE extends Instruction
     {
         // Do nothing here
 
-    }
-
-    @Override
-    public void decodeInstruction()
-    {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public WriteBackObject getWriteBackObject()
-    {
-        // TODO Auto-generated method stub
-        return null;
     }
 
 }

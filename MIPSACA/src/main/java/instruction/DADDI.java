@@ -5,19 +5,15 @@ import java.util.List;
 
 public class DADDI extends Instruction
 {
-
-    String sourceLabel;
-    String destinationLabel;
-
-    long   source;
-    long   destination;
-    int    immediate;
+    SourceObject    src1;
+    WriteBackObject dest;
+    int             immediate;
 
     public DADDI(String sourceLabel, String destinationLabel, int immediate)
     {
         super();
-        this.sourceLabel = sourceLabel;
-        this.destinationLabel = destinationLabel;
+        src1 = new SourceObject(sourceLabel, 0);
+        dest = new WriteBackObject(destinationLabel, 0);
         this.immediate = immediate;
     }
 
@@ -25,29 +21,23 @@ public class DADDI extends Instruction
     {
         super(obj);
         setPrintableInstruction(obj.printableInstruction);
-        sourceLabel = obj.sourceLabel;
-        destinationLabel = obj.destinationLabel;
-        source = obj.source;
-        destination = obj.destination;
-        immediate = obj.immediate;
+        this.src1 = new SourceObject(obj.src1);
+        this.dest = new WriteBackObject(obj.dest);
+        this.immediate = obj.immediate;
     }
 
     @Override
-    public List<String> getSourceRegister()
+    public List<SourceObject> getSourceRegister()
     {
-
-        List<String> sourceRegisterList = new ArrayList<String>();
-        sourceRegisterList.add(this.sourceLabel);
+        List<SourceObject> sourceRegisterList = new ArrayList<SourceObject>();
+        sourceRegisterList.add(src1);
         return sourceRegisterList;
-
     }
 
     @Override
-    public String getDestinationRegister()
+    public WriteBackObject getDestinationRegister()
     {
-
-        return destinationLabel;
-
+        return dest;
     }
 
     public int getImmediate()
@@ -58,28 +48,14 @@ public class DADDI extends Instruction
     @Override
     public String toString()
     {
-        return "DADDI " + destinationLabel + " " + sourceLabel + " "
-                + immediate;
+        return "DADDI " + dest.getDestinationLabel() + ", "
+                + src1.getSourceLabel() + ", " + immediate;
     }
 
     @Override
     public void executeInstruction()
     {
-
-        destination = source + immediate;
-    }
-
-    @Override
-    public void decodeInstruction()
-    {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public WriteBackObject getWriteBackObject()
-    {
-        return new WriteBackObject(destinationLabel, destination);
+        dest.setDestination(src1.getSource() + immediate);
     }
 
 }

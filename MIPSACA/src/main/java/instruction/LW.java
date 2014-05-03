@@ -5,18 +5,15 @@ import java.util.List;
 
 public class LW extends Instruction
 {
+    SourceObject    src1;
+    WriteBackObject dest;
+    int             immediate;
 
-    String sourceLabel;
-    String destinationLabel;
-    long   source;
-    long   destination;
-    int    immediate;
-
-    public LW(String sourceLabel, String desitnationLabel, int immediate)
+    public LW(String sourceLabel, String destinationLabel, int immediate)
     {
         super();
-        this.sourceLabel = sourceLabel;
-        this.destinationLabel = desitnationLabel;
+        src1 = new SourceObject(sourceLabel, 0);
+        dest = new WriteBackObject(destinationLabel, 0);
         this.immediate = immediate;
     }
 
@@ -24,56 +21,40 @@ public class LW extends Instruction
     {
         super(obj);
         setPrintableInstruction(obj.printableInstruction);
-        sourceLabel = obj.sourceLabel;
-        destinationLabel = obj.destinationLabel;
-        source = obj.source;
-        destination = obj.destination;
-        immediate = obj.immediate;
+        this.src1 = new SourceObject(obj.src1);
+        this.dest = new WriteBackObject(obj.dest);
+        this.immediate = obj.immediate;
     }
 
     @Override
-    public List<String> getSourceRegister()
+    public List<SourceObject> getSourceRegister()
     {
-        List<String> sourceRegisterList = new ArrayList<String>();
-        sourceRegisterList.add(sourceLabel);
+        List<SourceObject> sourceRegisterList = new ArrayList<SourceObject>();
+        sourceRegisterList.add(src1);
         return sourceRegisterList;
     }
 
     @Override
-    public String getDestinationRegister()
+    public WriteBackObject getDestinationRegister()
     {
-        return destinationLabel;
+        return dest;
     }
 
     public int getImmediate()
     {
-        return immediate;
+        return this.immediate;
     }
 
     @Override
     public String toString()
     {
-        return "LW" + destinationLabel + " " + immediate + "(" + sourceLabel
-                + ")";
+        return "LW " + dest.getDestinationLabel() + ", " + immediate + "("
+                + src1.getSourceLabel() + ")";
     }
 
     @Override
     public void executeInstruction()
     {
-        // TODO - Complete this method
-        destination = immediate + source;
     }
 
-    @Override
-    public void decodeInstruction()
-    {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public WriteBackObject getWriteBackObject()
-    {
-        return new WriteBackObject(destinationLabel, destination);
-    }
 }

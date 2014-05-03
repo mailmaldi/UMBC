@@ -17,14 +17,14 @@ public class NOOP extends Instruction
     }
 
     @Override
-    public List<String> getSourceRegister()
+    public List<SourceObject> getSourceRegister()
     {
         // Do nothing here
         return null;
     }
 
     @Override
-    public String getDestinationRegister()
+    public WriteBackObject getDestinationRegister()
     {
         // Do nothing here
         return null;
@@ -38,23 +38,9 @@ public class NOOP extends Instruction
     }
 
     @Override
-    public void decodeInstruction()
-    {
-        // Do nothing here
-
-    }
-
-    @Override
     public String toString()
     {
         return "NOOP";
-    }
-
-    @Override
-    public WriteBackObject getWriteBackObject()
-    {
-        // TODO Auto-generated method stub
-        return null;
     }
 
 }
