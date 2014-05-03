@@ -42,9 +42,10 @@ public class ResultsManager
         {
             Instruction inst = instructionMap.get(key);
 
-            System.out.format(formatStr, inst.toString(), inst.exitCycle[0],
-                    inst.exitCycle[1], inst.exitCycle[2], inst.exitCycle[3],
-                    inst.RAW, inst.WAR, inst.WAW, inst.STRUCT);
+            System.out.format(formatStr, inst.printableInstruction,
+                    inst.exitCycle[0], inst.exitCycle[1], inst.exitCycle[2],
+                    inst.exitCycle[3], inst.RAW, inst.WAR, inst.WAW,
+                    inst.STRUCT);
 
         }
     }

@@ -243,7 +243,9 @@ public class ProgramParser
                 throw new Exception("Illegal Instruction encountered");
 
         }
-        inst.setLabel(loopName);
+        loopName = (loopName != null && loopName.length() > 0) ? loopName
+                + ": " : "";
+        inst.setPrintableInstruction(loopName + inst.toString());
 
         ProgramManager.instance.InstructionList.put(
                 ProgramManager.instance.instructionCount, inst);

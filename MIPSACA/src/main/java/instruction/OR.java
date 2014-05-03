@@ -43,8 +43,8 @@ public class OR extends Instruction
     @Override
     public String toString()
     {
-        return super.toString() + "OR " + destinationLabel + " " + sourceLabel1
-                + " " + sourceLabel2;
+        return "OR " + destinationLabel + " " + sourceLabel1 + " "
+                + sourceLabel2;
     }
 
     @Override

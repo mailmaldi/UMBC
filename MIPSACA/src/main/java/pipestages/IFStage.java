@@ -7,7 +7,7 @@ public class IFStage extends PipelineStage
     public void executeStage()
     {
         // TODO Auto-generated method stub
-        
+
     }
 
 }

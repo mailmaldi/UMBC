@@ -44,8 +44,8 @@ public class ADDD extends Instruction
     @Override
     public String toString()
     {
-        return super.toString() + "ADDD " + destinationLabel + " "
-                + sourceLabel1 + " " + sourceLabel2;
+        return "ADDD " + destinationLabel + " " + sourceLabel1 + " "
+                + sourceLabel2;
     }
 
     @Override

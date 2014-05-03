@@ -48,8 +48,8 @@ public class DADDI extends Instruction
     @Override
     public String toString()
     {
-        return super.toString() + "DADDI " + destinationLabel + " "
-                + sourceLabel + " " + immediate;
+        return "DADDI " + destinationLabel + " " + sourceLabel + " "
+                + immediate;
     }
 
     @Override

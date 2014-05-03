@@ -28,7 +28,7 @@ public class J extends Instruction
     @Override
     public String toString()
     {
-        return super.toString() + "J " + destinationLabel;
+        return "J " + destinationLabel;
     }
 
     @Override

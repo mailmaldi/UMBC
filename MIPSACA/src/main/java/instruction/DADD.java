@@ -44,8 +44,8 @@ public class DADD extends Instruction
     @Override
     public String toString()
     {
-        return super.toString() + "DADD " + destinationLabel + " "
-                + sourceLabel1 + " " + sourceLabel2;
+        return "DADD " + destinationLabel + " " + sourceLabel1 + " "
+                + sourceLabel2;
     }
 
     @Override

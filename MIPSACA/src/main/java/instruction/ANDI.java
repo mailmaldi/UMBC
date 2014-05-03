@@ -50,8 +50,7 @@ public class ANDI extends Instruction
     @Override
     public String toString()
     {
-        return super.toString() + "ANDI " + destinationLabel + " "
-                + sourceLabel + " " + immediate;
+        return "ANDI " + destinationLabel + " " + sourceLabel + " " + immediate;
     }
 
     @Override

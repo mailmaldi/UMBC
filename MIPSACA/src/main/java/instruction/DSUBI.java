@@ -50,8 +50,8 @@ public class DSUBI extends Instruction
     @Override
     public String toString()
     {
-        return super.toString() + "DSUBI " + destinationLabel + " "
-                + sourceLabel + " " + immediate;
+        return "DSUBI " + destinationLabel + " " + sourceLabel + " "
+                + immediate;
     }
 
     @Override

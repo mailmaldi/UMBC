@@ -43,8 +43,8 @@ public class DIVD extends Instruction
     @Override
     public String toString()
     {
-        return super.toString() + "DIVD " + destinationLabel + " "
-                + sourceLabel1 + " " + sourceLabel2;
+        return "DIVD " + destinationLabel + " " + sourceLabel1 + " "
+                + sourceLabel2;
     }
 
     @Override

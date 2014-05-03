@@ -42,8 +42,8 @@ public class LW extends Instruction
     @Override
     public String toString()
     {
-        return super.toString() + "LW" + destinationLabel + " " + immediate
-                + "(" + sourceLabel + ")";
+        return "LW" + destinationLabel + " " + immediate + "(" + sourceLabel
+                + ")";
     }
 
     @Override

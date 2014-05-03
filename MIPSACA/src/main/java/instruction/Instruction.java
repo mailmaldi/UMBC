@@ -11,10 +11,10 @@ public abstract class Instruction
     public boolean WAW;
     public boolean STRUCT;
 
-    public int[]   entryCycle = new int[4];
-    public int[]   exitCycle  = new int[4];
+    public int[]   entryCycle           = new int[4];
+    public int[]   exitCycle            = new int[4];
 
-    public String  label      = "";        // Purely for printing purpose
+    public String  printableInstruction = "";
 
     public Instruction()
     {
@@ -36,14 +36,9 @@ public abstract class Instruction
     public abstract void writeBackResult();
 
     // Purely for decorative purposes
-    public String toString()
+    public void setPrintableInstruction(String str)
     {
-        return (label.length() > 0) ? label + ": " : label;
-    }
-
-    public void setLabel(String label)
-    {
-        this.label = label;
+        this.printableInstruction = str;
     }
 
 }

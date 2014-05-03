@@ -43,8 +43,8 @@ public class AND extends Instruction
     @Override
     public String toString()
     {
-        return super.toString() + "AND " + destinationLabel + " "
-                + sourceLabel1 + " " + sourceLabel2;
+        return "AND " + destinationLabel + " " + sourceLabel1 + " "
+                + sourceLabel2;
     }
 
     @Override

@@ -44,8 +44,8 @@ public class MULD extends Instruction
     @Override
     public String toString()
     {
-        return super.toString() + "MULD " + destinationLabel + " "
-                + sourceLabel1 + " " + sourceLabel2;
+        return "MULD " + destinationLabel + " " + sourceLabel1 + " "
+                + sourceLabel2;
     }
 
     @Override

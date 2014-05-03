@@ -4,6 +4,7 @@ import memory.DataMemoryFileParser;
 import pipestages.CPU;
 import program.ProgramParser;
 import registers.RegisterFileParser;
+import results.ResultsManager;
 import config.ConfigParser;
 
 public class Main
@@ -32,6 +33,8 @@ public class Main
 
             CPU.PROGRAM_COUNTER++;
         }
+
+        ResultsManager.testPrintWithDummyData();
 
     }
 }

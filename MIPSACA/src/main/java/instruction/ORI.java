@@ -50,8 +50,7 @@ public class ORI extends Instruction
     @Override
     public String toString()
     {
-        return super.toString() + "ORI " + destinationLabel + " " + sourceLabel
-                + " " + immediate;
+        return "ORI " + destinationLabel + " " + sourceLabel + " " + immediate;
     }
 
     @Override

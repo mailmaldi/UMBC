@@ -42,8 +42,8 @@ public class LD extends Instruction
     @Override
     public String toString()
     {
-        return super.toString() + "LD " + destinationLabel + " " + immediate
-                + "(" + sourceLabel + ")";
+        return "LD " + destinationLabel + " " + immediate + "(" + sourceLabel
+                + ")";
     }
 
     @Override

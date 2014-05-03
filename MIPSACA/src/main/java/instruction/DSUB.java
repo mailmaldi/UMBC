@@ -44,8 +44,8 @@ public class DSUB extends Instruction
     @Override
     public String toString()
     {
-        return super.toString() + "DSUB " + destinationLabel + " "
-                + sourceLabel1 + " " + sourceLabel2;
+        return "DSUB " + destinationLabel + " " + sourceLabel1 + " "
+                + sourceLabel2;
     }
 
     @Override

@@ -48,8 +48,8 @@ public class BNE extends Instruction
     @Override
     public String toString()
     {
-        return super.toString() + "BNE " + " " + leftLabel + " " + rightLabel
-                + " " + destinationLabel;
+        return "BNE " + " " + leftLabel + " " + rightLabel + " "
+                + destinationLabel;
     }
 
     @Override

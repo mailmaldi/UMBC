@@ -48,8 +48,8 @@ public class BEQ extends Instruction
     @Override
     public String toString()
     {
-        return super.toString() + "BEQ " + " " + leftLabel + " " + rightLabel
-                + " " + destinationLabel;
+        return "BEQ " + " " + leftLabel + " " + rightLabel + " "
+                + destinationLabel;
     }
 
     @Override

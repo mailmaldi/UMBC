@@ -42,8 +42,8 @@ public class SD extends Instruction
     @Override
     public String toString()
     {
-        return super.toString() + "SD " + sourceLabel + " " + immediate + "("
-                + destinationLabel + ")";
+        return "SD " + sourceLabel + " " + immediate + "(" + destinationLabel
+                + ")";
     }
 
     @Override

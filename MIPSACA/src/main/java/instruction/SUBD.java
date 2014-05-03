@@ -44,8 +44,8 @@ public class SUBD extends Instruction
     @Override
     public String toString()
     {
-        return super.toString() + "SUBD " + destinationLabel + " "
-                + sourceLabel1 + " " + sourceLabel2;
+        return "SUBD " + destinationLabel + " " + sourceLabel1 + " "
+                + sourceLabel2;
     }
 
     @Override

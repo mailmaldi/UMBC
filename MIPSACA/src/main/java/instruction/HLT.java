@@ -22,7 +22,7 @@ public class HLT extends Instruction
     @Override
     public String toString()
     {
-        return super.toString() + "HLT";
+        return "HLT";
     }
 
     @Override

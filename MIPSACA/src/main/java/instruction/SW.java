@@ -42,8 +42,8 @@ public class SW extends Instruction
     @Override
     public String toString()
     {
-        return super.toString() + "SW " + sourceLabel + " " + immediate + "("
-                + destinationLabel + ")";
+        return "SW " + sourceLabel + " " + immediate + "(" + destinationLabel
+                + ")";
     }
 
     @Override
