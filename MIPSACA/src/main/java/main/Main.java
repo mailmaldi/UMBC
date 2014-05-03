@@ -32,5 +32,6 @@ public class Main
 
             CPU.PROGRAM_COUNTER++;
         }
+
     }
 }

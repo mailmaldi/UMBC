@@ -34,4 +34,12 @@ public class ProgramManager
             System.out.println(Key + " " + LabelMap.get(Key));
         }
     }
+
+    public Instruction getInstructionAtAddress(int address) throws Exception
+    {
+        if (!InstructionList.containsKey(address))
+            throw new Exception("Instruction NOT Found at address: " + address);
+
+        return InstructionList.get(address);
+    }
 }

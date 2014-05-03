@@ -8,6 +8,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.TreeMap;
 
+import program.ProgramManager;
+
 public class ResultsManager
 {
 
@@ -35,15 +37,16 @@ public class ResultsManager
         // use String.format() and then print at the end
         // ordered by key which is clock entry of entry into IF
         //
-        // for(int key : instructionMap.keySet()
-        // {
-        // Instruction inst = instructionMap.get(key);
-        // inst.toString() , inst.exitCLKCycle[0]
-        // inst.exitCLKCycle[1] , inst.exitCLKCycle[2] ,
-        // inst.exitCLKCycle[3]
-        // inst.hasRAW , inst.hasWAR , inst.hasWAW , inst.hasStruct
-        //
-        // }
+        String formatStr = "| %-15s | %-4s | %-4s | %-4s | %-4s | %-3s | %-3s | %-3s | %-4s |%n";
+        for (int key : instructionMap.keySet())
+        {
+            Instruction inst = instructionMap.get(key);
+
+            System.out.format(formatStr, inst.toString(), inst.exitCycle[0],
+                    inst.exitCycle[1], inst.exitCycle[2], inst.exitCycle[3],
+                    inst.RAW, inst.WAR, inst.WAW, inst.STRUCT);
+
+        }
     }
 
     public void writeResults()
@@ -65,5 +68,19 @@ public class ResultsManager
     {
         int key = instruction.entryCycle[0];
         instructionMap.put(key, instruction);
+    }
+
+    public static void testPrintWithDummyData()
+    {
+        int count = 0;
+        for (Integer address : ProgramManager.instance.InstructionList.keySet())
+        {
+            Instruction inst = ProgramManager.instance.InstructionList
+                    .get(address);
+            inst.entryCycle[0] = count++;
+            ResultsManager.instance.addInstruction(inst);
+        }
+
+        ResultsManager.instance.printResults();
     }
 }
