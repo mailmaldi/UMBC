@@ -2,7 +2,7 @@ package main;
 
 import memory.DataMemoryFileParser;
 import pipestages.CPU;
-import program.Program;
+import program.ProgramParser;
 import registers.RegisterFileParser;
 import config.ConfigParser;
 
@@ -14,7 +14,7 @@ public class Main
             System.out.print(args[i] + " ");
         System.out.println();
 
-        Program.instance.parse(args[0]);
+        ProgramParser.parse(args[0]);
 
         DataMemoryFileParser.parseMemoryFile(args[1]);
 

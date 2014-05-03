@@ -25,24 +25,11 @@ import instruction.SW;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
-import java.util.Map;
-import java.util.TreeMap;
 
-public class Program
+public class ProgramParser
 {
 
-    public static final Program instance = new Program();
-
-    private Program()
-    {
-
-    }
-
-    public int                       instructionCount = 0;
-    public Map<Integer, Instruction> InstructionList  = new TreeMap<Integer, Instruction>();
-    public Map<String, Integer>      LabelMap         = new TreeMap<String, Integer>();
-
-    public void parse(String filePath) throws Exception
+    public static void parse(String filePath) throws Exception
     {
 
         BufferedReader reader = null;
@@ -64,7 +51,7 @@ public class Program
         }
     }
 
-    private void parseInstLine(String line) throws Exception
+    private static void parseInstLine(String line) throws Exception
     {
         Instruction inst = null;
         String tokens[] = new String[5];
@@ -83,7 +70,8 @@ public class Program
             loopName = line.substring(0, index);
             line = line.substring(index + 1);
             line = line.trim();
-            LabelMap.put(loopName.trim(), instructionCount);
+            ProgramManager.instance.LabelMap.put(loopName.trim(),
+                    ProgramManager.instance.instructionCount);
         }
 
         tokens = line.split("[\\s]", 2);
@@ -257,11 +245,12 @@ public class Program
         }
         inst.setLabel(loopName);
 
-        InstructionList.put(instructionCount, inst);
-        instructionCount++;
+        ProgramManager.instance.InstructionList.put(
+                ProgramManager.instance.instructionCount, inst);
+        ProgramManager.instance.instructionCount++;
     }
 
-    private String[] getOperands(String[] tokens) throws Exception
+    private static String[] getOperands(String[] tokens) throws Exception
     {
 
         String argListArray[] = new String[3];
@@ -277,33 +266,18 @@ public class Program
                 if (arg.charAt(0) != 'R' && arg.charAt(0) != 'F')
                 {
                     if (arg.charAt(0) < '0' || arg.charAt(0) > '9')
-                        if (!LabelMap.containsKey(arg))
+                        if (!ProgramManager.instance.LabelMap.containsKey(arg))
                             if (!tokens[0].equalsIgnoreCase("BEQ")
                                     && !tokens[0].equalsIgnoreCase("BNE")
                                     && !tokens[0].equalsIgnoreCase("J"))
                                 throw new Exception(
                                         "Incorrect Format in inst.txt at Line"
-                                                + instructionCount);
+                                                + ProgramManager.instance.instructionCount);
                 }
                 arg1[i] = argListArray[i];
             }
         }
         return arg1;
-    }
-
-    public void dumpProgram()
-    {
-
-        for (int key : InstructionList.keySet())
-        {
-            System.out.println(key + " " + InstructionList.get(key).toString());
-        }
-        System.out.println(instructionCount);
-
-        for (String Key : LabelMap.keySet())
-        {
-            System.out.println(Key + " " + LabelMap.get(Key));
-        }
     }
 
 }
