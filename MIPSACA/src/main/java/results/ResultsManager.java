@@ -1,5 +1,7 @@
 package results;
 
+import instruction.Instruction;
+
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -9,11 +11,11 @@ import java.util.TreeMap;
 public class ResultsManager
 {
 
-    public static final ResultsManager     instance       = new ResultsManager();
+    public static final ResultsManager          instance       = new ResultsManager();
 
-    private final TreeMap<Integer, Object> instructionMap = new TreeMap<Integer, Object>();
+    private final TreeMap<Integer, Instruction> instructionMap = new TreeMap<Integer, Instruction>();
 
-    private BufferedWriter                 resultsWriter  = null;
+    private BufferedWriter                      resultsWriter  = null;
 
     private ResultsManager()
     {
@@ -59,10 +61,9 @@ public class ResultsManager
         }
     }
 
-    public void addInstruction(Object instruction)
+    public void addInstruction(Instruction instruction)
     {
-        // int key = instruction.getEntryCycle[0] , IF cycles entry clock
-        // instructionMap.put(key, instruction)
+        int key = instruction.entryCycle[0];
+        instructionMap.put(key, instruction);
     }
-
 }

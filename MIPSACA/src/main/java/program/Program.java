@@ -25,7 +25,6 @@ import instruction.SW;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
-import java.util.Arrays;
 import java.util.Map;
 import java.util.TreeMap;
 

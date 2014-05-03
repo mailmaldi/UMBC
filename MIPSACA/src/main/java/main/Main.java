@@ -15,7 +15,6 @@ public class Main
         System.out.println();
 
         Program.instance.parse(args[0]);
-        Program.instance.dumpProgram();
 
         DataMemoryFileParser.parseMemoryFile(args[1]);
 
@@ -31,7 +30,7 @@ public class Main
 
             CPU.CLOCK++;
 
-            // Update PC
+            CPU.PROGRAM_COUNTER++;
         }
     }
 }

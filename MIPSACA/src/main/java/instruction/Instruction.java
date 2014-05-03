@@ -6,15 +6,15 @@ public abstract class Instruction
 {
 
     /* Hazards */
-    boolean RAW;
-    boolean WAR;
-    boolean WAW;
-    boolean STRUCT;
+    public boolean RAW;
+    public boolean WAR;
+    public boolean WAW;
+    public boolean STRUCT;
 
-    int[]   entryCycle = new int[4];
-    int[]   exitCycle  = new int[4];
+    public int[]   entryCycle = new int[4];
+    public int[]   exitCycle  = new int[4];
 
-    String  label      = "";        // Purely for printing purpose
+    public String  label      = "";        // Purely for printing purpose
 
     public Instruction()
     {
