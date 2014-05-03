@@ -1,8 +1,11 @@
 package main;
 
+import config.ConfigManager;
+import config.ConfigParser;
+import memory.MemoryFileParser;
+import memory.MemoryManager;
 import registers.RegisterFileParser;
 import registers.RegisterManager;
-
 
 public class Main
 {
@@ -13,11 +16,17 @@ public class Main
             System.out.print(args[i] + " ");
         System.out.println();
 
-       RegisterFileParser.instance.parseRegister(args[2]);
-       
-       
-       RegisterManager.instance.setRegisterBusy("R0");
-       RegisterManager.instance.dumpAllRegisters();
+        RegisterFileParser.parseRegister(args[2]);
+
+        RegisterManager.instance.setRegisterBusy("R0");
+        RegisterManager.instance.dumpAllRegisters();
+
+        MemoryFileParser.parseMemoryFile(args[1]);
+        MemoryManager.instace.dumpAllMemory();
+
+        ConfigParser.parseConfigFile(args[3]);
+
+        ConfigManager.instance.dumpConfiguration();
 
     }
 }

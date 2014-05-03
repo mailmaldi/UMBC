@@ -77,11 +77,12 @@ public class RegisterManager
 
     public void dumpAllRegisters()
     {
+        String leftAlignFormat = "| %-5s | %-5s | %-10d |%n";
         for (String label : registerMap.keySet())
         {
             Register<Long> reg = registerMap.get(label);
-            System.out.println(label + " " + registerStateMap.get(label) + " "
-                    + reg.value);
+            System.out.format(leftAlignFormat, label,
+                    registerStateMap.get(label), reg.value);
         }
     }
 

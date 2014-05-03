@@ -1,13 +1,13 @@
-package registers;
+package memory;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 
-public class RegisterFileParser
+// NOTE I break out of parsing after encountering the first empty line or file finishes
+public class MemoryFileParser
 {
-
-    public static void parseRegister(String fileName) throws Exception
+    public static void parseMemoryFile(String fileName) throws Exception
     {
         BufferedReader bfread = null;
         try
@@ -17,22 +17,21 @@ public class RegisterFileParser
 
             String line = null;
             int count = 0;
+            int initialAddress = 0x100;
+
             while ((line = bfread.readLine()) != null)
             {
                 line = line.trim();
                 if (line.length() == 0)
-                    throw new Exception(
-                            "Less than 32 Integer register data in reg.txt, count= "
-                                    + count);
+                    break; // break on the first empty line
                 int value = Integer.parseInt(line, 2);
-                RegisterManager.instance.setRegisterValue("R" + count, value);
+
+                MemoryManager.instace
+                        .setValueToAddress(initialAddress++, value);
 
                 count++;
-
-                if (count == 32)
-                    break;
             }
-
+            System.out.println("Total Number of memory locations = " + count);
         }
         finally
         {
