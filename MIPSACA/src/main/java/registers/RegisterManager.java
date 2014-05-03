@@ -1,7 +1,7 @@
 package registers;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.TreeMap;
 
 public class RegisterManager
 {
@@ -16,8 +16,8 @@ public class RegisterManager
     // keep track of all 32 Integer & 32 Floating registers if they're idle or
     // they're busy
 
-    Map<String, RegisterState>  registerStateMap = new HashMap<String, RegisterState>();
-    Map<String, Register<Long>> registerMap      = new HashMap<String, Register<Long>>();
+    Map<String, RegisterState>  registerStateMap = new TreeMap<String, RegisterState>();
+    Map<String, Register<Long>> registerMap      = new TreeMap<String, Register<Long>>();
 
     public void initializeRegisters()
     {

@@ -15,6 +15,8 @@ public class Main
 
        RegisterFileParser.instance.parseRegister(args[2]);
        
+       
+       RegisterManager.instance.setRegisterBusy("R0");
        RegisterManager.instance.dumpAllRegisters();
 
     }

@@ -13,22 +13,33 @@ public class RegisterFileParser
     public void parseRegister(String fileName) throws Exception
     {
 
-        BufferedReader bfread = new BufferedReader(new FileReader(new File(
-                fileName)));
-
-        String line = null;
-        int count = 0;
-        while ((line = bfread.readLine()) != null)
+        try
         {
-            line = line.trim();
-            int value = Integer.parseInt(line, 2);
-            RegisterManager.instance.setRegisterValue("R" + count, value);
-            // System.out.println(value);
-            count++;
-            if (count == 32)
-                break;
-        }
+            BufferedReader bfread = new BufferedReader(new FileReader(new File(
+                    fileName)));
 
-        bfread.close();
+            String line = null;
+            int count = 0;
+            while ((line = bfread.readLine()) != null)
+            {
+                line = line.trim();
+                if (line.length() == 0)
+                    throw new Exception(
+                            "Less than 32 Integer register data in reg.txt, count= "
+                                    + count);
+                int value = Integer.parseInt(line, 2);
+                RegisterManager.instance.setRegisterValue("R" + count, value);
+
+                count++;
+                if (count == 32)
+                    break;
+            }
+
+            bfread.close();
+        }
+        catch (Exception e)
+        {
+            throw new Exception("Error Reading reg.txt ");
+        }
     }
 }
