@@ -24,6 +24,23 @@ public abstract class Instruction implements InstructionI
         this.STRUCT = false;
     }
 
+    public Instruction(Instruction obj)
+    {
+        super();
+        // System.out.println("Copy Constructor of Instruction SuperClass: "
+        // + obj.printableInstruction);
+        this.RAW = obj.RAW;
+        this.WAR = obj.WAR;
+        this.WAW = obj.WAW;
+        this.STRUCT = obj.STRUCT;
+        this.entryCycle = new int[obj.entryCycle.length];
+        this.exitCycle = new int[obj.exitCycle.length];
+        System.arraycopy(obj.entryCycle, 0, this.entryCycle, 0,
+                this.entryCycle.length);
+        System.arraycopy(obj.exitCycle, 0, this.exitCycle, 0,
+                this.exitCycle.length);
+    }
+
     // Purely for decorative purposes
     public void setPrintableInstruction(String str)
     {

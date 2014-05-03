@@ -22,7 +22,7 @@ public class LD extends Instruction
 
     public LD(LD obj)
     {
-        super();
+        super(obj);
         setPrintableInstruction(obj.printableInstruction);
         sourceLabel = obj.sourceLabel;
         destinationLabel = obj.destinationLabel;

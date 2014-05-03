@@ -12,7 +12,7 @@ public class NOOP extends Instruction
 
     public NOOP(NOOP obj)
     {
-        super();
+        super(obj);
         setPrintableInstruction(obj.printableInstruction);
     }
 

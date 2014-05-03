@@ -24,7 +24,7 @@ public class BEQ extends Instruction
 
     public BEQ(BEQ obj)
     {
-        super();
+        super(obj);
         setPrintableInstruction(obj.printableInstruction);
         leftLabel = obj.leftLabel;
         rightLabel = obj.rightLabel;

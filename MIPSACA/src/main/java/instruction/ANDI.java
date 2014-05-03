@@ -23,7 +23,7 @@ public class ANDI extends Instruction
 
     public ANDI(ANDI obj)
     {
-        super();
+        super(obj);
         setPrintableInstruction(obj.printableInstruction);
         sourceLabel = obj.sourceLabel;
         destinationLabel = obj.destinationLabel;

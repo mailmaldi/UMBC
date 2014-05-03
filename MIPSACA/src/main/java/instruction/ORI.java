@@ -24,7 +24,7 @@ public class ORI extends Instruction
 
     public ORI(ORI obj)
     {
-        super();
+        super(obj);
         setPrintableInstruction(obj.printableInstruction);
         sourceLabel = obj.sourceLabel;
         destinationLabel = obj.destinationLabel;

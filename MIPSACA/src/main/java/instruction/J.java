@@ -15,7 +15,7 @@ public class J extends Instruction
 
     public J(J obj)
     {
-        super();
+        super(obj);
         setPrintableInstruction(obj.printableInstruction);
         destinationLabel = obj.destinationLabel;
     }

@@ -11,7 +11,7 @@ public class HLT extends Instruction
 
     public HLT(HLT obj)
     {
-        super();
+        super(obj);
         setPrintableInstruction(obj.printableInstruction);
     }
 

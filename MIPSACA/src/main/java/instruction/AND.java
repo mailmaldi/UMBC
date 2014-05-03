@@ -24,7 +24,7 @@ public class AND extends Instruction
 
     public AND(AND obj)
     {
-        super();
+        super(obj);
         setPrintableInstruction(obj.printableInstruction);
         sourceLabel1 = obj.sourceLabel1;
         sourceLabel2 = obj.sourceLabel2;

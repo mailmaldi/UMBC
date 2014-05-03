@@ -24,7 +24,7 @@ public class OR extends Instruction
 
     public OR(OR obj)
     {
-        super();
+        super(obj);
         setPrintableInstruction(obj.printableInstruction);
         sourceLabel1 = obj.sourceLabel1;
         sourceLabel2 = obj.sourceLabel2;

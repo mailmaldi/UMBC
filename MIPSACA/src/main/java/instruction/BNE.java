@@ -24,7 +24,7 @@ public class BNE extends Instruction
 
     public BNE(BNE obj)
     {
-        super();
+        super(obj);
         setPrintableInstruction(obj.printableInstruction);
         leftLabel = obj.leftLabel;
         rightLabel = obj.rightLabel;

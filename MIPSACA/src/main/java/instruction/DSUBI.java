@@ -23,7 +23,7 @@ public class DSUBI extends Instruction
 
     public DSUBI(DSUBI obj)
     {
-        super();
+        super(obj);
         setPrintableInstruction(obj.printableInstruction);
         sourceLabel = obj.sourceLabel;
         destinationLabel = obj.destinationLabel;

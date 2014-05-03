@@ -23,7 +23,7 @@ public class DADDI extends Instruction
 
     public DADDI(DADDI obj)
     {
-        super();
+        super(obj);
         setPrintableInstruction(obj.printableInstruction);
         sourceLabel = obj.sourceLabel;
         destinationLabel = obj.destinationLabel;

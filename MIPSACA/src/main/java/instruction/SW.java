@@ -22,7 +22,7 @@ public class SW extends Instruction
 
     public SW(SW obj)
     {
-        super();
+        super(obj);
         setPrintableInstruction(obj.printableInstruction);
         sourceLabel = obj.sourceLabel;
         destinationLabel = obj.destinationLabel;

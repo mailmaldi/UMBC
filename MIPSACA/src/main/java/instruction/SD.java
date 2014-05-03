@@ -22,7 +22,7 @@ public class SD extends Instruction
 
     public SD(SD obj)
     {
-        super();
+        super(obj);
         setPrintableInstruction(obj.printableInstruction);
         sourceLabel = obj.sourceLabel;
         destinationLabel = obj.destinationLabel;
