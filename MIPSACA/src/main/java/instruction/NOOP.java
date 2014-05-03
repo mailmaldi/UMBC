@@ -5,6 +5,17 @@ import java.util.List;
 public class NOOP extends Instruction
 {
 
+    public NOOP()
+    {
+        super();
+    }
+
+    public NOOP(NOOP obj)
+    {
+        super();
+        setPrintableInstruction(obj.printableInstruction);
+    }
+
     @Override
     public List<String> getSourceRegister()
     {

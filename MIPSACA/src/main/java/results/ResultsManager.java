@@ -44,8 +44,9 @@ public class ResultsManager
 
             System.out.format(formatStr, inst.printableInstruction,
                     inst.exitCycle[0], inst.exitCycle[1], inst.exitCycle[2],
-                    inst.exitCycle[3], inst.RAW, inst.WAR, inst.WAW,
-                    inst.STRUCT);
+                    inst.exitCycle[3], inst.RAW ? 'Y' : 'N', inst.WAR ? 'Y'
+                            : 'N', inst.WAW ? 'Y' : 'N', inst.STRUCT ? 'Y'
+                            : 'N');
 
         }
     }
@@ -76,13 +77,15 @@ public class ResultsManager
         int count = 0;
         for (Integer address : ProgramManager.instance.InstructionList.keySet())
         {
-            Instruction inst = ProgramManager.instance.InstructionList
-                    .get(address);
-
+            Instruction inst = ProgramManager.instance
+                    .getInstructionAtAddress(address);
             inst.entryCycle[0] = count++;
+            inst.exitCycle[0] = count;
+            inst.STRUCT = (count % 2 == 0) ? true : false;
             addInstruction(inst);
         }
 
         printResults();
+
     }
 }

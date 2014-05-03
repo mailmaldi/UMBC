@@ -11,7 +11,6 @@ public class DADDI extends Instruction
 
     long   source;
     long   destination;
-
     int    immediate;
 
     public DADDI(String sourceLabel, String destinationLabel, int immediate)
@@ -20,6 +19,17 @@ public class DADDI extends Instruction
         this.sourceLabel = sourceLabel;
         this.destinationLabel = destinationLabel;
         this.immediate = immediate;
+    }
+
+    public DADDI(DADDI obj)
+    {
+        super();
+        setPrintableInstruction(obj.printableInstruction);
+        sourceLabel = obj.sourceLabel;
+        destinationLabel = obj.destinationLabel;
+        source = obj.source;
+        destination = obj.destination;
+        immediate = obj.immediate;
     }
 
     @Override

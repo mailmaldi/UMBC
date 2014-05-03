@@ -22,6 +22,17 @@ public class BNE extends Instruction
         this.destinationLabel = destinationLabel;
     }
 
+    public BNE(BNE obj)
+    {
+        super();
+        setPrintableInstruction(obj.printableInstruction);
+        leftLabel = obj.leftLabel;
+        rightLabel = obj.rightLabel;
+        left = obj.left;
+        right = obj.right;
+        destinationLabel = obj.destinationLabel;
+    }
+
     @Override
     public List<String> getSourceRegister()
     {

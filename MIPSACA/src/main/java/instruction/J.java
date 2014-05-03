@@ -13,6 +13,13 @@ public class J extends Instruction
         this.destinationLabel = destinationLabel;
     }
 
+    public J(J obj)
+    {
+        super();
+        setPrintableInstruction(obj.printableInstruction);
+        destinationLabel = obj.destinationLabel;
+    }
+
     @Override
     public List<String> getSourceRegister()
     {

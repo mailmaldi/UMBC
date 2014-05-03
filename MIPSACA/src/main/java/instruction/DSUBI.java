@@ -11,7 +11,6 @@ public class DSUBI extends Instruction
 
     long   source;
     long   destination;
-
     int    immediate;
 
     public DSUBI(String sourceLabel, String destinationLabel, int immediate)
@@ -20,6 +19,17 @@ public class DSUBI extends Instruction
         this.sourceLabel = sourceLabel;
         this.destinationLabel = destinationLabel;
         this.immediate = immediate;
+    }
+
+    public DSUBI(DSUBI obj)
+    {
+        super();
+        setPrintableInstruction(obj.printableInstruction);
+        sourceLabel = obj.sourceLabel;
+        destinationLabel = obj.destinationLabel;
+        source = obj.source;
+        destination = obj.destination;
+        immediate = obj.immediate;
     }
 
     @Override

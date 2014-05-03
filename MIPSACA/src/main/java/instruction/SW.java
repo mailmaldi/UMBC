@@ -20,6 +20,17 @@ public class SW extends Instruction
         this.immediate = immediate;
     }
 
+    public SW(SW obj)
+    {
+        super();
+        setPrintableInstruction(obj.printableInstruction);
+        sourceLabel = obj.sourceLabel;
+        destinationLabel = obj.destinationLabel;
+        source = obj.source;
+        destination = obj.destination;
+        immediate = obj.immediate;
+    }
+
     @Override
     public List<String> getSourceRegister()
     {

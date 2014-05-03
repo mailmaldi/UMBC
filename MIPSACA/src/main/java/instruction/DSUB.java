@@ -23,6 +23,18 @@ public class DSUB extends Instruction
         this.destinationLabel = destinationLabel;
     }
 
+    public DSUB(DSUB obj)
+    {
+        super();
+        setPrintableInstruction(obj.printableInstruction);
+        sourceLabel1 = obj.sourceLabel1;
+        sourceLabel2 = obj.sourceLabel2;
+        destinationLabel = obj.destinationLabel;
+        source1 = obj.source1;
+        source2 = obj.source2;
+        destination = obj.destination;
+    }
+
     @Override
     public List<String> getSourceRegister()
     {

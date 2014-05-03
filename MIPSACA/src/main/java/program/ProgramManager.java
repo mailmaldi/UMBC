@@ -40,6 +40,8 @@ public class ProgramManager
         if (!InstructionList.containsKey(address))
             throw new Exception("Instruction NOT Found at address: " + address);
 
-        return InstructionList.get(address);
+        Instruction inst = InstructionList.get(address);
+        return inst.getClass().getConstructor(inst.getClass())
+                .newInstance(inst);
     }
 }

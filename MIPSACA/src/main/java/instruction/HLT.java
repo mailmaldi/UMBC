@@ -4,6 +4,16 @@ import java.util.List;
 
 public class HLT extends Instruction
 {
+    public HLT()
+    {
+        super();
+    }
+
+    public HLT(HLT obj)
+    {
+        super();
+        setPrintableInstruction(obj.printableInstruction);
+    }
 
     @Override
     public List<String> getSourceRegister()
