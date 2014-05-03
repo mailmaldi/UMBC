@@ -1,6 +1,5 @@
 package instruction;
 
-
 public class DIVD extends ThreeRegInstruction
 {
     public DIVD(String sourceLabel1, String sourceLabel2,

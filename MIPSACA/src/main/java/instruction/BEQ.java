@@ -1,6 +1,5 @@
 package instruction;
 
-
 public class BEQ extends ConditionalBranchInstruction
 {
 

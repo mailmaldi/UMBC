@@ -1,6 +1,5 @@
 package instruction;
 
-
 public class BNE extends ConditionalBranchInstruction
 {
 

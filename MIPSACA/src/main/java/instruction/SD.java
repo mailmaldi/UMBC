@@ -1,6 +1,5 @@
 package instruction;
 
-
 public class SD extends TwoRegImmediateInstruction
 {
 

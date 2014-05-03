@@ -1,6 +1,5 @@
 package instruction;
 
-
 public class MULD extends ThreeRegInstruction
 {
     public MULD(String sourceLabel1, String sourceLabel2,
