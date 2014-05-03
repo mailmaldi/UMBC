@@ -53,10 +53,10 @@ public class J extends Instruction
     }
 
     @Override
-    public void writeBackResult()
+    public WriteBackObject getWriteBackObject()
     {
         // TODO Auto-generated method stub
-
+        return null;
     }
 
 }

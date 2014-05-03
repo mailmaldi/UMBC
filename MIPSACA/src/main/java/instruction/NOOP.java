@@ -45,16 +45,16 @@ public class NOOP extends Instruction
     }
 
     @Override
-    public void writeBackResult()
-    {
-        // Do nothing here
-
-    }
-
-    @Override
     public String toString()
     {
         return "NOOP";
+    }
+
+    @Override
+    public WriteBackObject getWriteBackObject()
+    {
+        // TODO Auto-generated method stub
+        return null;
     }
 
 }

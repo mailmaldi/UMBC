@@ -77,9 +77,8 @@ public class ANDI extends Instruction
     }
 
     @Override
-    public void writeBackResult()
+    public WriteBackObject getWriteBackObject()
     {
-        // TODO Auto-generated method stub
-
+        return new WriteBackObject(destinationLabel, destination);
     }
 }
