@@ -34,7 +34,7 @@ public class Main
             CPU.PROGRAM_COUNTER++;
         }
 
-        ResultsManager.testPrintWithDummyData();
+        ResultsManager.instance.testPrintWithDummyData();
 
     }
 }

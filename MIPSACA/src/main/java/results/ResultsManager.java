@@ -71,17 +71,18 @@ public class ResultsManager
         instructionMap.put(key, instruction);
     }
 
-    public static void testPrintWithDummyData()
+    public void testPrintWithDummyData() throws Exception
     {
         int count = 0;
         for (Integer address : ProgramManager.instance.InstructionList.keySet())
         {
             Instruction inst = ProgramManager.instance.InstructionList
                     .get(address);
+
             inst.entryCycle[0] = count++;
-            ResultsManager.instance.addInstruction(inst);
+            addInstruction(inst);
         }
 
-        ResultsManager.instance.printResults();
+        printResults();
     }
 }
