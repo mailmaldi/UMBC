@@ -11,7 +11,7 @@ public abstract class Instruction implements InstructionI
     public int[]   entryCycle;
     public int[]   exitCycle;
 
-    public String  printableInstruction = "";
+    public String  printableInstruction;
 
     public Instruction()
     {
