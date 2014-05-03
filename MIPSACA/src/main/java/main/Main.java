@@ -1,5 +1,7 @@
 package main;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 import config.ConfigManager;
 import config.ConfigParser;
 import memory.MemoryFileParser;
