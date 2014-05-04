@@ -22,6 +22,7 @@ public class Main
         System.out.println();
 
         ProgramParser.parse(args[0]);
+        ProgramManager.instance.dumpProgram();
 
         DataMemoryFileParser.parseMemoryFile(args[1]);
 
