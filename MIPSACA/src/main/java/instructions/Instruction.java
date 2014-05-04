@@ -1,5 +1,7 @@
 package instructions;
 
+import java.util.Arrays;
+
 public abstract class Instruction implements InstructionI
 {
     /* Hazards */
@@ -53,6 +55,13 @@ public abstract class Instruction implements InstructionI
     public void setPrintableInstruction(String str)
     {
         this.printableInstruction = str;
+    }
+
+    public String debugString()
+    {
+        String format = "%-25s %-10s %-10s";
+        return String.format(format, printableInstruction,
+                Arrays.toString(entryCycle), Arrays.toString(exitCycle));
     }
 
 }

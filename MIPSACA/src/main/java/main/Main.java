@@ -58,7 +58,7 @@ public class Main
         try
         {
 
-            while (true)
+            while (CPU.CLOCK < 1000)
             {
 
                 writeBack.execute();
@@ -73,10 +73,14 @@ public class Main
 
                 CPU.CLOCK++;
 
-                if (ResultsManager.instance.isHALT())
-                    break;
+                // if (ResultsManager.instance.isHALT())
+                // break;
 
             }
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
         }
         finally
         {

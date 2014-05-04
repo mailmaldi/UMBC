@@ -6,6 +6,7 @@ import instructions.NOOP;
 import java.util.ArrayDeque;
 import java.util.Iterator;
 
+import results.ResultsManager;
 import stages.CPU;
 
 public abstract class FunctionalUnit
@@ -41,6 +42,13 @@ public abstract class FunctionalUnit
         // This is hack for IU to MEM
         /* if (instruction.entryCycle[this.stageId] == 0) - Removed */
         instruction.entryCycle[this.stageId] = CPU.CLOCK;
+
+        ResultsManager.instance.addInstruction(instruction);
+
+        /*
+         * System.out.format("%-3s  %-20s %50s %n", CPU.CLOCK, this.getClass()
+         * .getSimpleName(), instruction.debugString());
+         */
 
     }
 
