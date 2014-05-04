@@ -88,15 +88,4 @@ public class FetchUnit extends FunctionalUnit
 
         validateQueueSize();
     }
-
-    /*
-     * public void dumpUnitDetails(){
-     * System.out.println("isPipelined - "+instance.isPipelined());
-     * System.out.println("isAvailable - "+instance.isAvailable());
-     * System.out.println("Pipeline Size - "+instance.getPipelineSize());
-     * System.
-     * out.println("Clock Cycles required - "+instance.getClockCyclesRequired
-     * ()); }
-     */
-
 }

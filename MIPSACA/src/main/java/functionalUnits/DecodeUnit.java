@@ -16,6 +16,7 @@ import java.util.List;
 
 import program.ProgramManager;
 import registers.RegisterManager;
+import results.ResultsManager;
 import stages.CPU;
 import stages.ExStage;
 import stages.FetchStage;
@@ -199,9 +200,7 @@ public class DecodeUnit extends FunctionalUnit
         // process HLT instruction
         else if (inst instanceof HLT)
         {
-            // flush fetch
-            // flushFetchAndReturn(inst);
-            return;
+            ResultsManager.instance.setHALT(true);
         }
         else
         {

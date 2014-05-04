@@ -67,6 +67,9 @@ public abstract class FunctionalUnit
 
     }
 
+    /*
+     * TODO may have to override this for If functionalunit
+     */
     public boolean isReadyToSend() throws Exception
     {
         if (isPipelined)

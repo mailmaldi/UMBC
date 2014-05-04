@@ -1,13 +1,15 @@
 package main;
 
-import instructions.HLT;
 import instructions.Instruction;
 import memory.DataMemoryFileParser;
+import memory.DataMemoryManager;
 import program.ProgramManager;
 import program.ProgramParser;
 import registers.RegisterFileParser;
+import registers.RegisterManager;
 import results.ResultsManager;
 import stages.CPU;
+import stages.CPU.RUN;
 import stages.DecodeStage;
 import stages.ExStage;
 import stages.FetchStage;
@@ -16,70 +18,86 @@ import config.ConfigParser;
 
 public class Main
 {
+    /**
+     * 
+     * @param args
+     *            inst.txt data.txt reg.txt config.txt result.txt
+     * @throws Exception
+     */
     public static void main(String[] args) throws Exception
     {
-        for (int i = 0; i < args.length; i++)
-            System.out.print(args[i] + " ");
-        System.out.println();
 
         ProgramParser.parse(args[0]);
         ProgramManager.instance.dumpProgram();
 
         DataMemoryFileParser.parseMemoryFile(args[1]);
+        DataMemoryManager.instance.dumpAllMemory();
 
         RegisterFileParser.parseRegister(args[2]);
+        RegisterManager.instance.dumpAllRegisters();
 
         ConfigParser.parseConfigFile(args[3]);
+        // ConfigManager.instance.dumpConfiguration();
 
+        /**
+         * Initialize Global CLOCK and PC to 0
+         */
         CPU.CLOCK = 0;
         CPU.PROGRAM_COUNTER = 0;
+        CPU.RUN_TYPE = RUN.PIPELINE;
 
-        WriteBackStage writeBack = WriteBackStage.getInstance();
-        ExStage ex = ExStage.getInstance();
-        DecodeStage decode = DecodeStage.getInstance();
-        FetchStage fetch = FetchStage.getInstance();
-
-        /*
-         * Instruction test =
-         * ProgramManager.instance.getInstructionAtAddress(0);
-         * 
-         * test.entryCycle[0] = 1; test.entryCycle[1] = 2; test.entryCycle[2] =
-         * 3; test.entryCycle[3] = 5;
-         * 
-         * test.exitCycle[0] = 5; test.exitCycle[1] = 6; test.exitCycle[2] = 7;
-         * test.exitCycle[3] = 8;
-         * 
-         * test.RAW = true; test.getDestinationRegister().setDestination(1000);
-         * for (SourceObject reg : test.getSourceRegister()) {
-         * reg.setSource(RegisterManager.instance.getRegisterValue("R4")); }
-         * 
-         * ex.acceptInstruction(test);
-         */
+        WriteBackStage wbStage = WriteBackStage.getInstance();
+        ExStage exStage = ExStage.getInstance();
+        DecodeStage idStage = DecodeStage.getInstance();
+        FetchStage ifStage = FetchStage.getInstance();
 
         try
         {
 
-            while (CPU.CLOCK < 1000)
+            int extraCLKCount = 5000; // Extra number of CLOCK cycles that will
+                                      // be run after HLT is Decoded
+            while (extraCLKCount != 0)
             {
 
-                writeBack.execute();
-                ex.execute();
-                decode.execute();
-                fetch.execute();
+                wbStage.execute();
+                exStage.execute();
 
-                Instruction next = new HLT();
-                if (fetch.checkIfFree(next))
+                // Well this is just stupid way of doing this
+                if (!ResultsManager.instance.isHALT())
                 {
-                    next = ProgramManager.instance
-                            .getInstructionAtAddress(CPU.PROGRAM_COUNTER);
-                    if (fetch.acceptInstruction(next))
-                        CPU.PROGRAM_COUNTER++;
+                    idStage.execute();
+
+                    if (!ResultsManager.instance.isHALT())
+                    {
+                        ifStage.execute();
+
+                        boolean checkInst = false;
+
+                        Instruction next = null;
+                        switch (CPU.RUN_TYPE)
+                        {
+                            case MEMORY:
+                                break;
+
+                            case PIPELINE:
+                                next = ProgramManager.instance
+                                        .getInstructionAtAddress(CPU.PROGRAM_COUNTER);
+                                checkInst = true;
+                                break;
+                        }
+
+                        if (checkInst && ifStage.checkIfFree(next)
+                                && ifStage.acceptInstruction(next))
+                        {
+                            // TODO update next.entryCycle[0] = CPU.CLOCK;
+                            CPU.PROGRAM_COUNTER++;
+                        }
+                    }
                 }
+                else
+                    extraCLKCount--;
 
                 CPU.CLOCK++;
-
-                // if (ResultsManager.instance.isHALT())
-                // break;
 
             }
         }

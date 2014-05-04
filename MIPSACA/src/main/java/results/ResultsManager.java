@@ -1,6 +1,5 @@
 package results;
 
-import instructions.HLT;
 import instructions.Instruction;
 
 import java.io.BufferedWriter;
@@ -74,10 +73,6 @@ public class ResultsManager
         int key = instruction.entryCycle[0];
         instructionMap.put(key, instruction);
 
-        if (instruction instanceof HLT)
-        {
-            this.HALT = true;
-        }
     }
 
     public void testPrintWithDummyData() throws Exception
@@ -100,5 +95,10 @@ public class ResultsManager
     public boolean isHALT()
     {
         return HALT;
+    }
+
+    public void setHALT(boolean halt)
+    {
+        this.HALT = halt;
     }
 }
