@@ -59,63 +59,43 @@ public class ExStage extends Stage
 
         List<FunctionalUnit> readyList = new ArrayList<FunctionalUnit>();
 
-        for (FunctionalUnit functionalUnit : tieBreakerList)
+        for (FunctionalUnit fu : tieBreakerList)
         {
-            if (functionalUnit.isReadyToSend())
-                readyList.add(functionalUnit);
+            if (fu.isReadyToSend())
+                readyList.add(fu);
         }
 
         if (readyList.size() <= 1)
         {
-            for (FunctionalUnit functionalUnit : tieBreakerList)
-            {
-                functionalUnit.executeUnit();
-            }
+            for (FunctionalUnit fu : tieBreakerList)
+                fu.executeUnit();
         }
         else
         {
-
             List<FunctionalUnit> winnerList = new ArrayList<FunctionalUnit>();
-            winnerList.add(tieBreaker(readyList));//
+            winnerList.add(tieBreaker(readyList));
+
+            if (winnerList.size() == 0)
+                throw new Exception(
+                        "ExStage: units said ready to send but winnerslist is empty");
 
             List<FunctionalUnit> losersList = ListUtils.subtract(readyList,
                     winnerList);
 
-            System.out.println("Loser List - ");
-            for (FunctionalUnit functionalUnit : losersList)
-            {
-                System.out.println(functionalUnit.getClass().getName());
-            }
-
             List<FunctionalUnit> exeList = ListUtils.subtract(tieBreakerList,
                     losersList);
 
-            System.out.println("Final List [for exe] - ");
-            for (FunctionalUnit functionalUnit : exeList)
-            {
-                System.out.println(functionalUnit.getClass().getName());
-            }
-            /*
-             * for (FunctionalUnit functionalUnit :
-             * readyList.removeA(loserList)) { functionalUnit.executeUnit(); }
-             */
+            // for all losers, run mark StructHazard
+            for (FunctionalUnit fu : losersList)
+                fu.markStructHazard();
+
+            // for exeList, execute
+            for (FunctionalUnit fu : exeList)
+                fu.executeUnit();
         }
 
-        /* iu.executeUnit(); */
-        /*
-         * List<String> functionalUnits = new ArrayList<String>();
-         * 
-         * List<String> winnerFunctionalUnit = tiebreaker(functionalUnits);
-         * 
-         * System.out.println(winnerFunctionalUnit);
-         * 
-         * if(peek().size() <= 1){
-         * 
-         * fpadd.fpadd(); fpmul.fpmul(); fpdiv.fpdiv(); iu.iu(); mem.mem();
-         * 
-         * }else{ tiebreaker(peek()); //run all the funtional units except the
-         * loser(s) of tiebreaker() }
-         */
+        iu.executeUnit(); // Special Handling for this
+
     }
 
     // This method will be called by ID while executing and passing on the

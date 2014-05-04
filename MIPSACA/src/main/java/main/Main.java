@@ -1,6 +1,7 @@
 package main;
 
 import instructions.Instruction;
+import instructions.SourceObject;
 import memory.DataMemoryFileParser;
 import program.ProgramManager;
 import program.ProgramParser;
@@ -48,38 +49,34 @@ public class Main
          * WRITEBACK writeBack = WRITEBACK.getInstance();
          */
 
-        while (CPU.CLOCK < 1)
+        Instruction test = ProgramManager.instance.getInstructionAtAddress(0);
+        /*
+         * test.entryCycle[0] = 1; test.entryCycle[1] = 2; test.entryCycle[2] =
+         * 3; test.entryCycle[3] = 5;
+         * 
+         * test.exitCycle[0] = 5; test.exitCycle[1] = 6; test.exitCycle[2] = 7;
+         * test.exitCycle[3] = 8;
+         * 
+         * test.RAW = true;
+         */
+        test.getDestinationRegister().setDestination(1000);
+        for (SourceObject reg : test.getSourceRegister())
+        {
+            reg.setSource(RegisterManager.instance.getRegisterValue("R4"));
+        }
+
+        ex.acceptInstruction(test);
+
+        while (CPU.CLOCK < 10)
         {
 
-            CPU.CLOCK++;
-            Instruction test = ProgramManager.instance
-                    .getInstructionAtAddress(0);
-            test.entryCycle[0] = 1;
-            test.entryCycle[1] = 2;
-            test.entryCycle[2] = 3;
-            test.entryCycle[3] = 5;
-
-            test.exitCycle[0] = 5;
-            test.exitCycle[1] = 6;
-            test.exitCycle[2] = 7;
-            test.exitCycle[3] = 8;
-
-            test.RAW = true;
-            test.getDestinationRegister().setDestination(1000);
-
-            writeBack.acceptInstruction(test);
             writeBack.execute();
+            ex.execute();
+
+            CPU.CLOCK++;
 
             System.out.println(RegisterManager.instance.getRegisterValue(test
                     .getDestinationRegister().getDestinationLabel()));
-
-            // ex.execute();
-            /*
-             * // Writeback
-             * 
-             * // Execute ex.execute(); // Decode decode.execute(); // Fetch
-             * fetch.execute();
-             */
 
         }
 

@@ -15,6 +15,8 @@ public abstract class Instruction implements InstructionI
 
     public String             printableInstruction;
 
+    public long               address;             // HACK
+
     public Instruction()
     {
         super();

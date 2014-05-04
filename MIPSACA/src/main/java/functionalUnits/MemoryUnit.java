@@ -2,14 +2,12 @@ package functionalUnits;
 
 import instructions.Instruction;
 import instructions.InstructionType;
-import instructions.LD;
-import instructions.LW;
 import instructions.NOOP;
-import instructions.SD;
-import instructions.SW;
 
 import java.util.ArrayDeque;
 
+import memory.DataMemoryManager;
+import stages.WriteBackStage;
 import config.ConfigManager;
 
 public class MemoryUnit extends FunctionalUnit
@@ -44,9 +42,30 @@ public class MemoryUnit extends FunctionalUnit
     }
 
     @Override
-    public void executeUnit()
+    public void executeUnit() throws Exception
     {
-        // TODO Auto-generated method stub
+        validateQueueSize();
+
+        Instruction inst = instructionQueue.peekLast();
+        if (!(inst instanceof NOOP))
+        {
+
+            if (inst.instructionType.equals(InstructionType.MEMORY_FPREG)
+                    || inst.instructionType.equals(InstructionType.MEMORY_REG))
+            {
+                inst.getDestinationRegister().setDestination(
+                        DataMemoryManager.instance
+                                .getValueFromAddress((int) inst.address));
+            }
+
+            if (!WriteBackStage.getInstance().checkIfFree(inst))
+                throw new Exception(
+                        "MemoryUnit: won tie, WB Stage should always be free");
+
+            WriteBackStage.getInstance().acceptInstruction(inst);
+        }
+        instructionQueue.removeLast();
+        instructionQueue.addFirst(new NOOP());
 
     }
 
@@ -65,6 +84,10 @@ public class MemoryUnit extends FunctionalUnit
         throw new Exception("MemoryUnit: Illegal instruction in Memory Unit: "
                 + inst.toString());
     }
+
+    // TODO override acceptInstruction here, first call super.accept , then get
+    // data from datamanager
+
     /*
      * public void dumpUnitDetails(){
      * System.out.println("isPipelined - "+instance.isPipelined());

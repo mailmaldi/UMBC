@@ -25,6 +25,7 @@ public class SW extends TwoRegImmediateInstruction
     @Override
     public void executeInstruction()
     {
+        this.address = immediate + src1.getSource();
     }
 
 }

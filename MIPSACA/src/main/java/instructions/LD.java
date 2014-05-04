@@ -2,7 +2,6 @@ package instructions;
 
 public class LD extends TwoRegImmediateInstruction
 {
-
     public LD(String sourceLabel, String destinationLabel, int immediate)
     {
         super(sourceLabel, destinationLabel, immediate);
@@ -25,5 +24,7 @@ public class LD extends TwoRegImmediateInstruction
     @Override
     public void executeInstruction()
     {
+        this.address = immediate + src1.getSource();
     }
+
 }

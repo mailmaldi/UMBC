@@ -5,6 +5,7 @@ import instructions.NOOP;
 
 import java.util.ArrayDeque;
 
+import stages.WriteBackStage;
 import config.ConfigManager;
 
 public class FpAddUnit extends FunctionalUnit
@@ -42,9 +43,22 @@ public class FpAddUnit extends FunctionalUnit
     }
 
     @Override
-    public void executeUnit()
+    public void executeUnit() throws Exception
     {
-        // TODO Auto-generated method stub
+        validateQueueSize();
+        Instruction inst = instructionQueue.peekLast();
+        if (!(inst instanceof NOOP))
+        {
+            inst.executeInstruction();
+
+            if (!WriteBackStage.getInstance().checkIfFree(inst))
+                throw new Exception(
+                        "FpDivUnit: won tie, WB Stage should always be free");
+
+            WriteBackStage.getInstance().acceptInstruction(inst);
+        }
+        instructionQueue.removeLast();
+        instructionQueue.addFirst(new NOOP());
 
     }
 

@@ -38,9 +38,27 @@ public class IntegerUnit extends FunctionalUnit
     }
 
     @Override
-    public void executeUnit()
+    public void executeUnit() throws Exception
     {
-        // TODO Auto-generated method stub
+        validateQueueSize();
+
+        Instruction inst = instructionQueue.peekLast();
+
+        if (inst instanceof NOOP)
+            return;
+
+        inst.executeInstruction();
+
+        if (MemoryUnit.getInstance().checkIfFree(inst))
+        {
+            MemoryUnit.getInstance().acceptInstruction(inst);
+            instructionQueue.removeLast();
+            instructionQueue.addFirst(new NOOP());
+        }
+        else
+        {
+            markStructHazard();
+        }
 
     }
 
