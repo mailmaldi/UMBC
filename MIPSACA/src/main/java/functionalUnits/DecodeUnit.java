@@ -16,7 +16,6 @@ import java.util.List;
 
 import program.ProgramManager;
 import registers.RegisterManager;
-import results.ResultsManager;
 import stages.CPU;
 import stages.ExStage;
 import stages.FetchStage;
@@ -137,6 +136,10 @@ public class DecodeUnit extends FunctionalUnit
 
     private void executeDecode(Instruction inst) throws Exception
     {
+
+        // update inst exitcycle
+        inst.exitCycle[stageId] = CPU.CLOCK;
+
         // read source registers
         List<SourceObject> sources = inst.getSourceRegister();
         if (sources != null)
@@ -157,7 +160,6 @@ public class DecodeUnit extends FunctionalUnit
         // process J instruction
         if (inst instanceof J)
         {
-
             // update PC to label address
             CPU.PROGRAM_COUNTER = ProgramManager.instance
                     .getInstructionAddreessForLabel(((J) inst)
@@ -198,7 +200,8 @@ public class DecodeUnit extends FunctionalUnit
         else if (inst instanceof HLT)
         {
             // flush fetch
-            flushFetchAndReturn(inst);
+            // flushFetchAndReturn(inst);
+            return;
         }
         else
         {
@@ -210,9 +213,9 @@ public class DecodeUnit extends FunctionalUnit
 
             ExStage.getInstance().acceptInstruction(inst);
 
-            instructionQueue.removeLast();
-            instructionQueue.addFirst(new NOOP());
         }
+        instructionQueue.removeLast();
+        instructionQueue.addFirst(new NOOP());
 
         validateQueueSize();
 
@@ -220,13 +223,6 @@ public class DecodeUnit extends FunctionalUnit
 
     private void flushFetchAndReturn(Instruction inst) throws Exception
     {
-        // update inst exitcycle
-        inst.exitCycle[stageId] = CPU.CLOCK;
-        // send to result manager
-        ResultsManager.instance.addInstruction(inst);
-        // remove inst & add NOOP
-        instructionQueue.removeLast();
-        instructionQueue.addFirst(new NOOP());
         // Flush Fetch Stage, no matter what
         // TODO Flush Fetch call here
         FetchStage.getInstance().flushStage();

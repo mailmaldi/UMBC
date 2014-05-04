@@ -1,5 +1,6 @@
 package main;
 
+import instructions.HLT;
 import instructions.Instruction;
 import memory.DataMemoryFileParser;
 import program.ProgramManager;
@@ -66,10 +67,14 @@ public class Main
                 decode.execute();
                 fetch.execute();
 
-                Instruction next = ProgramManager.instance
-                        .getInstructionAtAddress(CPU.PROGRAM_COUNTER);
-                if (fetch.checkIfFree(next) && fetch.acceptInstruction(next))
-                    CPU.PROGRAM_COUNTER++;
+                Instruction next = new HLT();
+                if (fetch.checkIfFree(next))
+                {
+                    next = ProgramManager.instance
+                            .getInstructionAtAddress(CPU.PROGRAM_COUNTER);
+                    if (fetch.acceptInstruction(next))
+                        CPU.PROGRAM_COUNTER++;
+                }
 
                 CPU.CLOCK++;
 
