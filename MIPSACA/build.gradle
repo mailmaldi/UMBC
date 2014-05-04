@@ -10,10 +10,21 @@ jar {
     manifest {
         attributes 'Implementation-Title': 'Gradle Quickstart', 'Implementation-Version': version , 'Main-Class': 'main.Main' 
     }
+
+    
 }
 
 repositories { mavenCentral() }
+
 dependencies {
 
-            
+	compile 'org.apache.commons:commons-collections4:4.0'
+}
+
+task fatJar(type: Jar, dependsOn: jar) {
+  baseName = project.name + '-fat'
+  deps = configurations.runtime.collect { it.isDirectory() ? it : zipTree(it) }
+  from(deps) { 
+    exclude 'META-INF/MANIFEST.MF'
+  }
 }

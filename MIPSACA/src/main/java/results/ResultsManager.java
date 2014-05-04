@@ -1,6 +1,6 @@
 package results;
 
-import instruction.Instruction;
+import instructions.Instruction;
 
 import java.io.BufferedWriter;
 import java.io.File;

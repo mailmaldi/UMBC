@@ -1,6 +1,6 @@
 package program;
 
-import instruction.Instruction;
+import instructions.Instruction;
 
 import java.util.Map;
 import java.util.TreeMap;

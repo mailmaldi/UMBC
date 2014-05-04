@@ -6,4 +6,5 @@
 	<classpathentry kind="src" path="src/test/java"/>
 	<classpathentry kind="src" path="src/test/resources"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER" exported="true"/>
+	<classpathentry sourcepath="C:/Users/Maldi/.gradle/caches/modules-2/files-2.1/org.apache.commons/commons-collections4/4.0/f8262a0e305c01bb4e8cb4053374315a8bc08e21/commons-collections4-4.0-sources.jar" kind="lib" path="C:/Users/Maldi/.gradle/caches/modules-2/files-2.1/org.apache.commons/commons-collections4/4.0/da217367fd25e88df52ba79e47658d4cf928b0d1/commons-collections4-4.0.jar" exported="true"/>
 </classpath>
