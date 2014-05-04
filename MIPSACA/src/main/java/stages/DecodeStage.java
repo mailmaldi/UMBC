@@ -1,6 +1,7 @@
 package stages;
 
 import instructions.Instruction;
+import functionalUnits.DecodeUnit;
 
 public class DecodeStage extends Stage
 {
@@ -20,35 +21,36 @@ public class DecodeStage extends Stage
         return instance;
     }
 
-    private functionalUnits.DecodeUnit decode;
+    private DecodeUnit decode;
 
     private DecodeStage()
     {
         super();
-        decode = functionalUnits.DecodeUnit.getInstance();
+        decode = DecodeUnit.getInstance();
     }
 
     @Override
-    public void execute()
+    public void execute() throws Exception
     {
-        System.out.println("------------------------------");
-        System.out.println("DECODE - ");
-        /* decode.dumpUnitDetails(); */
-        // decode.decode();
+        decode.executeUnit();
     }
 
     @Override
     public boolean checkIfFree(Instruction instruction) throws Exception
     {
-        // TODO Implement this method
-        return false;
+        return decode.checkIfFree(instruction);
     }
 
     @Override
     public boolean acceptInstruction(Instruction instruction) throws Exception
     {
-        // TODO Implement this method
-        return false;
+        if (!decode.checkIfFree(instruction))
+            throw new Exception("DECODESTAGE: Illegal state exception "
+                    + instruction.toString());
+
+        decode.acceptInstruction(instruction);
+
+        return true;
     }
 
 }

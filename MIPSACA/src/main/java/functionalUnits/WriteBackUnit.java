@@ -43,13 +43,13 @@ public class WriteBackUnit extends FunctionalUnit
     private Instruction peekInstructionFromQueue()
     {
         //
-        System.out.println("WRITEBACK Instruction Queue Size - "
-                + instructionQueue.size());
+        // System.out.println("WRITEBACK Instruction Queue Size - "
+        // + instructionQueue.size());
         Instruction inst = instructionQueue.peek();
         if (inst instanceof NOOP)
             return null;
 
-        System.out.println("WRITEBACK Valid instruction found in Queue");
+        // System.out.println("WRITEBACK Valid instruction found in Queue");
 
         return inst;
     }

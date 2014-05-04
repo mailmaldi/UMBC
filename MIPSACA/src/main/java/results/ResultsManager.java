@@ -1,5 +1,6 @@
 package results;
 
+import instructions.HLT;
 import instructions.Instruction;
 
 import java.io.BufferedWriter;
@@ -18,6 +19,8 @@ public class ResultsManager
     private final TreeMap<Integer, Instruction> instructionMap = new TreeMap<Integer, Instruction>();
 
     private BufferedWriter                      resultsWriter  = null;
+
+    private boolean                             HALT           = false;
 
     private ResultsManager()
     {
@@ -70,6 +73,11 @@ public class ResultsManager
     {
         int key = instruction.entryCycle[0];
         instructionMap.put(key, instruction);
+
+        if (instruction instanceof HLT)
+        {
+            this.HALT = true;
+        }
     }
 
     public void testPrintWithDummyData() throws Exception
@@ -87,5 +95,10 @@ public class ResultsManager
 
         printResults();
 
+    }
+
+    public boolean isHALT()
+    {
+        return HALT;
     }
 }

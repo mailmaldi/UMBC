@@ -29,28 +29,32 @@ public class FetchStage extends Stage
     }
 
     @Override
-    public void execute()
+    public void execute() throws Exception
     {
-        System.out.println("------------------------------");
-        System.out.println("FETCH - ");
-        // fetch.dumpUnitDetails();
-        /*
-         * if(fetch.fetch()) CPU.PROGRAM_COUNTER++; else return;
-         */
+        fetch.executeUnit();
     }
 
     @Override
     public boolean checkIfFree(Instruction instruction) throws Exception
     {
-        // TODO Implement this method
-        return false;
+        return fetch.checkIfFree(instruction);
     }
 
     @Override
     public boolean acceptInstruction(Instruction instruction) throws Exception
     {
-        // TODO Implement this method
-        return false;
+        if (!fetch.checkIfFree(instruction))
+            throw new Exception("FetchStage: Illegal state exception "
+                    + instruction.toString());
+
+        fetch.acceptInstruction(instruction);
+
+        return true;
+    }
+
+    public void flushStage() throws Exception
+    {
+        fetch.flushUnit();
     }
 
 }

@@ -1,9 +1,25 @@
 package functionalUnits;
 
-import java.util.ArrayDeque;
-
+import instructions.BEQ;
+import instructions.BNE;
+import instructions.ConditionalBranchInstruction;
+import instructions.FunctionalUnitType;
+import instructions.HLT;
 import instructions.Instruction;
+import instructions.J;
 import instructions.NOOP;
+import instructions.SourceObject;
+import instructions.WriteBackObject;
+
+import java.util.ArrayDeque;
+import java.util.List;
+
+import program.ProgramManager;
+import registers.RegisterManager;
+import results.ResultsManager;
+import stages.CPU;
+import stages.ExStage;
+import stages.FetchStage;
 
 public class DecodeUnit extends FunctionalUnit
 {
@@ -36,76 +52,184 @@ public class DecodeUnit extends FunctionalUnit
 
     }
 
-    private boolean checkSTRUCT()
+    private boolean processStruct(Instruction inst) throws Exception
     {
         // Check for possible STRUCT hazards
+        FunctionalUnitType type = inst.functionalUnitType;
+        if (!type.equals(FunctionalUnitType.UNKNOWN))
+        {
+            if (!(ExStage.getInstance().checkIfFree(inst)))
+            {
+                inst.STRUCT = true;
+                return true;
+            }
+        }
+
         return false;
     }
 
-    private boolean checkRAW()
+    private boolean processRAW(Instruction inst) throws Exception
     {
         // Check for possible RAW hazards
 
-        // Check if the source registers are free, by making a call to
-        // RegisterManager, by passing the labels
-        // RegisterManager.isRegisterFree(Label1)
-        // RegisterManager.isRegisterFree(Label2)
-        // if(true and true)
-        // No RAW hazard present
-        // Update the instruction to indicate the absence of RAW hazard; "N"
-        // else
-        // RAW hazard present
-        // Update the instruction to indicate the presence of RAW hazard; "Y"
+        List<SourceObject> sources = inst.getSourceRegister();
+        if (sources != null)
+        {
+            for (SourceObject register : sources)
+            {
+                if (!RegisterManager.instance.isRegisterFree(register
+                        .getSourceLabel()))
+                {
+                    inst.RAW = true;
+                    return true;
+                }
+            }
+        }
 
         return false;
     }
 
-    private boolean checkWAW()
+    private boolean processWAW(Instruction inst) throws Exception
     {
-        // Check for possible WAW hazards
+        WriteBackObject dest = inst.getDestinationRegister();
+        if (dest != null)
+        {
 
-        // Check if the destination register is free/available by making a call
-        // to the RegisterManager, by passing the destination label
-        // RegisterManager.isRegisterFree(Destination)
-        // if(true)
-        // No WAW hazard present
-        // Update the instruction to indicate the absence of WAW hazard; "N"
-        // else
-        // WAW hazard present
-        // Update the instruction to indicate to presence of WAW hazard; "Y"
-
+            if (!RegisterManager.instance.isRegisterFree(dest
+                    .getDestinationLabel()))
+            {
+                inst.WAW = true;
+                return true;
+            }
+        }
         return false;
     }
 
-    private boolean checkWAR()
+    private boolean processWAR(Instruction inst)
     {
-        // Check for possible WAR hazards
         return false;
     }
 
-    private String whatFunctionalUnit()
+    private boolean processHazards(Instruction inst) throws Exception
     {
-        // Check what functional unit
-        checkRAW();
-        checkWAR();
-        checkWAW();
-        return null;
-    }
-
-    private boolean isFunctionalUnitFree()
-    {
-        //
-        checkSTRUCT();
-        return false;
+        return (processRAW(inst) || processWAR(inst) || processWAW(inst) || processStruct(inst));
     }
 
     @Override
-    public void executeUnit()
+    public void executeUnit() throws Exception
     {
         // Called by the decode stage
+        validateQueueSize();
 
-        whatFunctionalUnit();
-        isFunctionalUnitFree();
+        Instruction inst = instructionQueue.peekLast();
+
+        if (inst instanceof NOOP)
+            return;
+
+        boolean hazards = processHazards(inst);
+
+        if (!hazards)
+            executeDecode(inst);
+
+        validateQueueSize();
+
+    }
+
+    private void executeDecode(Instruction inst) throws Exception
+    {
+        // read source registers
+        List<SourceObject> sources = inst.getSourceRegister();
+        if (sources != null)
+        {
+            for (SourceObject register : sources)
+            {
+                register.setSource(RegisterManager.instance
+                        .getRegisterValue(register.getSourceLabel()));
+            }
+        }
+
+        // lock destination register
+        WriteBackObject destReg = inst.getDestinationRegister();
+        if (destReg != null)
+            RegisterManager.instance.setRegisterBusy(destReg
+                    .getDestinationLabel());
+
+        // process J instruction
+        if (inst instanceof J)
+        {
+
+            // update PC to label address
+            CPU.PROGRAM_COUNTER = ProgramManager.instance
+                    .getInstructionAddreessForLabel(((J) inst)
+                            .getDestinationLabel());
+
+            flushFetchAndReturn(inst);
+
+        }
+        // process BNE,BEQ instruction
+        else if (inst instanceof ConditionalBranchInstruction)
+        {
+            if (inst instanceof BEQ)
+            {
+                if (((ConditionalBranchInstruction) inst).compareRegisters())
+                {
+                    // update PC
+                    CPU.PROGRAM_COUNTER = ProgramManager.instance
+                            .getInstructionAddreessForLabel(((BEQ) inst)
+                                    .getDestinationLabel());
+                    // Flush fetch stage
+                    flushFetchAndReturn(inst);
+                }
+            }
+            else if (inst instanceof BNE)
+            {
+                if (!((ConditionalBranchInstruction) inst).compareRegisters())
+                {
+                    // update PC
+                    CPU.PROGRAM_COUNTER = ProgramManager.instance
+                            .getInstructionAddreessForLabel(((BNE) inst)
+                                    .getDestinationLabel());
+                    // Flush fetch stage
+                    flushFetchAndReturn(inst);
+                }
+            }
+        }
+        // process HLT instruction
+        else if (inst instanceof HLT)
+        {
+            // flush fetch
+            flushFetchAndReturn(inst);
+        }
+        else
+        {
+
+            if (!ExStage.getInstance().checkIfFree(inst))
+                throw new Exception(
+                        "DecodeUnit: failed in exstage.checkIfFree after resolving struct hazard "
+                                + inst.toString());
+
+            ExStage.getInstance().acceptInstruction(inst);
+
+            instructionQueue.removeLast();
+            instructionQueue.addFirst(new NOOP());
+        }
+
+        validateQueueSize();
+
+    }
+
+    private void flushFetchAndReturn(Instruction inst) throws Exception
+    {
+        // update inst exitcycle
+        inst.exitCycle[stageId] = CPU.CLOCK;
+        // send to result manager
+        ResultsManager.instance.addInstruction(inst);
+        // remove inst & add NOOP
+        instructionQueue.removeLast();
+        instructionQueue.addFirst(new NOOP());
+        // Flush Fetch Stage, no matter what
+        // TODO Flush Fetch call here
+        FetchStage.getInstance().flushStage();
 
     }
 
