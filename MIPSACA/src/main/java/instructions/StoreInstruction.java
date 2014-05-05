@@ -8,12 +8,12 @@ public abstract class StoreInstruction extends Instruction
     SourceObject src1, src2;
     int          immediate;
 
-    public StoreInstruction(String sourceLabel, String destinationLabel,
+    public StoreInstruction(String sourceLabel1, String sourceLabel2,
             int immediate)
     {
         super();
-        src1 = new SourceObject(sourceLabel, 0);
-        src2 = new SourceObject(sourceLabel, 0);
+        src1 = new SourceObject(sourceLabel1, 0);
+        src2 = new SourceObject(sourceLabel2, 0);
         this.immediate = immediate;
     }
 
