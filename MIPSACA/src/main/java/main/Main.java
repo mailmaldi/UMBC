@@ -40,6 +40,8 @@ public class Main
         ConfigParser.parseConfigFile(args[3]);
         ConfigManager.instance.dumpConfiguration();
 
+        ResultsManager.instance.setResultsPath(args[4]);
+
         /**
          * Initialize Global CLOCK and PC to 0
          */
@@ -117,6 +119,7 @@ public class Main
         Thread.sleep(1000L);
         System.out.println("Results");
         ResultsManager.instance.printResults();
+        ResultsManager.instance.writeResults();
 
     }
 }

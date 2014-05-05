@@ -4,6 +4,7 @@ import instructions.Instruction;
 import instructions.NOOP;
 
 import java.util.ArrayDeque;
+import java.util.Iterator;
 
 import stages.WriteBackStage;
 
@@ -51,5 +52,21 @@ public abstract class FPFunctionalUnit extends FunctionalUnit
     public int getClockCyclesRequiredForNonPipeLinedUnit()
     {
         return clockCyclesRequired;
+    }
+
+    public void rotatePipelineOnHazard()
+    {
+        if (!isPipelined)
+            return;
+        // non pipelined, now iterate in reverse
+
+        for (Iterator<Instruction> itr = instructionQueue.descendingIterator(); itr
+                .hasNext();)
+        {
+            Instruction inst = itr.next();
+
+            if (inst instanceof NOOP)
+                break;
+        }
     }
 }

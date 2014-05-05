@@ -4,7 +4,6 @@ import instructions.Instruction;
 import instructions.NOOP;
 
 import java.util.ArrayDeque;
-import java.util.Iterator;
 
 import stages.CPU;
 import stages.StageType;
@@ -91,26 +90,30 @@ public abstract class FunctionalUnit
         return false;
     }
 
+    /**
+     * This will mark ONLY the last instruction in pipeline as Struct hazard
+     * 
+     * @throws Exception
+     */
     public void markStructHazard() throws Exception
     {
         // defensive, call validateQueueSize, may call isReadyToSend too!
         validateQueueSize();
 
-        // starting from last inst till we reach first of Q or a NOOP & mark the
-        // inst.StructHazard = true
-
         // TODO find this out else do
-        // instructionQueue.peekLast().STRUCT = true;
+        instructionQueue.peekLast().STRUCT = true;
 
-        for (Iterator<Instruction> itr = this.instructionQueue
-                .descendingIterator(); itr.hasNext();)
-        {
-            Instruction inst = itr.next();
-            if (inst instanceof NOOP)
-                break;
-
-            inst.STRUCT = true;
-        }
+        // // starting from last inst till we reach first of Q or a NOOP mark
+        // // Struct Hazard
+        // for (Iterator<Instruction> itr = this.instructionQueue
+        // .descendingIterator(); itr.hasNext();)
+        // {
+        // Instruction inst = itr.next();
+        // if (inst instanceof NOOP)
+        // break;
+        //
+        // inst.STRUCT = true;
+        // }
     }
 
     protected void updateEntryClockCycle(Instruction inst)

@@ -36,14 +36,13 @@ public class ResultsManager
 
     public void printResults()
     {
-        // http://stackoverflow.com/questions/15215326/how-can-i-create-ascii-table-in-java-in-a-console
-        // use String.format() and then print at the end
-        // ordered by key which is clock entry of entry into IF
-        //
+
+        System.out.println(String.format(
+                Utils.Constants.instructionOutputFormatString, "Instruction",
+                "FT", "ID", "EX", "WB", "RAW", "WAR", "WAW", "Struct"));
         for (int key : instructionMap.keySet())
         {
             Instruction inst = instructionMap.get(key);
-
             // System.out.format("%-3s ", key);
             // System.out.println(inst.debugString());
             System.out.println(inst.getOutputString());
@@ -53,10 +52,19 @@ public class ResultsManager
 
     public void writeResults()
     {
-        // use the printResults String, write it to writer and then close
-
         try
         {
+            resultsWriter.write(String.format(
+                    Utils.Constants.instructionOutputFormatString,
+                    "Instruction", "FT", "ID", "EX", "WB", "RAW", "WAR", "WAW",
+                    "Struct"));
+            resultsWriter.newLine();
+            for (int key : instructionMap.keySet())
+            {
+                Instruction inst = instructionMap.get(key);
+                resultsWriter.write(inst.getOutputString());
+                resultsWriter.newLine();
+            }
             resultsWriter.flush();
             resultsWriter.close();
         }

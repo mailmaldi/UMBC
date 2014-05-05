@@ -9,6 +9,7 @@ import java.util.TreeMap;
 
 import org.apache.commons.collections4.ListUtils;
 
+import functionalUnits.FPFunctionalUnit;
 import functionalUnits.FunctionalUnit;
 import functionalUnits.MemoryUnit;
 
@@ -90,8 +91,12 @@ public class ExStage extends Stage
 
             // for all losers, run mark StructHazard
             for (FunctionalUnit fu : losersList)
+            {
                 fu.markStructHazard();
-
+                // TODO for pipelined FPFunctionalUnit, move things 1 right
+                if(fu instanceof FPFunctionalUnit)
+                    ((FPFunctionalUnit) fu).rotatePipelineOnHazard();
+            }
             // for exeList, execute
             for (FunctionalUnit fu : exeList)
                 fu.executeUnit();
