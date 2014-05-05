@@ -1,11 +1,11 @@
 package instructions;
 
-public class SW extends TwoRegImmediateInstruction
+public class SW extends StoreInstruction
 {
 
-    public SW(String sourceLabel, String destinationLabel, int immediate)
+    public SW(String sourceLabel, String sourceLabel2, int immediate)
     {
-        super(sourceLabel, destinationLabel, immediate);
+        super(sourceLabel, sourceLabel2, immediate);
         this.functionalUnitType = FunctionalUnitType.IU;
         this.instructionType = InstructionType.MEMORY_REG;
     }
@@ -18,14 +18,7 @@ public class SW extends TwoRegImmediateInstruction
     @Override
     public String toString()
     {
-        return "SW" + dest.getDestinationLabel() + ", " + immediate + "("
-                + src1.getSourceLabel() + ")";
+        return "SW " + src1.getSourceLabel() + ", " + immediate + "("
+                + src2.getSourceLabel() + ")";
     }
-
-    @Override
-    public void executeInstruction()
-    {
-        this.address = immediate + src1.getSource();
-    }
-
 }

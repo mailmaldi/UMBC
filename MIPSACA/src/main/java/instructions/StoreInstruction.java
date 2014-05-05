@@ -3,27 +3,26 @@ package instructions;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class TwoRegImmediateInstruction extends Instruction
+public abstract class StoreInstruction extends Instruction
 {
-    SourceObject    src1;
-    WriteBackObject dest;
-    int             immediate;
+    SourceObject src1, src2;
+    int          immediate;
 
-    public TwoRegImmediateInstruction(String sourceLabel,
-            String destinationLabel, int immediate)
+    public StoreInstruction(String sourceLabel, String destinationLabel,
+            int immediate)
     {
         super();
         src1 = new SourceObject(sourceLabel, 0);
-        dest = new WriteBackObject(destinationLabel, 0);
+        src2 = new SourceObject(sourceLabel, 0);
         this.immediate = immediate;
     }
 
-    public TwoRegImmediateInstruction(TwoRegImmediateInstruction obj)
+    public StoreInstruction(StoreInstruction obj)
     {
         super(obj);
         setPrintableInstruction(obj.printableInstruction);
         this.src1 = new SourceObject(obj.src1);
-        this.dest = new WriteBackObject(obj.dest);
+        this.src2 = new SourceObject(obj.src2);
         this.immediate = obj.immediate;
     }
 
@@ -32,12 +31,24 @@ public abstract class TwoRegImmediateInstruction extends Instruction
     {
         List<SourceObject> sourceRegisterList = new ArrayList<SourceObject>();
         sourceRegisterList.add(src1);
+        sourceRegisterList.add(src2);
         return sourceRegisterList;
     }
 
     @Override
     public WriteBackObject getDestinationRegister()
     {
-        return dest;
+        return null;
+    }
+
+    @Override
+    public void executeInstruction()
+    {
+        this.address = immediate + src2.getSource();
+    }
+
+    public SourceObject getValueToWrite()
+    {
+        return src1;
     }
 }

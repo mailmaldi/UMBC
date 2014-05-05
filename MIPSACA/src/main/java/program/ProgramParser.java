@@ -113,20 +113,20 @@ public class ProgramParser
                 sourceRegister1 = operands[0];
                 offset = Integer.parseInt(operands[1].substring(0,
                         operands[1].lastIndexOf('(')));
-                destinationRegister = operands[1].substring(
+                sourceRegister2 = operands[1].substring(
                         operands[1].lastIndexOf('(') + 1,
                         operands[1].lastIndexOf(')'));
-                inst = new SW(sourceRegister1, destinationRegister, offset);
+                inst = new SW(sourceRegister1, sourceRegister2, offset);
                 break;
             case "S.D":
                 operands = getOperands(tokens);
                 sourceRegister1 = operands[0];
                 offset = Integer.parseInt(operands[1].substring(0,
                         operands[1].lastIndexOf('(')));
-                destinationRegister = operands[1].substring(
+                sourceRegister2 = operands[1].substring(
                         operands[1].lastIndexOf('(') + 1,
                         operands[1].lastIndexOf(')'));
-                inst = new SD(sourceRegister1, destinationRegister, offset);
+                inst = new SD(sourceRegister1, sourceRegister2, offset);
                 break;
             case "ADD.D":
                 operands = getOperands(tokens);

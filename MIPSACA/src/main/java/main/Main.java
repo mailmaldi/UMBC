@@ -14,6 +14,7 @@ import stages.DecodeStage;
 import stages.ExStage;
 import stages.FetchStage;
 import stages.WriteBackStage;
+import config.ConfigManager;
 import config.ConfigParser;
 
 public class Main
@@ -37,7 +38,7 @@ public class Main
         RegisterManager.instance.dumpAllRegisters();
 
         ConfigParser.parseConfigFile(args[3]);
-        // ConfigManager.instance.dumpConfiguration();
+        ConfigManager.instance.dumpConfiguration();
 
         /**
          * Initialize Global CLOCK and PC to 0

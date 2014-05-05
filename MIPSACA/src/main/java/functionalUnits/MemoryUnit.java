@@ -5,6 +5,7 @@ import instructions.InstructionType;
 import instructions.LD;
 import instructions.LW;
 import instructions.NOOP;
+import instructions.StoreInstruction;
 
 import java.util.ArrayDeque;
 
@@ -77,14 +78,14 @@ public class MemoryUnit extends FunctionalUnit
             if (inst.instructionType.equals(InstructionType.MEMORY_FPREG)
                     || inst.instructionType.equals(InstructionType.MEMORY_REG))
             {
-                if (inst instanceof LW || inst instanceof LD)
+                if (inst instanceof StoreInstruction)
+                    DataMemoryManager.instance.setValueToAddress(
+                            (int) inst.address, (int) ((StoreInstruction) inst)
+                                    .getValueToWrite().getSource());
+                else
                     inst.getDestinationRegister().setDestination(
                             DataMemoryManager.instance
                                     .getValueFromAddress((int) inst.address));
-                else
-                    DataMemoryManager.instance.setValueToAddress(
-                            (int) inst.address, (int) inst
-                                    .getDestinationRegister().getDestination());
             }
 
             if (!WriteBackStage.getInstance().checkIfFree(inst))
