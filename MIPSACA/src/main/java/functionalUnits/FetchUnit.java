@@ -2,9 +2,6 @@ package functionalUnits;
 
 import instructions.Instruction;
 import instructions.NOOP;
-
-import java.util.ArrayDeque;
-
 import results.ResultsManager;
 import stages.CPU;
 import stages.DecodeStage;
@@ -34,26 +31,21 @@ public class FetchUnit extends FunctionalUnit
         this.clockCyclesRequired = 1;
         this.pipelineSize = 1;
         this.stageId = StageType.IFSTAGE;
-        this.instructionQueue = new ArrayDeque<Instruction>();
-        for (int i = 0; i < this.pipelineSize; i++)
-            this.instructionQueue.add(new NOOP());
-
+        createPipelineQueue(pipelineSize);
     }
 
     @Override
     public int getClockCyclesRequiredForNonPipeLinedUnit()
     {
-        // TODO Auto-generated method stub
         return clockCyclesRequired;
     }
 
     @Override
     public void executeUnit() throws Exception
     {
-
         validateQueueSize();
 
-        Instruction inst = instructionQueue.peekLast();
+        Instruction inst = peekFirst();
 
         if (inst instanceof NOOP)
             return;
@@ -65,21 +57,15 @@ public class FetchUnit extends FunctionalUnit
 
             DecodeStage.getInstance().acceptInstruction(inst);
             updateExitClockCycle(inst);
-            instructionQueue.removeLast();
-            instructionQueue.add(new NOOP());
-
+            rotatePipe();
         }
-
-        validateQueueSize();
-
     }
 
     public void flushUnit() throws Exception
     {
-        // TODO Auto-generated method stub
         validateQueueSize();
 
-        Instruction inst = instructionQueue.peekLast();
+        Instruction inst = peekFirst();
 
         System.out.println("FetchUnit flushUnit called for inst: "
                 + inst.debugString());
@@ -93,8 +79,7 @@ public class FetchUnit extends FunctionalUnit
         // send to result manager
         ResultsManager.instance.addInstruction(inst);
         // remove inst & add NOOP
-        instructionQueue.removeLast();
-        instructionQueue.addFirst(new NOOP());
+        rotatePipe();
 
         validateQueueSize();
     }

@@ -2,28 +2,17 @@ package functionalUnits;
 
 import instructions.Instruction;
 import instructions.NOOP;
-
-import java.util.ArrayDeque;
-import java.util.Iterator;
-
 import stages.WriteBackStage;
 
 public abstract class FPFunctionalUnit extends FunctionalUnit
 {
-
-    protected void createPipelineQueue(int size)
-    {
-        instructionQueue = new ArrayDeque<Instruction>();
-        for (int i = 0; i < size; i++)
-            instructionQueue.add(new NOOP());
-    }
 
     @Override
     public void executeUnit() throws Exception
     {
         validateQueueSize();
 
-        Instruction inst = instructionQueue.peekLast();
+        Instruction inst = peekFirst();
         inst.executeInstruction();
 
         // TODO clean this up!!!
@@ -54,19 +43,30 @@ public abstract class FPFunctionalUnit extends FunctionalUnit
         return clockCyclesRequired;
     }
 
-    public void rotatePipelineOnHazard()
+    public void rotatePipelineOnHazard() throws Exception
     {
+        validateQueueSize();
         if (!isPipelined)
             return;
         // non pipelined, now iterate in reverse
 
-        for (Iterator<Instruction> itr = instructionQueue.descendingIterator(); itr
-                .hasNext();)
-        {
-            Instruction inst = itr.next();
+        Instruction objects[] = pipelineToArray();
 
-            if (inst instanceof NOOP)
-                break;
+        for (int i = objects.length; i > 0; i--)
+        {
+            if (objects[i] instanceof NOOP)
+            {
+                Instruction temp = objects[i];
+                objects[i] = objects[i - 1];
+                objects[i - 1] = temp;
+            }
         }
+
+        createPipelineQueue(0);
+        for (int i = objects.length; i >= 0; i--)
+        {
+            addLast(objects[i]);
+        }
+        validateQueueSize();
     }
 }
