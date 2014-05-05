@@ -68,10 +68,10 @@ public class DecodeUnit extends FunctionalUnit
 
         Instruction inst = instructionQueue.peekLast();
 
-        System.out.println(CPU.CLOCK + " Decode " + inst.debugString());
-
         if (inst instanceof NOOP)
             return;
+
+        System.out.println(CPU.CLOCK + " Decode " + inst.debugString());
 
         boolean hazards = processHazards(inst);
 

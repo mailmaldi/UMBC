@@ -71,15 +71,4 @@ public class IntegerUnit extends FunctionalUnit
         // TODO Auto-generated method stub
         return clockCyclesRequired;
     }
-
-    /*
-     * public void dumpUnitDetails(){
-     * System.out.println("isPipelined - "+instance.isPipelined());
-     * System.out.println("isAvailable - "+instance.isAvailable());
-     * System.out.println("Pipeline Size - "+instance.getPipelineSize());
-     * System.
-     * out.println("Clock Cycles required - "+instance.getClockCyclesRequired
-     * ()); }
-     */
-
 }

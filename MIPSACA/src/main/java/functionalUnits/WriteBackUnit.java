@@ -8,6 +8,7 @@ import java.util.ArrayDeque;
 
 import registers.RegisterManager;
 import results.ResultsManager;
+import stages.CPU;
 import stages.StageType;
 
 public class WriteBackUnit extends FunctionalUnit
@@ -40,29 +41,15 @@ public class WriteBackUnit extends FunctionalUnit
 
     }
 
-    private Instruction peekInstructionFromQueue()
-    {
-        //
-        // System.out.println("WRITEBACK Instruction Queue Size - "
-        // + instructionQueue.size());
-        Instruction inst = instructionQueue.peek();
-        if (inst instanceof NOOP)
-            return null;
-
-        // System.out.println("WRITEBACK Valid instruction found in Queue");
-
-        return inst;
-    }
-
     @Override
     public void executeUnit() throws Exception
     {
-        // Remove instruction from the queue if it is not a NOOP
+        Instruction inst = instructionQueue.peekLast();
 
-        // Check if an instruction other than NOOP is in its Queue
-        Instruction inst = peekInstructionFromQueue();
-        if (inst == null)
+        if (inst instanceof NOOP)
             return;
+
+        System.out.println(CPU.CLOCK + " WBUnit " + inst.debugString());
 
         // Write back the data to the destination register if any and unlock
         // destination register as Free
@@ -76,13 +63,13 @@ public class WriteBackUnit extends FunctionalUnit
             RegisterManager.instance.setRegisterFree(writeBackObject
                     .getDestinationLabel());
         }
-        // Update the exit cycle in the instruction and pass it on to the result
-        // manager for printing
-        // Remove the instruction from the queue and enqueue a NOOP
 
+        // Update the exit cycle in the instruction and pass it on to the result
         updateExitClockCycle(inst);
+        // manager for printing
         ResultsManager.instance.addInstruction(inst);
 
+        // Remove the instruction from the queue and enqueue a NOOP
         instructionQueue.remove();
         instructionQueue.add(new NOOP());
     }
@@ -93,12 +80,4 @@ public class WriteBackUnit extends FunctionalUnit
         // TODO Auto-generated method stub
         return clockCyclesRequired;
     }
-    /*
-     * public void dumpUnitDetails() { System.out.println("isPipelined - " +
-     * instance.isPipelined()); System.out.println("isAvailable - " +
-     * instance.isAvailable()); System.out.println("Pipeline Size - " +
-     * instance.getPipelineSize());
-     * System.out.println("Clock Cycles required - " +
-     * instance.getClockCyclesRequired()); }
-     */
 }

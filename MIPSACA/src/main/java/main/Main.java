@@ -103,7 +103,6 @@ public class Main
                     extraCLKCount--;
 
                 CPU.CLOCK++;
-
             }
         }
         catch (Exception e)

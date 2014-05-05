@@ -54,11 +54,21 @@ public class MemoryUnit extends FunctionalUnit
 
             // TODO for pipelined execution
             // check if inst has spent enough time in this unit
-            // switch (CPU.RUN_TYPE)
 
-            if (!((CPU.CLOCK - inst.entryCycle[this.stageId.getId()]) >= this
-                    .getClockCyclesRequiredForNonPipeLinedUnit()))
-                return;
+            switch (CPU.RUN_TYPE)
+            {
+                case MEMORY:
+
+                    break;
+
+                case PIPELINE:
+                    if (!((CPU.CLOCK - inst.entryCycle[stageId.getId()]) >= this
+                            .getClockCyclesRequiredForNonPipeLinedUnit()))
+                        return;
+                    break;
+                default:
+                    throw new Exception("MemoryUnit Illegal CPU.RUN_TYPE ");
+            }
 
             // TODO for cache, check if data is available yet
 
@@ -100,15 +110,5 @@ public class MemoryUnit extends FunctionalUnit
 
     // TODO override acceptInstruction here, first call super.accept , then get
     // data from datamanager
-
-    /*
-     * public void dumpUnitDetails(){
-     * System.out.println("isPipelined - "+instance.isPipelined());
-     * System.out.println("isAvailable - "+instance.isAvailable());
-     * System.out.println("Pipeline Size - "+instance.getPipelineSize());
-     * System.
-     * out.println("Clock Cycles required - "+instance.getClockCyclesRequired
-     * ()); }
-     */
 
 }
