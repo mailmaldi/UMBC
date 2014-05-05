@@ -132,7 +132,8 @@ public abstract class FunctionalUnit
 
     protected Instruction[] pipelineToArray()
     {
-        return (Instruction[]) instructionQueue.toArray();
+        return (Instruction[]) instructionQueue
+                .toArray(new Instruction[instructionQueue.size()]);
     }
 
     protected void createPipelineQueue(int size)

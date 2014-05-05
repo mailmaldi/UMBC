@@ -95,8 +95,8 @@ public class ExStage extends Stage
                 fu.markStructHazard();
                 // TODO for pipelined FPFunctionalUnit, move things 1 right
 
-                // if (fu instanceof FPFunctionalUnit)
-                // ((FPFunctionalUnit) fu).rotatePipelineOnHazard();
+                if (fu instanceof FPFunctionalUnit)
+                    ((FPFunctionalUnit) fu).rotatePipelineOnHazard();
 
             }
             // for exeList, execute
