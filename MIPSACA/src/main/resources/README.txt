@@ -6,8 +6,12 @@ just goto MIPSACA folder and run the following
 ./gradlew assemble
 ./gradlew fatJar
 
+If you have gradle installed on your machine (awesome!), then
+gradle clean build assemble fatJar
+
 this should resolve all dependencies and create 2 jar files in the MIPSACA/build/libs folder
 
+ ../resources/main/inst.txt ../resources/main/data.txt ../resources/main/reg.txt ../resources/main/config.txt ../resources/main/result.txt
 
 BUILD:
 
