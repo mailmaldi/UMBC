@@ -1,15 +1,9 @@
 package functionalUnits;
 
-import instructions.Instruction;
-import instructions.NOOP;
-
-import java.util.ArrayDeque;
-
 import stages.StageType;
-import stages.WriteBackStage;
 import config.ConfigManager;
 
-public class FpMulUnit extends FunctionalUnit
+public class FpMulUnit extends FPFunctionalUnit
 {
 
     private static volatile FpMulUnit instance;
@@ -29,45 +23,10 @@ public class FpMulUnit extends FunctionalUnit
     private FpMulUnit()
     {
         super();
-        this.isPipelined = ConfigManager.instance.FPMultPipelined;
-        this.clockCyclesRequired = ConfigManager.instance.FPMultLatency;
-
-        this.pipelineSize = this.isPipelined ? ConfigManager.instance.FPMultLatency
-                : 1;
-
-        this.instructionQueue = new ArrayDeque<Instruction>();
-        for (int i = 0; i < this.pipelineSize; i++)
-            this.instructionQueue.add(new NOOP());
-
-        this.stageId = StageType.EXSTAGE;
-    }
-
-    @Override
-    public void executeUnit() throws Exception
-    {
-        validateQueueSize();
-
-        Instruction inst = instructionQueue.peekLast();
-        if (!(inst instanceof NOOP))
-        {
-            inst.executeInstruction();
-
-            if (!WriteBackStage.getInstance().checkIfFree(inst))
-                throw new Exception(
-                        "FPMULTUNIT: won tie, WB Stage should always be free");
-
-            WriteBackStage.getInstance().acceptInstruction(inst);
-            updateExitClockCycle(inst);
-        }
-        instructionQueue.removeLast();
-        instructionQueue.addFirst(new NOOP());
-
-    }
-
-    @Override
-    public int getClockCyclesRequiredForNonPipeLinedUnit()
-    {
-        // TODO Auto-generated method stub
-        return clockCyclesRequired;
+        isPipelined = ConfigManager.instance.FPMultPipelined;
+        clockCyclesRequired = ConfigManager.instance.FPMultLatency;
+        pipelineSize = isPipelined ? ConfigManager.instance.FPMultLatency : 1;
+        stageId = StageType.EXSTAGE;
+        createPipelineQueue(pipelineSize);
     }
 }

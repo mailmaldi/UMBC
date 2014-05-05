@@ -123,4 +123,11 @@ public abstract class FunctionalUnit
         inst.exitCycle[this.stageId.getId()] = CPU.CLOCK;
     }
 
+    protected void rotatePipe() throws Exception
+    {
+        validateQueueSize();
+        instructionQueue.removeLast();
+        instructionQueue.addFirst(new NOOP());
+    }
+
 }
