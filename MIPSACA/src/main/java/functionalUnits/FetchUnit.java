@@ -1,12 +1,14 @@
 package functionalUnits;
 
+import instructions.Instruction;
+import instructions.NOOP;
+
 import java.util.ArrayDeque;
 
 import results.ResultsManager;
 import stages.CPU;
 import stages.DecodeStage;
-import instructions.Instruction;
-import instructions.NOOP;
+import stages.StageType;
 
 public class FetchUnit extends FunctionalUnit
 {
@@ -31,7 +33,7 @@ public class FetchUnit extends FunctionalUnit
         this.isPipelined = false;
         this.clockCyclesRequired = 1;
         this.pipelineSize = 1;
-        this.stageId = 0;
+        this.stageId = StageType.IFSTAGE;
         this.instructionQueue = new ArrayDeque<Instruction>();
         for (int i = 0; i < this.pipelineSize; i++)
             this.instructionQueue.add(new NOOP());
@@ -56,12 +58,16 @@ public class FetchUnit extends FunctionalUnit
         if (inst instanceof NOOP)
             return;
 
+        System.out.println(CPU.CLOCK + " Fetch  " + inst.debugString());
+
         if (DecodeStage.getInstance().checkIfFree(inst))
         {
 
             DecodeStage.getInstance().acceptInstruction(inst);
+            updateExitClockCycle(inst);
             instructionQueue.removeLast();
             instructionQueue.add(new NOOP());
+
         }
 
         validateQueueSize();
@@ -75,11 +81,15 @@ public class FetchUnit extends FunctionalUnit
 
         Instruction inst = instructionQueue.peekLast();
 
+        System.out.println("FetchUnit flushUnit called for inst: "
+                + inst.debugString());
+
         if (inst instanceof NOOP)
             return;
 
         // update inst exitcycle
-        inst.exitCycle[stageId] = CPU.CLOCK;
+        // updateEntryClockCycle(inst); // hack dont do this!!!
+        updateExitClockCycle(inst);
         // send to result manager
         ResultsManager.instance.addInstruction(inst);
         // remove inst & add NOOP

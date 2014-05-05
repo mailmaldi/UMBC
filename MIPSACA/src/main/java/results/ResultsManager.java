@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.util.TreeMap;
 
 import program.ProgramManager;
+import stages.StageType;
 
 public class ResultsManager
 {
@@ -39,16 +40,13 @@ public class ResultsManager
         // use String.format() and then print at the end
         // ordered by key which is clock entry of entry into IF
         //
-        String formatStr = "| %-25s | %-4s | %-4s | %-4s | %-4s | %-3s | %-3s | %-3s | %-4s |%n";
         for (int key : instructionMap.keySet())
         {
             Instruction inst = instructionMap.get(key);
 
-            System.out.format(formatStr, inst.printableInstruction,
-                    inst.exitCycle[0], inst.exitCycle[1], inst.exitCycle[2],
-                    inst.exitCycle[3], inst.RAW ? 'Y' : 'N', inst.WAR ? 'Y'
-                            : 'N', inst.WAW ? 'Y' : 'N', inst.STRUCT ? 'Y'
-                            : 'N');
+            // System.out.format("%-3s ", key);
+            // System.out.println(inst.debugString());
+            System.out.println(inst.getOutputString());
 
         }
     }
@@ -70,7 +68,7 @@ public class ResultsManager
 
     public void addInstruction(Instruction instruction)
     {
-        int key = instruction.entryCycle[0];
+        int key = instruction.entryCycle[StageType.IFSTAGE.getId()];
         instructionMap.put(key, instruction);
 
     }

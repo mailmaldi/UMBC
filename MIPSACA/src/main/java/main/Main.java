@@ -71,27 +71,32 @@ public class Main
                     {
                         ifStage.execute();
 
-                        boolean checkInst = false;
-
-                        Instruction next = null;
-                        switch (CPU.RUN_TYPE)
+                        // fetch a new instruction only if ifStage is free
+                        if (ifStage.checkIfFree())
                         {
-                            case MEMORY:
-                                break;
+                            boolean checkInst = false;
 
-                            case PIPELINE:
-                                next = ProgramManager.instance
-                                        .getInstructionAtAddress(CPU.PROGRAM_COUNTER);
-                                checkInst = true;
-                                break;
-                        }
+                            Instruction next = null;
+                            switch (CPU.RUN_TYPE)
+                            {
+                                case MEMORY:
+                                    break;
 
-                        if (checkInst && ifStage.checkIfFree(next)
-                                && ifStage.acceptInstruction(next))
-                        {
-                            // TODO update next.entryCycle[0] = CPU.CLOCK;
-                            CPU.PROGRAM_COUNTER++;
-                        }
+                                case PIPELINE:
+                                    next = ProgramManager.instance
+                                            .getInstructionAtAddress(CPU.PROGRAM_COUNTER);
+                                    checkInst = true;
+                                    break;
+                            }
+
+                            if (checkInst && ifStage.checkIfFree()
+                                    && ifStage.acceptInstruction(next))
+                            {
+                                // update entry clock?
+                                CPU.PROGRAM_COUNTER++;
+                            }
+
+                        } // end ifStage.checkIfFree
                     }
                 }
                 else
@@ -103,13 +108,15 @@ public class Main
         }
         catch (Exception e)
         {
+            System.out.println("ERROR: CLOCK=" + CPU.CLOCK);
             e.printStackTrace();
         }
         finally
         {
-            System.out.println("Results");
-            ResultsManager.instance.printResults();
         }
+        Thread.sleep(1000L);
+        System.out.println("Results");
+        ResultsManager.instance.printResults();
 
     }
 }

@@ -20,6 +20,7 @@ import results.ResultsManager;
 import stages.CPU;
 import stages.ExStage;
 import stages.FetchStage;
+import stages.StageType;
 
 public class DecodeUnit extends FunctionalUnit
 {
@@ -44,11 +45,125 @@ public class DecodeUnit extends FunctionalUnit
         this.isPipelined = false;
         this.clockCyclesRequired = 1;
         this.pipelineSize = 1;
-        this.stageId = 1;
+        this.stageId = StageType.IDSTAGE;
 
         this.instructionQueue = new ArrayDeque<Instruction>();
         for (int i = 0; i < this.pipelineSize; i++)
             this.instructionQueue.add(new NOOP());
+
+    }
+
+    @Override
+    public int getClockCyclesRequiredForNonPipeLinedUnit()
+    {
+        // TODO Auto-generated method stub
+        return clockCyclesRequired;
+    }
+
+    @Override
+    public void executeUnit() throws Exception
+    {
+        // Called by the decode stage
+        validateQueueSize();
+
+        Instruction inst = instructionQueue.peekLast();
+
+        System.out.println(CPU.CLOCK + " Decode " + inst.debugString());
+
+        if (inst instanceof NOOP)
+            return;
+
+        boolean hazards = processHazards(inst);
+
+        if (!hazards)
+            executeDecode(inst);
+
+        validateQueueSize();
+
+    }
+
+    private void executeDecode(Instruction inst) throws Exception
+    {
+
+        updateExitClockCycle(inst);
+        ResultsManager.instance.addInstruction(inst);
+
+        // read source registers
+        List<SourceObject> sources = inst.getSourceRegister();
+        if (sources != null)
+        {
+            for (SourceObject register : sources)
+            {
+                register.setSource(RegisterManager.instance
+                        .getRegisterValue(register.getSourceLabel()));
+            }
+        }
+
+        // lock destination register
+        WriteBackObject destReg = inst.getDestinationRegister();
+        if (destReg != null)
+            RegisterManager.instance.setRegisterBusy(destReg
+                    .getDestinationLabel());
+
+        // process J instruction
+        if (inst instanceof J)
+        {
+            // update PC to label address
+            CPU.PROGRAM_COUNTER = ProgramManager.instance
+                    .getInstructionAddreessForLabel(((J) inst)
+                            .getDestinationLabel());
+
+            FetchStage.getInstance().flushStage();
+
+        }
+        // process BNE,BEQ instruction
+        else if (inst instanceof ConditionalBranchInstruction)
+        {
+            if (inst instanceof BEQ)
+            {
+                if (((ConditionalBranchInstruction) inst).compareRegisters())
+                {
+                    // update PC
+                    CPU.PROGRAM_COUNTER = ProgramManager.instance
+                            .getInstructionAddreessForLabel(((BEQ) inst)
+                                    .getDestinationLabel());
+                    // Flush fetch stage
+                    FetchStage.getInstance().flushStage();
+                }
+            }
+            else if (inst instanceof BNE)
+            {
+                if (!((ConditionalBranchInstruction) inst).compareRegisters())
+                {
+                    // update PC
+                    CPU.PROGRAM_COUNTER = ProgramManager.instance
+                            .getInstructionAddreessForLabel(((BNE) inst)
+                                    .getDestinationLabel());
+                    // Flush fetch stage
+                    FetchStage.getInstance().flushStage();
+                }
+            }
+        }
+        // process HLT instruction
+        else if (inst instanceof HLT)
+        {
+            ResultsManager.instance.setHALT(true);
+        }
+        else
+        {
+
+            if (!ExStage.getInstance().checkIfFree(inst))
+                throw new Exception(
+                        "DecodeUnit: failed in exstage.checkIfFree after resolving struct hazard "
+                                + inst.toString());
+
+            ExStage.getInstance().acceptInstruction(inst);
+
+        }
+        instructionQueue.removeLast();
+        instructionQueue.addFirst(new NOOP());
+
+        validateQueueSize();
 
     }
 
@@ -114,133 +229,4 @@ public class DecodeUnit extends FunctionalUnit
     {
         return (processRAW(inst) || processWAR(inst) || processWAW(inst) || processStruct(inst));
     }
-
-    @Override
-    public void executeUnit() throws Exception
-    {
-        // Called by the decode stage
-        validateQueueSize();
-
-        Instruction inst = instructionQueue.peekLast();
-
-        if (inst instanceof NOOP)
-            return;
-
-        boolean hazards = processHazards(inst);
-
-        if (!hazards)
-            executeDecode(inst);
-
-        validateQueueSize();
-
-    }
-
-    private void executeDecode(Instruction inst) throws Exception
-    {
-
-        // update inst exitcycle
-        inst.exitCycle[stageId] = CPU.CLOCK;
-
-        // read source registers
-        List<SourceObject> sources = inst.getSourceRegister();
-        if (sources != null)
-        {
-            for (SourceObject register : sources)
-            {
-                register.setSource(RegisterManager.instance
-                        .getRegisterValue(register.getSourceLabel()));
-            }
-        }
-
-        // lock destination register
-        WriteBackObject destReg = inst.getDestinationRegister();
-        if (destReg != null)
-            RegisterManager.instance.setRegisterBusy(destReg
-                    .getDestinationLabel());
-
-        // process J instruction
-        if (inst instanceof J)
-        {
-            // update PC to label address
-            CPU.PROGRAM_COUNTER = ProgramManager.instance
-                    .getInstructionAddreessForLabel(((J) inst)
-                            .getDestinationLabel());
-
-            flushFetchAndReturn(inst);
-
-        }
-        // process BNE,BEQ instruction
-        else if (inst instanceof ConditionalBranchInstruction)
-        {
-            if (inst instanceof BEQ)
-            {
-                if (((ConditionalBranchInstruction) inst).compareRegisters())
-                {
-                    // update PC
-                    CPU.PROGRAM_COUNTER = ProgramManager.instance
-                            .getInstructionAddreessForLabel(((BEQ) inst)
-                                    .getDestinationLabel());
-                    // Flush fetch stage
-                    flushFetchAndReturn(inst);
-                }
-            }
-            else if (inst instanceof BNE)
-            {
-                if (!((ConditionalBranchInstruction) inst).compareRegisters())
-                {
-                    // update PC
-                    CPU.PROGRAM_COUNTER = ProgramManager.instance
-                            .getInstructionAddreessForLabel(((BNE) inst)
-                                    .getDestinationLabel());
-                    // Flush fetch stage
-                    flushFetchAndReturn(inst);
-                }
-            }
-        }
-        // process HLT instruction
-        else if (inst instanceof HLT)
-        {
-            ResultsManager.instance.setHALT(true);
-        }
-        else
-        {
-
-            if (!ExStage.getInstance().checkIfFree(inst))
-                throw new Exception(
-                        "DecodeUnit: failed in exstage.checkIfFree after resolving struct hazard "
-                                + inst.toString());
-
-            ExStage.getInstance().acceptInstruction(inst);
-
-        }
-        instructionQueue.removeLast();
-        instructionQueue.addFirst(new NOOP());
-
-        validateQueueSize();
-
-    }
-
-    private void flushFetchAndReturn(Instruction inst) throws Exception
-    {
-        // Flush Fetch Stage, no matter what
-        // TODO Flush Fetch call here
-        FetchStage.getInstance().flushStage();
-
-    }
-
-    @Override
-    public int getClockCyclesRequiredForNonPipeLinedUnit()
-    {
-        // TODO Auto-generated method stub
-        return clockCyclesRequired;
-    }
-    /*
-     * public void dumpUnitDetails() { System.out.println("isPipelined - " +
-     * instance.isPipelined()); System.out.println("isAvailable - " +
-     * instance.isAvailable()); System.out.println("Pipeline Size - " +
-     * instance.getPipelineSize());
-     * System.out.println("Clock Cycles required - " +
-     * instance.getClockCyclesRequired()); }
-     */
-
 }

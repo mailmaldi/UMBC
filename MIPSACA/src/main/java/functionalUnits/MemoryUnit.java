@@ -7,6 +7,8 @@ import instructions.NOOP;
 import java.util.ArrayDeque;
 
 import memory.DataMemoryManager;
+import stages.CPU;
+import stages.StageType;
 import stages.WriteBackStage;
 import config.ConfigManager;
 
@@ -38,7 +40,7 @@ public class MemoryUnit extends FunctionalUnit
         for (int i = 0; i < this.pipelineSize; i++)
             this.instructionQueue.add(new NOOP());
 
-        this.stageId = 2;
+        this.stageId = StageType.EXSTAGE;
     }
 
     @Override
@@ -49,6 +51,16 @@ public class MemoryUnit extends FunctionalUnit
         Instruction inst = instructionQueue.peekLast();
         if (!(inst instanceof NOOP))
         {
+
+            // TODO for pipelined execution
+            // check if inst has spent enough time in this unit
+            // switch (CPU.RUN_TYPE)
+
+            if (!((CPU.CLOCK - inst.entryCycle[this.stageId.getId()]) >= this
+                    .getClockCyclesRequiredForNonPipeLinedUnit()))
+                return;
+
+            // TODO for cache, check if data is available yet
 
             if (inst.instructionType.equals(InstructionType.MEMORY_FPREG)
                     || inst.instructionType.equals(InstructionType.MEMORY_REG))
@@ -63,6 +75,7 @@ public class MemoryUnit extends FunctionalUnit
                         "MemoryUnit: won tie, WB Stage should always be free");
 
             WriteBackStage.getInstance().acceptInstruction(inst);
+            updateExitClockCycle(inst);
         }
         instructionQueue.removeLast();
         instructionQueue.addFirst(new NOOP());

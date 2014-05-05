@@ -1,11 +1,13 @@
 package functionalUnits;
 
-import java.util.ArrayDeque;
-
-import stages.WriteBackStage;
-import config.ConfigManager;
 import instructions.Instruction;
 import instructions.NOOP;
+
+import java.util.ArrayDeque;
+
+import stages.StageType;
+import stages.WriteBackStage;
+import config.ConfigManager;
 
 public class FpMulUnit extends FunctionalUnit
 {
@@ -37,7 +39,7 @@ public class FpMulUnit extends FunctionalUnit
         for (int i = 0; i < this.pipelineSize; i++)
             this.instructionQueue.add(new NOOP());
 
-        this.stageId = 2;
+        this.stageId = StageType.EXSTAGE;
     }
 
     @Override
@@ -54,6 +56,7 @@ public class FpMulUnit extends FunctionalUnit
                         "FPMULTUNIT: won tie, WB Stage should always be free");
 
             WriteBackStage.getInstance().acceptInstruction(inst);
+            updateExitClockCycle(inst);
         }
         instructionQueue.removeLast();
         instructionQueue.addFirst(new NOOP());

@@ -8,7 +8,7 @@ import java.util.ArrayDeque;
 
 import registers.RegisterManager;
 import results.ResultsManager;
-import stages.CPU;
+import stages.StageType;
 
 public class WriteBackUnit extends FunctionalUnit
 {
@@ -36,7 +36,7 @@ public class WriteBackUnit extends FunctionalUnit
         this.instructionQueue = new ArrayDeque<Instruction>();
         this.instructionQueue.add(new NOOP());
 
-        this.stageId = 3;
+        this.stageId = StageType.WBSTAGE;
 
     }
 
@@ -80,7 +80,7 @@ public class WriteBackUnit extends FunctionalUnit
         // manager for printing
         // Remove the instruction from the queue and enqueue a NOOP
 
-        inst.exitCycle[3] = CPU.CLOCK;
+        updateExitClockCycle(inst);
         ResultsManager.instance.addInstruction(inst);
 
         instructionQueue.remove();

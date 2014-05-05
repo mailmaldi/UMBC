@@ -25,6 +25,9 @@ public class WriteBackStage extends Stage
     private WriteBackStage()
     {
         super();
+
+        this.stageType = StageType.WBSTAGE;
+
         writeBack = functionalUnits.WriteBackUnit.getInstance();
     }
 

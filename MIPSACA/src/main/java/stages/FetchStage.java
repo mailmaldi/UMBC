@@ -26,6 +26,7 @@ public class FetchStage extends Stage
     {
         super();
         fetch = functionalUnits.FetchUnit.getInstance();
+        this.stageType = StageType.IFSTAGE;
     }
 
     @Override
@@ -48,7 +49,6 @@ public class FetchStage extends Stage
                     + instruction.toString());
 
         fetch.acceptInstruction(instruction);
-
         return true;
     }
 

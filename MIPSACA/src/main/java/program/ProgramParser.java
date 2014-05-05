@@ -49,6 +49,13 @@ public class ProgramParser
             if (reader != null)
                 reader.close();
         }
+        // HACK
+
+        Instruction inst = new HLT();
+        inst.setPrintableInstruction(inst.toString());
+        ProgramManager.instance.InstructionList.put(
+                ProgramManager.instance.instructionCount++, inst);
+
     }
 
     private static void parseInstLine(String line) throws Exception

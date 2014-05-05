@@ -40,6 +40,9 @@ public class ExStage extends Stage
     private ExStage()
     {
         super();
+
+        this.stageType = StageType.EXSTAGE;
+
         iu = functionalUnits.IntegerUnit.getInstance();
         mem = functionalUnits.MemoryUnit.getInstance();
         fpadd = functionalUnits.FpAddUnit.getInstance();

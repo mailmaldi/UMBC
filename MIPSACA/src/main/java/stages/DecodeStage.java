@@ -27,6 +27,7 @@ public class DecodeStage extends Stage
     {
         super();
         decode = DecodeUnit.getInstance();
+        this.stageType = StageType.IDSTAGE;
     }
 
     @Override

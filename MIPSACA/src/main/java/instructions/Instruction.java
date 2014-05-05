@@ -59,9 +59,18 @@ public abstract class Instruction implements InstructionI
 
     public String debugString()
     {
-        String format = "%-25s %-10s %-10s";
-        return String.format(format, printableInstruction,
-                Arrays.toString(entryCycle), Arrays.toString(exitCycle));
+        String format = "%-20s %-10s %-10s %-3s %-3s %-3s %-3s";
+        return String.format(format, printableInstruction, Arrays
+                .toString(entryCycle), Arrays.toString(exitCycle), RAW ? 'Y'
+                : 'N', WAR ? 'Y' : 'N', WAW ? 'Y' : 'N', STRUCT ? 'Y' : 'N');
+    }
+
+    public String getOutputString()
+    {
+        String formatStr = "| %-25s | %-4s | %-4s | %-4s | %-4s | %-3s | %-3s | %-3s | %-4s |";
+        return String.format(formatStr, printableInstruction, exitCycle[0],
+                exitCycle[1], exitCycle[2], exitCycle[3], RAW ? 'Y' : 'N',
+                WAR ? 'Y' : 'N', WAW ? 'Y' : 'N', STRUCT ? 'Y' : 'N');
     }
 
 }

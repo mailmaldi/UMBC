@@ -1,9 +1,11 @@
 package functionalUnits;
 
-import java.util.ArrayDeque;
-
 import instructions.Instruction;
 import instructions.NOOP;
+
+import java.util.ArrayDeque;
+
+import stages.StageType;
 
 public class IntegerUnit extends FunctionalUnit
 {
@@ -33,7 +35,7 @@ public class IntegerUnit extends FunctionalUnit
         for (int i = 0; i < this.pipelineSize; i++)
             this.instructionQueue.add(new NOOP());
 
-        this.stageId = 2;
+        this.stageId = StageType.EXSTAGE;
 
     }
 
@@ -52,6 +54,7 @@ public class IntegerUnit extends FunctionalUnit
         if (MemoryUnit.getInstance().checkIfFree(inst))
         {
             MemoryUnit.getInstance().acceptInstruction(inst);
+            updateExitClockCycle(inst);
             instructionQueue.removeLast();
             instructionQueue.addFirst(new NOOP());
         }

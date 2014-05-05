@@ -6,8 +6,8 @@ import instructions.NOOP;
 import java.util.ArrayDeque;
 import java.util.Iterator;
 
-import results.ResultsManager;
 import stages.CPU;
+import stages.StageType;
 
 public abstract class FunctionalUnit
 {
@@ -15,7 +15,7 @@ public abstract class FunctionalUnit
     public boolean                 isPipelined;
     public int                     clockCyclesRequired;
     public int                     pipelineSize;
-    public int                     stageId;
+    public StageType               stageId;
     public ArrayDeque<Instruction> instructionQueue;
 
     public abstract void executeUnit() throws Exception;
@@ -29,21 +29,15 @@ public abstract class FunctionalUnit
     {
 
         if (!checkIfFree(instruction))
-            throw new Exception("FUNCTIONALUNIT: Illegal state of queue");
+            throw new Exception("FUNCTIONALUNIT: Illegal state of queue "
+                    + this.getClass().getSimpleName());
 
         instructionQueue.removeFirst();
         instructionQueue.addFirst(instruction);
 
+        updateEntryClockCycle(instruction);
+
         validateQueueSize();
-
-        if (this.stageId > 0)
-            instruction.exitCycle[this.stageId - 1] = CPU.CLOCK;
-
-        // This is hack for IU to MEM
-        /* if (instruction.entryCycle[this.stageId] == 0) - Removed */
-        instruction.entryCycle[this.stageId] = CPU.CLOCK;
-
-        ResultsManager.instance.addInstruction(instruction);
 
         /*
          * System.out.format("%-3s  %-20s %50s %n", CPU.CLOCK, this.getClass()
@@ -67,6 +61,11 @@ public abstract class FunctionalUnit
 
     }
 
+    public boolean checkIfFree() throws Exception
+    {
+        return checkIfFree(null);
+    }
+
     /*
      * TODO may have to override this for If functionalunit
      */
@@ -82,7 +81,8 @@ public abstract class FunctionalUnit
         else
         {
             if (!(instructionQueue.peekLast() instanceof NOOP)
-                    && ((CPU.CLOCK - instructionQueue.peekLast().entryCycle[stageId]) >= getClockCyclesRequiredForNonPipeLinedUnit()))
+                    && ((CPU.CLOCK - instructionQueue.peekLast().entryCycle[stageId
+                            .getId()]) >= getClockCyclesRequiredForNonPipeLinedUnit()))
             {
                 return true;
             }
@@ -111,6 +111,16 @@ public abstract class FunctionalUnit
 
             inst.STRUCT = true;
         }
-
     }
+
+    protected void updateEntryClockCycle(Instruction inst)
+    {
+        inst.entryCycle[this.stageId.getId()] = CPU.CLOCK;
+    }
+
+    protected void updateExitClockCycle(Instruction inst)
+    {
+        inst.exitCycle[this.stageId.getId()] = CPU.CLOCK;
+    }
+
 }
