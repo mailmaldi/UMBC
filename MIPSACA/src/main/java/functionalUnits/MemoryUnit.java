@@ -53,7 +53,8 @@ public class MemoryUnit extends FunctionalUnit
             {
                 case MEMORY:
 
-                    break;
+                    // TODO break when written code here
+                    // break;
 
                 case PIPELINE:
                     if (!((CPU.CLOCK - inst.entryCycle[stageId.getId()]) >= this

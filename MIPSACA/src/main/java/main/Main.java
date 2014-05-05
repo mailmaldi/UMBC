@@ -14,6 +14,7 @@ import stages.DecodeStage;
 import stages.ExStage;
 import stages.FetchStage;
 import stages.WriteBackStage;
+import cache.ICacheManager;
 import config.ConfigManager;
 import config.ConfigParser;
 
@@ -47,7 +48,7 @@ public class Main
          */
         CPU.CLOCK = 0;
         CPU.PROGRAM_COUNTER = 0;
-        CPU.RUN_TYPE = RUN.PIPELINE;
+        CPU.RUN_TYPE = RUN.MEMORY;
 
         WriteBackStage wbStage = WriteBackStage.getInstance();
         ExStage exStage = ExStage.getInstance();
@@ -83,6 +84,11 @@ public class Main
                             switch (CPU.RUN_TYPE)
                             {
                                 case MEMORY:
+
+                                    next = ICacheManager.instance
+                                            .getInstructionFromCache(CPU.PROGRAM_COUNTER);
+                                    if (next != null)
+                                        checkInst = true;
                                     break;
 
                                 case PIPELINE:
