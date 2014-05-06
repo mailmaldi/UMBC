@@ -2,7 +2,7 @@ package cache;
 
 public class ICache
 {
-    int[] cache;
+    private int[] cache;
 
     public ICache()
     {

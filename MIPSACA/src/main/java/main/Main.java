@@ -46,7 +46,7 @@ public class Main
          */
         CPU.CLOCK = 0;
         CPU.PROGRAM_COUNTER = 0;
-        CPU.RUN_TYPE = RUN.PIPELINE;
+        CPU.RUN_TYPE = RUN.MEMORY;
 
         WriteBackStage wbStage = WriteBackStage.getInstance();
         ExStage exStage = ExStage.getInstance();
@@ -56,8 +56,8 @@ public class Main
         try
         {
 
-            int extraCLKCount = 5000; // Extra number of CLOCK cycles that will
-                                      // be run after HLT is Decoded flush pipeline
+            // I run these many clock cycles after HLT to flush pipeline
+            int extraCLKCount = 5000;
             while (extraCLKCount != 0)
             {
 
