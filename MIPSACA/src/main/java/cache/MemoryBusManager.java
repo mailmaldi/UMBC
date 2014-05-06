@@ -37,8 +37,8 @@ public class MemoryBusManager
         if (dCacheRequested == true
                 && DCacheManager.instance.request.lastRequestInstructionEntryClock < CPU.CLOCK)
         {
-            return DCacheManager.instance.request.clockCyclesToBlock
-                    + DCacheManager.instance.request.lastRequestInstructionEntryClock;
+            return CPU.CLOCK - (dCacheRequestClk)
+                    + DCacheManager.instance.request.clockCyclesToBlock;
         }
         else
         {

@@ -27,6 +27,7 @@ public class DCacheManager
 
     public boolean canProceed(Instruction inst) throws Exception
     {
+        boolean accessingMemory = false;
         int address = (int) inst.address;
         if (request.lastRequestInstruction == null)
         {
@@ -62,8 +63,10 @@ public class DCacheManager
                         // if lru block is not dirty, then just write to dcache
                         if (cache.isLRUBlockDirty(address))
                         {
-                            request.clockCyclesToBlock += MemoryBusManager.instance
+                            int memoryDelay = MemoryBusManager.instance
                                     .getDelayForDCache();
+                            accessingMemory = true;
+                            request.clockCyclesToBlock += memoryDelay;
                             request.clockCyclesToBlock += get2TPlusKValue();
                         }
                         else
@@ -93,6 +96,7 @@ public class DCacheManager
                     {
                         request.clockCyclesToBlock += MemoryBusManager.instance
                                 .getDelayForDCache();
+                        accessingMemory = true;
                         request.clockCyclesToBlock += get2TPlusKValue();
                     }
                     else
@@ -104,6 +108,7 @@ public class DCacheManager
                         {
                             request.clockCyclesToBlock += MemoryBusManager.instance
                                     .getDelayForDCache();
+                            accessingMemory = true;
                             request.clockCyclesToBlock += (ConfigManager.instance.MemoryLatency);
                             request.clockCyclesToBlock += get2TPlusKValue();
                         }
@@ -125,6 +130,11 @@ public class DCacheManager
         else
         {
             //
+        }
+        if (accessingMemory)
+        {
+            MemoryBusManager.instance.dCacheRequestClk = CPU.CLOCK;
+            MemoryBusManager.instance.dCacheRequested = true;
         }
 
         return validateClockCyclesToBlock();
