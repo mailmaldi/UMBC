@@ -1,6 +1,8 @@
 package cache;
 
 import instructions.Instruction;
+import instructions.LD;
+import instructions.SD;
 import stages.CPU;
 import config.ConfigManager;
 
@@ -62,7 +64,7 @@ public class DCacheManager
                         {
                             request.clockCyclesToBlock += MemoryBusManager.instance
                                     .getDelayForDCache();
-                            request.clockCyclesToBlock += 2 * (ConfigManager.instance.DCacheLatency + ConfigManager.instance.MemoryLatency);
+                            request.clockCyclesToBlock += get2TPlusKValue();
                         }
                         else
                         {
@@ -91,7 +93,7 @@ public class DCacheManager
                     {
                         request.clockCyclesToBlock += MemoryBusManager.instance
                                 .getDelayForDCache();
-                        request.clockCyclesToBlock += 2 * (ConfigManager.instance.DCacheLatency + ConfigManager.instance.MemoryLatency);
+                        request.clockCyclesToBlock += get2TPlusKValue();
                     }
                     else
                     {
@@ -103,7 +105,7 @@ public class DCacheManager
                             request.clockCyclesToBlock += MemoryBusManager.instance
                                     .getDelayForDCache();
                             request.clockCyclesToBlock += (ConfigManager.instance.MemoryLatency);
-                            request.clockCyclesToBlock += 2 * (ConfigManager.instance.DCacheLatency + ConfigManager.instance.MemoryLatency);
+                            request.clockCyclesToBlock += get2TPlusKValue();
                         }
                         else
                         {
@@ -133,15 +135,20 @@ public class DCacheManager
         int address = (int) inst.address;
         if (!request.hasAccessVariablesSet)
         {
+            if (inst instanceof LD || inst instanceof SD)
+                dCacheAccessRequests++;
             dCacheAccessRequests++;
             if (cache.doesAddressExist(address))
+                dCacheAccessHits++;
+            cache.updateBlock(address, Instruction.isStore(inst));
+            if (cache.doesAddressExist(address)
+                    && (inst instanceof LD || inst instanceof SD))
                 dCacheAccessHits++;
             request.hasAccessVariablesSet = true;
         }
         // For Store, find block, mark dirty & update address & lru
         // for Load, find block, update address & lru
         request.resetValues();
-        cache.updateBlock(address, Instruction.isStore(inst));
     }
 
     private boolean validateClockCyclesToBlock() throws Exception
@@ -167,6 +174,11 @@ public class DCacheManager
         sb.append(String.format(format, "Number of Data cache hits:",
                 dCacheAccessHits));
         return sb.toString();
+    }
+
+    public int get2TPlusKValue()
+    {
+        return 2 * (ConfigManager.instance.DCacheLatency + ConfigManager.instance.MemoryLatency);
     }
 
 }
