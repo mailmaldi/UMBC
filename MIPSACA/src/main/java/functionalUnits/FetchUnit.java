@@ -1,5 +1,7 @@
 package functionalUnits;
 
+import program.ProgramManager;
+import cache.ICacheManager;
 import instructions.Instruction;
 import instructions.NOOP;
 import results.ResultsManager;
@@ -47,18 +49,20 @@ public class FetchUnit extends FunctionalUnit
 
         Instruction inst = peekFirst();
 
-        if (inst instanceof NOOP)
-            return;
-
-        System.out.println(CPU.CLOCK + " Fetch  " + inst.debugString());
-
-        if (DecodeStage.getInstance().checkIfFree(inst))
+        if (!(inst instanceof NOOP))
         {
+            System.out.println(CPU.CLOCK + " Fetch  " + inst.debugString());
 
-            DecodeStage.getInstance().acceptInstruction(inst);
-            updateExitClockCycle(inst);
-            rotatePipe();
+            if (DecodeStage.getInstance().checkIfFree(inst))
+            {
+
+                DecodeStage.getInstance().acceptInstruction(inst);
+                updateExitClockCycle(inst);
+                rotatePipe();
+            }
         }
+
+        fetchNextInstruction();
     }
 
     public void flushUnit() throws Exception
@@ -82,5 +86,40 @@ public class FetchUnit extends FunctionalUnit
         rotatePipe();
 
         validateQueueSize();
+    }
+
+    private void fetchNextInstruction() throws Exception
+    {
+        // fetch a new instruction only if ifStage is free
+        if (checkIfFree())
+        {
+            boolean checkInst = false;
+
+            Instruction next = null;
+            switch (CPU.RUN_TYPE)
+            {
+                case MEMORY:
+
+                    next = ICacheManager.instance
+                            .getInstructionFromCache(CPU.PROGRAM_COUNTER);
+                    if (next != null)
+                        checkInst = true;
+                    break;
+
+                case PIPELINE:
+                    next = ProgramManager.instance
+                            .getInstructionAtAddress(CPU.PROGRAM_COUNTER);
+                    checkInst = true;
+                    break;
+            }
+
+            if (checkInst && checkIfFree())
+            {
+                acceptInstruction(next);
+                CPU.PROGRAM_COUNTER++;
+            }
+
+        } // end ifStage.checkIfFree
+
     }
 }

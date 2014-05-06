@@ -1,6 +1,5 @@
 package main;
 
-import instructions.Instruction;
 import memory.DataMemoryFileParser;
 import memory.DataMemoryManager;
 import program.ProgramManager;
@@ -14,7 +13,6 @@ import stages.DecodeStage;
 import stages.ExStage;
 import stages.FetchStage;
 import stages.WriteBackStage;
-import cache.ICacheManager;
 import config.ConfigManager;
 import config.ConfigParser;
 
@@ -48,7 +46,7 @@ public class Main
          */
         CPU.CLOCK = 0;
         CPU.PROGRAM_COUNTER = 0;
-        CPU.RUN_TYPE = RUN.MEMORY;
+        CPU.RUN_TYPE = RUN.PIPELINE;
 
         WriteBackStage wbStage = WriteBackStage.getInstance();
         ExStage exStage = ExStage.getInstance();
@@ -59,7 +57,7 @@ public class Main
         {
 
             int extraCLKCount = 5000; // Extra number of CLOCK cycles that will
-                                      // be run after HLT is Decoded
+                                      // be run after HLT is Decoded flush pipeline
             while (extraCLKCount != 0)
             {
 
@@ -74,38 +72,6 @@ public class Main
                     if (!ResultsManager.instance.isHALT())
                     {
                         ifStage.execute();
-
-                        // fetch a new instruction only if ifStage is free
-                        if (ifStage.checkIfFree())
-                        {
-                            boolean checkInst = false;
-
-                            Instruction next = null;
-                            switch (CPU.RUN_TYPE)
-                            {
-                                case MEMORY:
-
-                                    next = ICacheManager.instance
-                                            .getInstructionFromCache(CPU.PROGRAM_COUNTER);
-                                    if (next != null)
-                                        checkInst = true;
-                                    break;
-
-                                case PIPELINE:
-                                    next = ProgramManager.instance
-                                            .getInstructionAtAddress(CPU.PROGRAM_COUNTER);
-                                    checkInst = true;
-                                    break;
-                            }
-
-                            if (checkInst && ifStage.checkIfFree()
-                                    && ifStage.acceptInstruction(next))
-                            {
-                                // update entry clock?
-                                CPU.PROGRAM_COUNTER++;
-                            }
-
-                        } // end ifStage.checkIfFree
                     }
                 }
                 else
