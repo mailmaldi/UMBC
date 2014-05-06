@@ -37,14 +37,40 @@ public class MemoryBusManager
         if (dCacheRequested == true
                 && DCacheManager.instance.request.lastRequestInstructionEntryClock < CPU.CLOCK)
         {
-            return CPU.CLOCK - (dCacheRequestClk)
-                    + DCacheManager.instance.request.clockCyclesToBlock;
+            System.out.println(CPU.CLOCK + " DUMMY " + dCacheRequestClk + " "
+                    + DCacheManager.instance.request.clockCyclesToBlock);
+            return (dCacheRequestClk + DCacheManager.instance.request.clockCyclesToBlock)
+                    - CPU.CLOCK;
         }
         else
         {
             DCacheManager.instance.request.resetValues();
             return 0;
         }
+    }
+
+    public void setICacheBusy()
+    {
+        iCacheRequested = true;
+        iCacheRequestClk = CPU.CLOCK;
+    }
+
+    public void setICacheFree()
+    {
+        iCacheRequestClk = -1;
+        iCacheRequested = false;
+    }
+
+    public void setDCacheBusy()
+    {
+        dCacheRequested = true;
+        dCacheRequestClk = CPU.CLOCK;
+    }
+
+    public void setDCacheFree()
+    {
+        dCacheRequestClk = -1;
+        dCacheRequested = false;
     }
 
     private void resetValues()

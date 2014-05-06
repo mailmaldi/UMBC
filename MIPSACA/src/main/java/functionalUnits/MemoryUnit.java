@@ -53,7 +53,8 @@ public class MemoryUnit extends FunctionalUnit
 
         if (Instruction.isLoadStore(inst))
         {
-            DCacheManager.instance.updateCacheBlock(inst);
+            if (CPU.RUN_TYPE.equals(CPU.RUN.MEMORY))
+                DCacheManager.instance.updateCacheBlock(inst);
             if (inst instanceof StoreInstruction)
                 DataMemoryManager.instance.setValueToAddress(
                         (int) inst.address, (int) ((StoreInstruction) inst)

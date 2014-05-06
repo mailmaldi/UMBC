@@ -12,6 +12,8 @@ import stages.StageType;
 public class FetchUnit extends FunctionalUnit
 {
 
+    private boolean                   hasBeenFlushed;
+
     private static volatile FetchUnit instance;
 
     public static FetchUnit getInstance()
@@ -34,6 +36,7 @@ public class FetchUnit extends FunctionalUnit
         this.pipelineSize = 1;
         this.stageId = StageType.IFSTAGE;
         createPipelineQueue(pipelineSize);
+        hasBeenFlushed = false;
     }
 
     @Override
@@ -46,7 +49,12 @@ public class FetchUnit extends FunctionalUnit
     public void executeUnit() throws Exception
     {
         validateQueueSize();
-
+        if (hasBeenFlushed)
+        {
+            System.out.println(CPU.CLOCK + " FetchUnit: Running Flush hack");
+            hasBeenFlushed = false;
+            return;
+        }
         Instruction inst = peekFirst();
 
         if (!(inst instanceof NOOP))
@@ -55,7 +63,6 @@ public class FetchUnit extends FunctionalUnit
 
             if (DecodeStage.getInstance().checkIfFree(inst))
             {
-
                 DecodeStage.getInstance().acceptInstruction(inst);
                 updateExitClockCycle(inst);
                 rotatePipe();
@@ -68,8 +75,9 @@ public class FetchUnit extends FunctionalUnit
     public void flushUnit() throws Exception
     {
         validateQueueSize();
-        
-        //TODO flush the ICacheManager
+
+        // flush the ICacheManager
+        hasBeenFlushed = true;
         ICacheManager.instance.flush();
 
         Instruction inst = peekFirst();
@@ -102,7 +110,6 @@ public class FetchUnit extends FunctionalUnit
             switch (CPU.RUN_TYPE)
             {
                 case MEMORY:
-
                     next = ICacheManager.instance
                             .getInstructionFromCache(CPU.PROGRAM_COUNTER);
                     if (next != null)

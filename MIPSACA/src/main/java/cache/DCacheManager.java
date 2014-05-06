@@ -1,5 +1,6 @@
 package cache;
 
+import Utils.Utils;
 import instructions.Instruction;
 import instructions.LD;
 import instructions.SD;
@@ -44,7 +45,11 @@ public class DCacheManager
                 // if it does, then just write to DCache & mark it dirty. --> it
                 // is a cache hit
                 if (cache.doesAddressExist(address))
+                {
                     request.clockCyclesToBlock += ConfigManager.instance.DCacheLatency;
+                    System.out.println("DCACHEMANAGER: HIT for instruction "
+                            + inst.debugString() + " address " + address);
+                }
                 else
                 {
                     // if address doesnt exist in DCache, then check if a block
@@ -53,7 +58,11 @@ public class DCacheManager
                     // if free, then just write to Dcache and mark it dirty
                     if (cache.isThereAFreeBlock(address))
                     {
-                        request.clockCyclesToBlock += ConfigManager.instance.DCacheLatency;
+                        int memoryDelay = MemoryBusManager.instance
+                                .getDelayForDCache();
+                        accessingMemory = true;
+                        request.clockCyclesToBlock += memoryDelay;
+                        request.clockCyclesToBlock += get2TPlusKValue();
                     }
                     else
                     {
@@ -76,19 +85,24 @@ public class DCacheManager
                     }
 
                 }
+                request.clockCyclesToBlock--;
             }
             else
             {
                 // Cache hit and found the same address - > return the value
                 // from cache
                 // latency is cache access time
+
                 if (cache.doesAddressExist(address))
                 {
                     request.clockCyclesToBlock += ConfigManager.instance.DCacheLatency;
+                    System.out.println("DCACHEMANAGER: HIT for instruction "
+                            + inst.debugString() + " address " + address);
                 }
                 else
                 {
-                    // Cache miss and cache block is free - > write in the cache
+                    // Cache miss and cache block is free - > write in the
+                    // cache
                     // and
                     // return the value
                     // latency is 2(t + k)
@@ -101,7 +115,8 @@ public class DCacheManager
                     }
                     else
                     {
-                        // Cache miss and cache block is full - > Check if dirty
+                        // Cache miss and cache block is full - > Check if
+                        // dirty
                         // if dirty - > write back and update cache
                         // else(not dirty) - > just update cache
                         if (cache.isLRUBlockDirty(address))
@@ -117,8 +132,45 @@ public class DCacheManager
                             request.clockCyclesToBlock += ConfigManager.instance.DCacheLatency;
                         }
                     }
-
-                }
+                } // end of cache.doesAddressExist(address)
+                if (inst instanceof LD
+                        && (Utils.getDCacheTag(address) != Utils
+                                .getDCacheTag(address + 4) || Utils
+                                .getDCacheSet(address) != Utils
+                                .getDCacheSet(address + 4)))
+                {
+                    address += 4;
+                    if (cache.doesAddressExist(address))
+                    {
+                    }
+                    else
+                    {
+                        if (cache.isThereAFreeBlock(address))
+                        {
+                            request.clockCyclesToBlock += MemoryBusManager.instance
+                                    .getDelayForDCache();
+                            accessingMemory = true;
+                            request.clockCyclesToBlock += get2TPlusKValue();
+                        }
+                        else
+                        {
+                            if (cache.isLRUBlockDirty(address))
+                            {
+                                request.clockCyclesToBlock += MemoryBusManager.instance
+                                        .getDelayForDCache();
+                                accessingMemory = true;
+                                // request.clockCyclesToBlock +=
+                                // (ConfigManager.instance.MemoryLatency);
+                                request.clockCyclesToBlock += get2TPlusKValue();
+                            }
+                            else
+                            {
+                            }
+                        }
+                    } // end of cache.doesAddressExist(address)
+                    //request.clockCyclesToBlock--; // HACK!!!
+                }// end of instanceofLD
+                //request.clockCyclesToBlock--; // HACK!!!
             }
 
         }
@@ -133,8 +185,7 @@ public class DCacheManager
         }
         if (accessingMemory)
         {
-            MemoryBusManager.instance.dCacheRequestClk = CPU.CLOCK;
-            MemoryBusManager.instance.dCacheRequested = true;
+            MemoryBusManager.instance.setDCacheBusy();
         }
 
         return validateClockCyclesToBlock();
@@ -145,18 +196,21 @@ public class DCacheManager
         int address = (int) inst.address;
         if (!request.hasAccessVariablesSet)
         {
-            if (inst instanceof LD || inst instanceof SD)
-                dCacheAccessRequests++;
             dCacheAccessRequests++;
             if (cache.doesAddressExist(address))
                 dCacheAccessHits++;
             cache.updateBlock(address, Instruction.isStore(inst));
-            if (cache.doesAddressExist(address)
-                    && (inst instanceof LD || inst instanceof SD))
-                dCacheAccessHits++;
+            if (inst instanceof LD || inst instanceof SD)
+            {
+                dCacheAccessRequests++;
+                if (cache.doesAddressExist(address + 4))
+                    dCacheAccessHits++;
+            }
+            cache.updateBlock(address + 4, Instruction.isStore(inst));
+
             request.hasAccessVariablesSet = true;
-            MemoryBusManager.instance.dCacheRequestClk = -1;
-            MemoryBusManager.instance.dCacheRequested = false;
+            MemoryBusManager.instance.setDCacheFree();
+            System.out.println(CPU.CLOCK+ " DCacheM set Bus Manager free");
         }
         // For Store, find block, mark dirty & update address & lru
         // for Load, find block, update address & lru

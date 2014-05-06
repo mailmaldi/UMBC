@@ -1,5 +1,7 @@
 package cache;
 
+import Utils.Utils;
+
 public class DCache
 {
     DCacheSet[] dCacheSet;
@@ -62,17 +64,10 @@ public class DCache
         return dCacheSet[setId];
     }
 
-    private int getBaseAddress(int address)
-    {
-        int baseAddress = address >> 2;
-        baseAddress = baseAddress << 2;
-        return baseAddress;
-    }
-
     public boolean doesAddressExist(int address)
     {
         DCacheSet set = getSet(address);
-        int baseAddress = getBaseAddress(address);
+        int baseAddress = Utils.getDCacheTag(address);
         return set.doesAddressExist(baseAddress);
     }
 
@@ -92,7 +87,7 @@ public class DCache
     {
         // TODO Auto-generated method stub
         DCacheSet set = getSet(address);
-        int baseAddress = getBaseAddress(address);
+        int baseAddress = Utils.getDCacheTag(address);
 
         DCacheBlock block = null;
         // update same address block, if not then free block , if not then
@@ -111,7 +106,7 @@ public class DCache
         }
         if (block == null)
             throw new Exception("DCache cannot find a null block");
-        block.baseAddress = baseAddress;
+        block.tag = baseAddress;
         block.dirty = store;
         set.toggleLRU(block);
     }
@@ -148,8 +143,8 @@ class DCacheSet
 
     public boolean doesAddressExist(int baseAddress)
     {
-        return (dCacheBlocks[0].baseAddress == baseAddress)
-                || (dCacheBlocks[0].baseAddress == baseAddress);
+        return (dCacheBlocks[0].tag == baseAddress)
+                || (dCacheBlocks[1].tag == baseAddress);
     }
 
     public boolean isLRUBlockDirty()
@@ -159,11 +154,11 @@ class DCacheSet
 
     public DCacheBlock getAddressBlock(int baseAddress)
     {
-
+        
         if (!doesAddressExist(baseAddress))
             return null;
 
-        if (dCacheBlocks[0].baseAddress == baseAddress)
+        if (dCacheBlocks[0].tag == baseAddress)
             return dCacheBlocks[0];
         return dCacheBlocks[1];
     }
@@ -172,7 +167,7 @@ class DCacheSet
     {
         if (!hasFreeBlock())
             return null;
-        if (dCacheBlocks[0].baseAddress == -1)
+        if (dCacheBlocks[0].tag == -1)
             return dCacheBlocks[0];
         return dCacheBlocks[1];
     }
@@ -186,18 +181,38 @@ class DCacheSet
 
 class DCacheBlock
 {
-    int     baseAddress;
+    int     tag;
     boolean dirty;
 
-    public DCacheBlock(int baseAddress)
+    public DCacheBlock(int address)
     {
-        this.baseAddress = baseAddress;
+        this.tag = -1;
         this.dirty = false;
+    }
+
+    public int getTag()
+    {
+        return tag;
+    }
+
+    public void setTag(int address)
+    {
+        this.tag = Utils.getDCacheTag(address);
+    }
+
+    public boolean isDirty()
+    {
+        return dirty;
+    }
+
+    public void setDirty(boolean dirty)
+    {
+        this.dirty = dirty;
     }
 
     public boolean isFree()
     {
-        return (baseAddress == -1);
+        return (tag == -1);
     }
 
 }

@@ -26,8 +26,9 @@ public class DataMemoryFileParser
                     break; // break on the first empty line
                 int value = Integer.parseInt(line, 2);
 
-                DataMemoryManager.instance.setValueToAddress(initialAddress++,
+                DataMemoryManager.instance.setValueToAddress(initialAddress,
                         value);
+                initialAddress += 4;
 
                 count++;
             }

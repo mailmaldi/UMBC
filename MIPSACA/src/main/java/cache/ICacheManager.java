@@ -2,7 +2,9 @@ package cache;
 
 import instructions.Instruction;
 import program.ProgramManager;
+import results.ResultsManager;
 import stages.CPU;
+import stages.StageType;
 import config.ConfigManager;
 
 public class ICacheManager
@@ -35,6 +37,8 @@ public class ICacheManager
 
         if (request.lastRequestInstruction == -1)
         {
+            System.out.println(CPU.CLOCK + " ICacheM First Request for PC="
+                    + address);
             request.lastRequestInstruction = address;
             request.lastRequestInstructionEntryClock = CPU.CLOCK;
             iCacheAccessRequests++;
@@ -47,13 +51,14 @@ public class ICacheManager
             else
             {
                 int delayToBus = MemoryBusManager.instance.getDelayForICache();
-                // if delay ==0 , set memorybus busy
                 if (delayToBus == 0)
-                {
-                    MemoryBusManager.instance.iCacheRequested = true;
-                    MemoryBusManager.instance.iCacheRequestClk = CPU.CLOCK;
-                }
-                request.clockCyclesToBlock = get2TPlusKValue() + delayToBus - 1;
+                    MemoryBusManager.instance.setICacheBusy();
+                // else
+                // request.resetValues();
+                request.clockCyclesToBlock = delayToBus + get2TPlusKValue() - 1;
+                System.out.println(CPU.CLOCK + " ICacheM "
+                        + request.toDebugString() + " delayToBus " + delayToBus
+                        + " 2T+K " + get2TPlusKValue());
             }
         }
         return validateClockCyclesToBlock();
@@ -61,10 +66,10 @@ public class ICacheManager
 
     private Instruction validateClockCyclesToBlock() throws Exception
     {
-        if (CPU.CLOCK - request.lastRequestInstructionEntryClock == request.clockCyclesToBlock)
+        if ((request.lastRequestInstruction >= 0)
+                && (CPU.CLOCK - request.lastRequestInstructionEntryClock == request.clockCyclesToBlock))
         {
-            MemoryBusManager.instance.iCacheRequested = false;
-            MemoryBusManager.instance.iCacheRequestClk = -1;
+            MemoryBusManager.instance.setICacheFree();
 
             cache.setInCache(request.lastRequestInstruction); // hack
             return getInstructionAndResetRequest();
@@ -109,12 +114,19 @@ public class ICacheManager
         return sb.toString();
     }
 
-    public void flush()
+    public void flush() throws Exception
     {
-        this.request.resetValues();
-        MemoryBusManager.instance.iCacheRequestClk = -1;
-        MemoryBusManager.instance.iCacheRequested = false;
+        if (request.lastRequestInstruction >= 0)
+        {
+            Instruction inst = ProgramManager.instance
+                    .getInstructionAtAddress(request.lastRequestInstruction);
+            inst.entryCycle[StageType.IFSTAGE.getId()] = CPU.CLOCK - 1;
+            inst.exitCycle[StageType.IFSTAGE.getId()] = CPU.CLOCK;
+            ResultsManager.instance.addInstruction(inst);
+        }
 
+        this.request.resetValues();
+        MemoryBusManager.instance.setICacheFree();
     }
 
 }
@@ -136,6 +148,12 @@ class ICacheRequestData
         lastRequestInstruction = -1;
         lastRequestInstructionEntryClock = -1;
         clockCyclesToBlock = -1;
+    }
+
+    public String toDebugString()
+    {
+        return lastRequestInstructionEntryClock + " " + lastRequestInstruction
+                + " " + clockCyclesToBlock;
     }
 
 }
