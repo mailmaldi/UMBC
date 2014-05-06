@@ -57,7 +57,7 @@ public class Main
         {
 
             // I run these many clock cycles after HLT to flush pipeline
-            int extraCLKCount = 5000;
+            int extraCLKCount = 10;
             while (extraCLKCount != 0)
             {
 
@@ -93,7 +93,7 @@ public class Main
         ResultsManager.instance.printResults();
         ResultsManager.instance.writeResults();
 
-        RegisterManager.instance.dumpAllRegisters();
+        // RegisterManager.instance.dumpAllRegisters();
 
     }
 }

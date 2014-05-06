@@ -1,14 +1,13 @@
 package functionalUnits;
 
-import cache.DCacheManager;
 import instructions.Instruction;
-import instructions.InstructionType;
 import instructions.NOOP;
 import instructions.StoreInstruction;
 import memory.DataMemoryManager;
 import stages.CPU;
 import stages.StageType;
 import stages.WriteBackStage;
+import cache.DCacheManager;
 import config.ConfigManager;
 
 public class MemoryUnit extends FunctionalUnit
@@ -44,72 +43,65 @@ public class MemoryUnit extends FunctionalUnit
         validateQueueSize();
 
         Instruction inst = peekFirst();
-        if (!(inst instanceof NOOP))
+        if ((inst instanceof NOOP))
+            return;
+
+        System.out.println(CPU.CLOCK + " Memory " + inst.debugString());
+
+        if (!isReadyToSend())
+            return;
+
+        if (Instruction.isLoadStore(inst))
         {
+            DCacheManager.instance.updateCacheBlock(inst);
+            if (inst instanceof StoreInstruction)
+                DataMemoryManager.instance.setValueToAddress(
+                        (int) inst.address, (int) ((StoreInstruction) inst)
+                                .getValueToWrite().getSource());
+            else
+                inst.getDestinationRegister().setDestination(
+                        DataMemoryManager.instance
+                                .getValueFromAddress((int) inst.address));
+        }
 
-            // TODO for pipelined execution
-            // check if inst has spent enough time in this unit
+        if (!WriteBackStage.getInstance().checkIfFree(inst))
+            throw new Exception(
+                    "MemoryUnit: won tie, WB Stage should always be free");
 
+        WriteBackStage.getInstance().acceptInstruction(inst);
+        updateExitClockCycle(inst);
+        rotatePipe();
+
+    }
+
+    public boolean isReadyToSend() throws Exception
+    {
+        Instruction inst = peekFirst();
+        if (inst instanceof NOOP)
+            return true;
+        if (Instruction.isLoadStore(inst))
+        {
             switch (CPU.RUN_TYPE)
             {
                 case MEMORY:
-                    // TODO call DCacheManager only if inst is type of Memory
-                    // Operation
-                    if (Instruction.isLoadStore(inst)
-                            && !DCacheManager.instance.canProceed(inst))
-                        return;
-                    break;
+                    return DCacheManager.instance.canProceed(inst);
                 case PIPELINE:
-                    if (!((CPU.CLOCK - inst.entryCycle[stageId.getId()]) >= this
-                            .getClockCyclesRequiredForNonPipeLinedUnit()))
-                        return;
-                    break;
+                    return ((CPU.CLOCK - inst.entryCycle[stageId.getId()]) >= clockCyclesRequired);
                 default:
                     throw new Exception("MemoryUnit Illegal CPU.RUN_TYPE ");
             }
-
-            // TODO for cache, check if data is available yet
-
-            if (Instruction.isLoadStore(inst))
-            {
-                if (inst instanceof StoreInstruction)
-                    DataMemoryManager.instance.setValueToAddress(
-                            (int) inst.address, (int) ((StoreInstruction) inst)
-                                    .getValueToWrite().getSource());
-                else
-                    inst.getDestinationRegister().setDestination(
-                            DataMemoryManager.instance
-                                    .getValueFromAddress((int) inst.address));
-            }
-
-            if (!WriteBackStage.getInstance().checkIfFree(inst))
-                throw new Exception(
-                        "MemoryUnit: won tie, WB Stage should always be free");
-
-            WriteBackStage.getInstance().acceptInstruction(inst);
-            updateExitClockCycle(inst);
         }
-        rotatePipe();
-
+        else
+        {
+            return ((CPU.CLOCK - inst.entryCycle[stageId.getId()]) >= 1);
+        }
     }
 
     @Override
     public int getClockCyclesRequiredForNonPipeLinedUnit() throws Exception
     {
-        // TODO Auto-generated method stub
         Instruction inst = peekFirst();
-        if (inst.instructionType.equals(InstructionType.MEMORY_FPREG)
-                || inst.instructionType.equals(InstructionType.MEMORY_REG))
-            return clockCyclesRequired;
-        else if (inst.instructionType.equals(InstructionType.ARITHMETIC_REG)
-                || inst.instructionType.equals(InstructionType.ARITHMETIC_IMM))
-            return 1;
-
-        throw new Exception("MemoryUnit: Illegal instruction in Memory Unit: "
+        throw new Exception("MemoryUnit: Should never call this function: "
                 + inst.toString());
     }
-
-    // TODO override acceptInstruction here, first call super.accept , then get
-    // data from datamanager
-
 }

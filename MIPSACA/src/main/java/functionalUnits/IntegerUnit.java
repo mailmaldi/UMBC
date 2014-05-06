@@ -2,6 +2,7 @@ package functionalUnits;
 
 import instructions.Instruction;
 import instructions.NOOP;
+import stages.CPU;
 import stages.StageType;
 
 public class IntegerUnit extends FunctionalUnit
@@ -43,6 +44,8 @@ public class IntegerUnit extends FunctionalUnit
             return;
 
         inst.executeInstruction();
+        
+        System.out.println(CPU.CLOCK + " Intger " + inst.debugString());
 
         if (MemoryUnit.getInstance().checkIfFree(inst))
         {

@@ -122,29 +122,34 @@ public class DCacheManager
         }
         else
         {
-
-            if (!request.hasAccessVariablesSet)
-            {
-                dCacheAccessRequests++;
-                if (cache.doesAddressExist(address))
-                    dCacheAccessHits++;
-                request.hasAccessVariablesSet = true;
-            }
-            // For Store, find block, mark dirty & update address & lru
-            // for Load, find block, update address & lru
-            cache.updateBlock(address, Instruction.isStore(inst));
+            //
         }
 
         return validateClockCyclesToBlock();
     }
 
+    public void updateCacheBlock(Instruction inst) throws Exception
+    {
+        int address = (int) inst.address;
+        if (!request.hasAccessVariablesSet)
+        {
+            dCacheAccessRequests++;
+            if (cache.doesAddressExist(address))
+                dCacheAccessHits++;
+            request.hasAccessVariablesSet = true;
+        }
+        // For Store, find block, mark dirty & update address & lru
+        // for Load, find block, update address & lru
+        request.resetValues();
+        cache.updateBlock(address, Instruction.isStore(inst));
+    }
+
     private boolean validateClockCyclesToBlock() throws Exception
     {
-        if (CPU.CLOCK - request.lastRequestInstructionEntryClock == request.clockCyclesToBlock)
+        if (CPU.CLOCK - request.lastRequestInstructionEntryClock >= request.clockCyclesToBlock)
         {
             // do any cache updates at this point?
             // cache.setInCache(request.lastRequestInstruction); // hack
-            request.resetValues();
             return true;
         }
         else
