@@ -155,6 +155,8 @@ public class DCacheManager
                     && (inst instanceof LD || inst instanceof SD))
                 dCacheAccessHits++;
             request.hasAccessVariablesSet = true;
+            MemoryBusManager.instance.dCacheRequestClk = -1;
+            MemoryBusManager.instance.dCacheRequested = false;
         }
         // For Store, find block, mark dirty & update address & lru
         // for Load, find block, update address & lru

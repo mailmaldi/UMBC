@@ -68,6 +68,9 @@ public class FetchUnit extends FunctionalUnit
     public void flushUnit() throws Exception
     {
         validateQueueSize();
+        
+        //TODO flush the ICacheManager
+        ICacheManager.instance.flush();
 
         Instruction inst = peekFirst();
 

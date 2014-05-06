@@ -57,7 +57,7 @@ public class Main
         {
 
             // I run these many clock cycles after HLT to flush pipeline
-            int extraCLKCount = 10;
+            int extraCLKCount = 50;
             while (extraCLKCount != 0)
             {
 

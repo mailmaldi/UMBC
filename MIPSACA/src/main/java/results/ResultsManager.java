@@ -69,6 +69,7 @@ public class ResultsManager
                 resultsWriter.newLine();
             }
             resultsWriter.write(ICacheManager.instance.getICacheStatistics());
+            resultsWriter.newLine();
             resultsWriter.write(DCacheManager.instance.getDCacheStatistics());
             resultsWriter.newLine();
             resultsWriter.flush();

@@ -63,6 +63,9 @@ public class ICacheManager
     {
         if (CPU.CLOCK - request.lastRequestInstructionEntryClock == request.clockCyclesToBlock)
         {
+            MemoryBusManager.instance.iCacheRequested = false;
+            MemoryBusManager.instance.iCacheRequestClk = -1;
+
             cache.setInCache(request.lastRequestInstruction); // hack
             return getInstructionAndResetRequest();
         }
@@ -104,6 +107,14 @@ public class ICacheManager
         sb.append(String.format(format, "Number of instruction cache hits:",
                 getICacheAccessHits()));
         return sb.toString();
+    }
+
+    public void flush()
+    {
+        this.request.resetValues();
+        MemoryBusManager.instance.iCacheRequestClk = -1;
+        MemoryBusManager.instance.iCacheRequested = false;
+
     }
 
 }
