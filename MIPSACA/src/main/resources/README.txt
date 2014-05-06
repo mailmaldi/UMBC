@@ -1,17 +1,23 @@
 README:
-This is a gradle project (think maven but no xml)
+This is a gradle project (think maven but no xml) & the build script compiles it for Java 1.7!
 To build a jar, from a linux/mac machine,
 just goto MIPSACA folder and run the following
-./gradlew build
-./gradlew assemble
-./gradlew fatJar
 
-If you have gradle installed on your machine (awesome!), then
-gradle clean build assemble fatJar
+gadlew is the wrapper for gradle binary, so it needs to be an executable
+chmod +x gradlew
 
-this should resolve all dependencies and create 2 jar files in the MIPSACA/build/libs folder
+The following command will clean, compile and build a jar of my code
+./gradlew clean eclipse build assemble jar
 
- ../resources/main/inst.txt ../resources/main/data.txt ../resources/main/reg.txt ../resources/main/config.txt ../resources/main/result.txt
+If you have gradle installed on your machine (awesome!), then just
+gradle clean eclipse build assemble jar
+
+The jar is found in build/libs
+
+To execute, simply do (paths are relative):
+java -jar MIPSACA-1.0.jar inst.txt data.txt reg.txt config.txt results.txt
+
+I recommend copying the jar to the folder where you want to test
 
 BUILD:
 
