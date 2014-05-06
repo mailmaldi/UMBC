@@ -46,10 +46,14 @@ public class ICacheManager
             }
             else
             {
-                int delayToBus = MemoryBusManager.instance.getDelay();
-                request.clockCyclesToBlock = 2
-                        * (ConfigManager.instance.ICacheLatency + ConfigManager.instance.MemoryLatency)
-                        + delayToBus - 1;
+                int delayToBus = MemoryBusManager.instance.getDelayForICache();
+                // if delay ==0 , set memorybus busy
+                if (delayToBus == 0)
+                {
+                    MemoryBusManager.instance.iCacheRequested = true;
+                    MemoryBusManager.instance.iCacheRequestClk = CPU.CLOCK;
+                }
+                request.clockCyclesToBlock = get2TPlusKValue() + delayToBus - 1;
             }
         }
         return validateClockCyclesToBlock();
@@ -82,6 +86,11 @@ public class ICacheManager
     public int getICacheAccessHits()
     {
         return iCacheAccessHits;
+    }
+
+    public int get2TPlusKValue()
+    {
+        return 2 * (ConfigManager.instance.ICacheLatency + ConfigManager.instance.MemoryLatency);
     }
 
     public String getICacheStatistics()

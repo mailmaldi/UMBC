@@ -8,7 +8,7 @@ public class DCacheManager
 {
 
     private DCache                    cache;
-    private DCacheRequestData         request;
+    public DCacheRequestData          request;
     // private DCacheRequestData request;
 
     private int                       dCacheAccessRequests;
@@ -61,7 +61,7 @@ public class DCacheManager
                         if (cache.isLRUBlockDirty(address))
                         {
                             request.clockCyclesToBlock += MemoryBusManager.instance
-                                    .getDelay();
+                                    .getDelayForDCache();
                             request.clockCyclesToBlock += 2 * (ConfigManager.instance.DCacheLatency + ConfigManager.instance.MemoryLatency);
                         }
                         else
@@ -90,7 +90,7 @@ public class DCacheManager
                     if (cache.isThereAFreeBlock(address))
                     {
                         request.clockCyclesToBlock += MemoryBusManager.instance
-                                .getDelay();
+                                .getDelayForDCache();
                         request.clockCyclesToBlock += 2 * (ConfigManager.instance.DCacheLatency + ConfigManager.instance.MemoryLatency);
                     }
                     else
@@ -101,7 +101,7 @@ public class DCacheManager
                         if (cache.isLRUBlockDirty(address))
                         {
                             request.clockCyclesToBlock += MemoryBusManager.instance
-                                    .getDelay();
+                                    .getDelayForDCache();
                             request.clockCyclesToBlock += (ConfigManager.instance.MemoryLatency);
                             request.clockCyclesToBlock += 2 * (ConfigManager.instance.DCacheLatency + ConfigManager.instance.MemoryLatency);
                         }
