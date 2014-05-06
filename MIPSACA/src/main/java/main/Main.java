@@ -93,5 +93,7 @@ public class Main
         ResultsManager.instance.printResults();
         ResultsManager.instance.writeResults();
 
+        RegisterManager.instance.dumpAllRegisters();
+
     }
 }

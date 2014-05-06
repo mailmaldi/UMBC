@@ -8,6 +8,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.TreeMap;
 
+import cache.DCacheManager;
 import cache.ICacheManager;
 import program.ProgramManager;
 import stages.StageType;
@@ -49,6 +50,7 @@ public class ResultsManager
             System.out.println(inst.getOutputString());
         }
         System.out.println(ICacheManager.instance.getICacheStatistics());
+        System.out.println(DCacheManager.instance.getDCacheStatistics());
     }
 
     public void writeResults()
@@ -67,6 +69,7 @@ public class ResultsManager
                 resultsWriter.newLine();
             }
             resultsWriter.write(ICacheManager.instance.getICacheStatistics());
+            resultsWriter.write(DCacheManager.instance.getDCacheStatistics());
             resultsWriter.newLine();
             resultsWriter.flush();
             resultsWriter.close();

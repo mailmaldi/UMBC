@@ -75,4 +75,15 @@ public abstract class Instruction implements InstructionI
                 WAR ? 'Y' : 'N', WAW ? 'Y' : 'N', STRUCT ? 'Y' : 'N');
     }
 
+    public static boolean isLoadStore(Instruction inst)
+    {
+        return (inst.instructionType.equals(InstructionType.MEMORY_FPREG) || inst.instructionType
+                .equals(InstructionType.MEMORY_REG)) ? true : false;
+    }
+
+    public static boolean isStore(Instruction inst)
+    {
+        return (isLoadStore(inst) && (inst instanceof StoreInstruction));
+    }
+
 }

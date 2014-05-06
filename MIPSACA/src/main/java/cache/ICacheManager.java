@@ -55,14 +55,6 @@ public class ICacheManager
         return validateClockCyclesToBlock();
     }
 
-    private Instruction getInstructionAndResetRequest() throws Exception
-    {
-        Instruction inst = ProgramManager.instance
-                .getInstructionAtAddress(request.lastRequestInstruction);
-        request.resetValues();
-        return inst;
-    }
-
     private Instruction validateClockCyclesToBlock() throws Exception
     {
         if (CPU.CLOCK - request.lastRequestInstructionEntryClock == request.clockCyclesToBlock)
@@ -72,6 +64,14 @@ public class ICacheManager
         }
         else
             return null;
+    }
+
+    private Instruction getInstructionAndResetRequest() throws Exception
+    {
+        Instruction inst = ProgramManager.instance
+                .getInstructionAtAddress(request.lastRequestInstruction);
+        request.resetValues();
+        return inst;
     }
 
     public int getICacheAccessRequests()

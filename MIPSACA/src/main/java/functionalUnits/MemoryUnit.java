@@ -1,5 +1,6 @@
 package functionalUnits;
 
+import cache.DCacheManager;
 import instructions.Instruction;
 import instructions.InstructionType;
 import instructions.NOOP;
@@ -52,10 +53,12 @@ public class MemoryUnit extends FunctionalUnit
             switch (CPU.RUN_TYPE)
             {
                 case MEMORY:
-
-                    // TODO break when written code here
-                    // break;
-
+                    // TODO call DCacheManager only if inst is type of Memory
+                    // Operation
+                    if (Instruction.isLoadStore(inst)
+                            && !DCacheManager.instance.canProceed(inst))
+                        return;
+                    break;
                 case PIPELINE:
                     if (!((CPU.CLOCK - inst.entryCycle[stageId.getId()]) >= this
                             .getClockCyclesRequiredForNonPipeLinedUnit()))
@@ -67,8 +70,7 @@ public class MemoryUnit extends FunctionalUnit
 
             // TODO for cache, check if data is available yet
 
-            if (inst.instructionType.equals(InstructionType.MEMORY_FPREG)
-                    || inst.instructionType.equals(InstructionType.MEMORY_REG))
+            if (Instruction.isLoadStore(inst))
             {
                 if (inst instanceof StoreInstruction)
                     DataMemoryManager.instance.setValueToAddress(
