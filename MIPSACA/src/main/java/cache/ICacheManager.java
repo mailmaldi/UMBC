@@ -116,12 +116,13 @@ public class ICacheManager
 
     public void flush() throws Exception
     {
+        // TODO this is weird, fix it!!
         if (request.lastRequestInstruction >= 0)
         {
             Instruction inst = ProgramManager.instance
                     .getInstructionAtAddress(request.lastRequestInstruction);
-            inst.entryCycle[StageType.IFSTAGE.getId()] = CPU.CLOCK - 1;
-            inst.exitCycle[StageType.IFSTAGE.getId()] = CPU.CLOCK;
+            inst.setEntryCycleForStage(StageType.IFSTAGE.getId(), CPU.CLOCK - 1);
+            inst.setExitCycleForStage(StageType.IFSTAGE.getId(), CPU.CLOCK);
             ResultsManager.instance.addInstruction(inst);
         }
 

@@ -149,7 +149,7 @@ public class DecodeUnit extends FunctionalUnit
         {
             if (!(ExStage.getInstance().checkIfFree(inst)))
             {
-                inst.STRUCT = true;
+                inst.setStruct(true);
                 return true;
             }
         }

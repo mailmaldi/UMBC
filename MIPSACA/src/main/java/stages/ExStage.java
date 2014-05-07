@@ -204,9 +204,10 @@ public class ExStage extends Stage
         {
 
             FunctionalUnit mapEntry = (FunctionalUnit) map.get(calculatedKey);
-            int fuEntry = fu.peekFirst().entryCycle[StageType.IFSTAGE.getId()];
-            int localEntry = mapEntry.peekFirst().entryCycle[StageType.IFSTAGE
-                    .getId()];
+            int fuEntry = fu.peekFirst().getEntryCycleForStage(
+                    StageType.IFSTAGE.getId());
+            int localEntry = mapEntry.peekFirst().getEntryCycleForStage(
+                    StageType.IFSTAGE.getId());
             if (fuEntry < localEntry)
                 map.put(calculatedKey, fu);
 

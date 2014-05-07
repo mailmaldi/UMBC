@@ -35,7 +35,7 @@ public abstract class FunctionalUnit
         removeLast();
         addLast(instruction);
 
-        updateEntryClockCycle(instruction);
+        instruction.setEntryCycleForStage(stageId.getId(), CPU.CLOCK);
 
         validateQueueSize();
 
@@ -81,7 +81,8 @@ public abstract class FunctionalUnit
         else
         {
             if (!InstructionUtils.isNOOP(peekFirst())
-                    && ((CPU.CLOCK - peekFirst().entryCycle[stageId.getId()]) >= getClockCyclesRequiredForNonPipeLinedUnit()))
+                    && ((CPU.CLOCK - peekFirst().getEntryCycleForStage(
+                            stageId.getId())) >= getClockCyclesRequiredForNonPipeLinedUnit()))
             {
                 return true;
             }
@@ -101,7 +102,8 @@ public abstract class FunctionalUnit
         validateQueueSize();
 
         // TODO find this out else do
-        peekFirst().STRUCT = true;
+
+        peekFirst().setStruct(true);
 
         // // starting from last inst till we reach first of Q or a NOOP mark
         // // Struct Hazard
@@ -116,14 +118,9 @@ public abstract class FunctionalUnit
         // }
     }
 
-    protected void updateEntryClockCycle(Instruction inst)
-    {
-        inst.entryCycle[this.stageId.getId()] = CPU.CLOCK;
-    }
-
     protected void updateExitClockCycle(Instruction inst)
     {
-        inst.exitCycle[this.stageId.getId()] = CPU.CLOCK;
+        inst.setExitCycleForStage(this.stageId.getId(), CPU.CLOCK);
     }
 
     /**

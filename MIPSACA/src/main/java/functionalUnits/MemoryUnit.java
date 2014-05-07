@@ -57,13 +57,15 @@ public class MemoryUnit extends FunctionalUnit
             if (CPU.RUN_TYPE.equals(CPU.RUN.MEMORY))
                 DCacheManager.instance.updateCacheBlock(inst);
             if (inst instanceof StoreInstruction)
-                DataMemoryManager.instance.setValueToAddress(
-                        (int) inst.getDestinationAddress(), (int) ((StoreInstruction) inst)
-                                .getValueToWrite().getSource());
+                DataMemoryManager.instance.setValueToAddress((int) inst
+                        .getDestinationAddress(),
+                        (int) ((StoreInstruction) inst).getValueToWrite()
+                                .getSource());
             else
                 inst.getDestinationRegister().setDestination(
                         DataMemoryManager.instance
-                                .getValueFromAddress((int) inst.getDestinationAddress()));
+                                .getValueFromAddress((int) inst
+                                        .getDestinationAddress()));
         }
 
         if (!WriteBackStage.getInstance().checkIfFree(inst))
@@ -88,14 +90,17 @@ public class MemoryUnit extends FunctionalUnit
                 case MEMORY:
                     return DCacheManager.instance.canProceed(inst);
                 case PIPELINE:
-                    return ((CPU.CLOCK - inst.entryCycle[stageId.getId()]) >= clockCyclesRequired);
+                    return ((CPU.CLOCK - inst.getEntryCycleForStage(stageId
+                            .getId())) >= clockCyclesRequired);
                 default:
                     throw new Exception("MemoryUnit Illegal CPU.RUN_TYPE ");
             }
         }
         else
         {
-            return ((CPU.CLOCK - inst.entryCycle[stageId.getId()]) >= 1);
+            // delay for non load-store in memory unit is always 1,
+            // not configurable
+            return ((CPU.CLOCK - inst.getEntryCycleForStage(stageId.getId())) >= 1);
         }
     }
 

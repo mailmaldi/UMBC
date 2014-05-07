@@ -6,13 +6,13 @@ public abstract class Instruction implements InstructionI
 {
     private boolean              RAW;
     private boolean              WAR;
-    public boolean               WAW;
-    public boolean               STRUCT;
+    private boolean              WAW;
+    private boolean              STRUCT;
     private EXFunctionalUnitType functionalUnitType;
     private InstructionType      instructionType;
 
-    public int[]                 entryCycle;
-    public int[]                 exitCycle;
+    private int[]                entryCycle;
+    private int[]                exitCycle;
 
     private String               printableInstruction;
 
@@ -83,6 +83,11 @@ public abstract class Instruction implements InstructionI
         this.WAW = b;
     }
 
+    public void setStruct(boolean b)
+    {
+        STRUCT = b;
+    }
+
     public long getDestinationAddress() throws Exception
     {
         if (InstructionUtils.isLoadStore(this))
@@ -121,6 +126,26 @@ public abstract class Instruction implements InstructionI
     protected void setInstructionType(InstructionType instructionType)
     {
         this.instructionType = instructionType;
+    }
+
+    public int getEntryCycleForStage(int stageId)
+    {
+        return entryCycle[stageId];
+    }
+
+    public int getExitCycleForStage(int stageId)
+    {
+        return exitCycle[stageId];
+    }
+
+    public void setEntryCycleForStage(int stageId, int value)
+    {
+        entryCycle[stageId] = value;
+    }
+
+    public void setExitCycleForStage(int stageId, int value)
+    {
+        exitCycle[stageId] = value;
     }
 
 }

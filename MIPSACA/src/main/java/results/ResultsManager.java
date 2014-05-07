@@ -83,9 +83,8 @@ public class ResultsManager
 
     public void addInstruction(Instruction instruction)
     {
-        int key = instruction.entryCycle[StageType.IFSTAGE.getId()];
+        int key = instruction.getEntryCycleForStage(StageType.IFSTAGE.getId());
         instructionMap.put(key, instruction);
-
     }
 
     public void testPrintWithDummyData() throws Exception
@@ -95,9 +94,9 @@ public class ResultsManager
         {
             Instruction inst = ProgramManager.instance
                     .getInstructionAtAddress(address);
-            inst.entryCycle[0] = count++;
-            inst.exitCycle[0] = count;
-            inst.STRUCT = (count % 2 == 0) ? true : false;
+            inst.setEntryCycleForStage(0, count++);
+            inst.setExitCycleForStage(0, count);
+            inst.setStruct(count % 2 == 0);
             addInstruction(inst);
         }
 
