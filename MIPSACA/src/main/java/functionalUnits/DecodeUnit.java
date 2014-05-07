@@ -161,7 +161,7 @@ public class DecodeUnit extends FunctionalUnit
     private boolean processStruct(Instruction inst) throws Exception
     {
         // Check for possible STRUCT hazards
-        FunctionalUnitType type = inst.functionalUnitType;
+        FunctionalUnitType type = inst.getFunctionalUnitType();
         if (!type.equals(FunctionalUnitType.UNKNOWN))
         {
             if (!(ExStage.getInstance().checkIfFree(inst)))
@@ -186,7 +186,7 @@ public class DecodeUnit extends FunctionalUnit
                 if (!RegisterManager.instance.isRegisterFree(register
                         .getSourceLabel()))
                 {
-                    inst.RAW = true;
+                    inst.setRAW(true);
                     return true;
                 }
             }
@@ -204,7 +204,7 @@ public class DecodeUnit extends FunctionalUnit
             if (!RegisterManager.instance.isRegisterFree(dest
                     .getDestinationLabel()))
             {
-                inst.WAW = true;
+                inst.setWAW(true);
                 return true;
             }
         }

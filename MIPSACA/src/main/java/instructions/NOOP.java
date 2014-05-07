@@ -8,13 +8,12 @@ public class NOOP extends Instruction
     public NOOP()
     {
         super();
-        this.instructionType = InstructionType.NOOP;
+        this.setInstructionType(InstructionType.NOOP);
     }
 
     public NOOP(NOOP obj)
     {
         super(obj);
-        setPrintableInstruction(obj.printableInstruction);
     }
 
     @Override

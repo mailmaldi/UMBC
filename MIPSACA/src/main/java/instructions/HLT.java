@@ -7,13 +7,12 @@ public class HLT extends Instruction
     public HLT()
     {
         super();
-        this.instructionType = InstructionType.HALT;
+        this.setInstructionType(InstructionType.HALT);
     }
 
     public HLT(HLT obj)
     {
         super(obj);
-        setPrintableInstruction(obj.printableInstruction);
     }
 
     @Override

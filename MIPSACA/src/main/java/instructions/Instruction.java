@@ -4,20 +4,19 @@ import java.util.Arrays;
 
 public abstract class Instruction implements InstructionI
 {
-    /* Hazards */
-    public boolean            RAW;
-    public boolean            WAR;
-    public boolean            WAW;
-    public boolean            STRUCT;
-    public FunctionalUnitType functionalUnitType;
-    public InstructionType    instructionType;
+    private boolean            RAW;
+    private boolean            WAR;
+    public boolean             WAW;
+    public boolean             STRUCT;
+    private FunctionalUnitType functionalUnitType;
+    private InstructionType    instructionType;
 
-    public int[]              entryCycle;
-    public int[]              exitCycle;
+    public int[]               entryCycle;
+    public int[]               exitCycle;
 
-    public String             printableInstruction;
+    private String             printableInstruction;
 
-    public long               address;             // HACK
+    private long               destinationAddress;  // HACK
 
     public Instruction()
     {
@@ -28,15 +27,13 @@ public abstract class Instruction implements InstructionI
         this.WAR = false;
         this.WAW = false;
         this.STRUCT = false;
-        this.functionalUnitType = FunctionalUnitType.UNKNOWN;
-        this.instructionType = InstructionType.UNKNOWN;
+        this.setFunctionalUnitType(FunctionalUnitType.UNKNOWN);
+        this.setInstructionType(InstructionType.UNKNOWN);
     }
 
     public Instruction(Instruction obj)
     {
         super();
-        // System.out.println("Copy Constructor of Instruction SuperClass: "
-        // + obj.printableInstruction);
         this.RAW = obj.RAW;
         this.WAR = obj.WAR;
         this.WAW = obj.WAW;
@@ -47,8 +44,9 @@ public abstract class Instruction implements InstructionI
                 this.entryCycle.length);
         System.arraycopy(obj.exitCycle, 0, this.exitCycle, 0,
                 this.exitCycle.length);
-        this.functionalUnitType = obj.functionalUnitType;
-        this.instructionType = obj.instructionType;
+        this.setFunctionalUnitType(obj.getFunctionalUnitType());
+        this.setInstructionType(obj.getInstructionType());
+        this.setPrintableInstruction(obj.printableInstruction);
     }
 
     // Purely for decorative purposes
@@ -75,15 +73,54 @@ public abstract class Instruction implements InstructionI
                 WAR ? 'Y' : 'N', WAW ? 'Y' : 'N', STRUCT ? 'Y' : 'N');
     }
 
-    public static boolean isLoadStore(Instruction inst)
+    public void setRAW(boolean b)
     {
-        return (inst.instructionType.equals(InstructionType.MEMORY_FPREG) || inst.instructionType
-                .equals(InstructionType.MEMORY_REG)) ? true : false;
+        this.RAW = b;
     }
 
-    public static boolean isStore(Instruction inst)
+    public void setWAW(boolean b)
     {
-        return (isLoadStore(inst) && (inst instanceof StoreInstruction));
+        this.WAW = b;
+    }
+
+    public long getDestinationAddress() throws Exception
+    {
+        if (InstructionUtils.isLoadStore(this))
+            return destinationAddress;
+        else
+            throw new Exception(
+                    " called getDestinationAddress for non-LoadStore "
+                            + toString());
+    }
+
+    protected void setDestinationAddress(long address) throws Exception
+    {
+        if (InstructionUtils.isLoadStore(this))
+            this.destinationAddress = address;
+        else
+            throw new Exception(
+                    " called setDestinationAddress for non-LoadStore "
+                            + toString());
+    }
+
+    public FunctionalUnitType getFunctionalUnitType()
+    {
+        return functionalUnitType;
+    }
+
+    protected void setFunctionalUnitType(FunctionalUnitType functionalUnitType)
+    {
+        this.functionalUnitType = functionalUnitType;
+    }
+
+    public InstructionType getInstructionType()
+    {
+        return instructionType;
+    }
+
+    protected void setInstructionType(InstructionType instructionType)
+    {
+        this.instructionType = instructionType;
     }
 
 }

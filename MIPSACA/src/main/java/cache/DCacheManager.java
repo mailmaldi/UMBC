@@ -2,6 +2,7 @@ package cache;
 
 import Utils.Utils;
 import instructions.Instruction;
+import instructions.InstructionUtils;
 import instructions.LD;
 import instructions.SD;
 import stages.CPU;
@@ -29,7 +30,7 @@ public class DCacheManager
     public boolean canProceed(Instruction inst) throws Exception
     {
         boolean accessingMemory = false;
-        int address = (int) inst.address;
+        int address = (int) inst.getDestinationAddress();
         if (request.lastRequestInstruction == null)
         {
             // first time request
@@ -37,7 +38,7 @@ public class DCacheManager
             request.lastRequestInstructionEntryClock = CPU.CLOCK;
             request.clockCyclesToBlock = 0;
 
-            if (Instruction.isStore(inst))
+            if (InstructionUtils.isStore(inst))
             {
 
                 // check if address of this instruction actually exists in
@@ -193,20 +194,20 @@ public class DCacheManager
 
     public void updateCacheBlock(Instruction inst) throws Exception
     {
-        int address = (int) inst.address;
+        int address = (int) inst.getDestinationAddress();
         if (!request.hasAccessVariablesSet)
         {
             dCacheAccessRequests++;
             if (cache.doesAddressExist(address))
                 dCacheAccessHits++;
-            cache.updateBlock(address, Instruction.isStore(inst));
+            cache.updateBlock(address, InstructionUtils.isStore(inst));
             if (inst instanceof LD || inst instanceof SD)
             {
                 dCacheAccessRequests++;
                 if (cache.doesAddressExist(address + 4))
                     dCacheAccessHits++;
             }
-            cache.updateBlock(address + 4, Instruction.isStore(inst));
+            cache.updateBlock(address + 4, InstructionUtils.isStore(inst));
 
             request.hasAccessVariablesSet = true;
             MemoryBusManager.instance.setDCacheFree();

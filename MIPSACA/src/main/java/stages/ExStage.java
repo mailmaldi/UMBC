@@ -146,12 +146,12 @@ public class ExStage extends Stage
             throws Exception
     {
 
-        if (instruction.functionalUnitType == FunctionalUnitType.UNKNOWN
-                || instruction.functionalUnitType == null)
+        if (instruction.getFunctionalUnitType() == FunctionalUnitType.UNKNOWN
+                || instruction.getFunctionalUnitType() == null)
             throw new Exception("EXSTAGE: Incorrect type"
                     + instruction.toString());
 
-        switch (instruction.functionalUnitType)
+        switch (instruction.getFunctionalUnitType())
         {
 
             case FPADD:

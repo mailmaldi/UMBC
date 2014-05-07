@@ -6,7 +6,7 @@ public class BEQ extends ConditionalBranchInstruction
     public BEQ(String sourceLabel1, String sourceLabel2, String destinationLabel)
     {
         super(sourceLabel1, sourceLabel2, destinationLabel);
-        this.instructionType = InstructionType.BRANCH;
+        this.setInstructionType(InstructionType.BRANCH);
     }
 
     public BEQ(BEQ obj)

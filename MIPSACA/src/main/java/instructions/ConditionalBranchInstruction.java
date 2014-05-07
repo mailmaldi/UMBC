@@ -21,7 +21,6 @@ public abstract class ConditionalBranchInstruction extends Instruction
     public ConditionalBranchInstruction(ConditionalBranchInstruction obj)
     {
         super(obj);
-        setPrintableInstruction(obj.printableInstruction);
         src1 = new SourceObject(obj.src1);
         src2 = new SourceObject(obj.src2);
         destinationLabel = obj.destinationLabel;

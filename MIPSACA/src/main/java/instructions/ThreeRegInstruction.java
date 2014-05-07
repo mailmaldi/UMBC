@@ -20,8 +20,6 @@ public abstract class ThreeRegInstruction extends Instruction
     public ThreeRegInstruction(ThreeRegInstruction obj)
     {
         super(obj);
-        setPrintableInstruction(obj.printableInstruction);
-
         src1 = new SourceObject(obj.src1);
         src2 = new SourceObject(obj.src2);
         dest = new WriteBackObject(obj.dest);

@@ -1,12 +1,11 @@
 package instructions;
 
-public class LD extends TwoRegImmediateInstruction
+public class LD extends LoadInstruction
 {
     public LD(String sourceLabel, String destinationLabel, int immediate)
     {
         super(sourceLabel, destinationLabel, immediate);
-        this.functionalUnitType = FunctionalUnitType.IU;
-        this.instructionType = InstructionType.MEMORY_FPREG;
+        this.setInstructionType(InstructionType.MEMORY_FPREG);
     }
 
     public LD(LD obj)
@@ -17,14 +16,6 @@ public class LD extends TwoRegImmediateInstruction
     @Override
     public String toString()
     {
-        return "LD " + dest.getDestinationLabel() + ", " + immediate + "("
-                + src1.getSourceLabel() + ")";
+        return "LD " + super.toString();
     }
-
-    @Override
-    public void executeInstruction()
-    {
-        this.address = immediate + src1.getSource();
-    }
-
 }

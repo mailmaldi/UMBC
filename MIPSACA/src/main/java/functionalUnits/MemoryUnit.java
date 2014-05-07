@@ -1,6 +1,7 @@
 package functionalUnits;
 
 import instructions.Instruction;
+import instructions.InstructionUtils;
 import instructions.NOOP;
 import instructions.StoreInstruction;
 import memory.DataMemoryManager;
@@ -51,18 +52,18 @@ public class MemoryUnit extends FunctionalUnit
         if (!isReadyToSend())
             return;
 
-        if (Instruction.isLoadStore(inst))
+        if (InstructionUtils.isLoadStore(inst))
         {
             if (CPU.RUN_TYPE.equals(CPU.RUN.MEMORY))
                 DCacheManager.instance.updateCacheBlock(inst);
             if (inst instanceof StoreInstruction)
                 DataMemoryManager.instance.setValueToAddress(
-                        (int) inst.address, (int) ((StoreInstruction) inst)
+                        (int) inst.getDestinationAddress(), (int) ((StoreInstruction) inst)
                                 .getValueToWrite().getSource());
             else
                 inst.getDestinationRegister().setDestination(
                         DataMemoryManager.instance
-                                .getValueFromAddress((int) inst.address));
+                                .getValueFromAddress((int) inst.getDestinationAddress()));
         }
 
         if (!WriteBackStage.getInstance().checkIfFree(inst))
@@ -80,7 +81,7 @@ public class MemoryUnit extends FunctionalUnit
         Instruction inst = peekFirst();
         if (inst instanceof NOOP)
             return true;
-        if (Instruction.isLoadStore(inst))
+        if (InstructionUtils.isLoadStore(inst))
         {
             switch (CPU.RUN_TYPE)
             {

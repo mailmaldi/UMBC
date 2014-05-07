@@ -15,12 +15,12 @@ public abstract class StoreInstruction extends Instruction
         src1 = new SourceObject(sourceLabel1, 0);
         src2 = new SourceObject(sourceLabel2, 0);
         this.immediate = immediate;
+        this.setFunctionalUnitType(FunctionalUnitType.IU);
     }
 
     public StoreInstruction(StoreInstruction obj)
     {
         super(obj);
-        setPrintableInstruction(obj.printableInstruction);
         this.src1 = new SourceObject(obj.src1);
         this.src2 = new SourceObject(obj.src2);
         this.immediate = obj.immediate;
@@ -42,13 +42,19 @@ public abstract class StoreInstruction extends Instruction
     }
 
     @Override
-    public void executeInstruction()
+    public void executeInstruction() throws Exception
     {
-        this.address = immediate + src2.getSource();
+        this.setDestinationAddress(immediate + src2.getSource());
     }
 
     public SourceObject getValueToWrite()
     {
         return src1;
+    }
+
+    public String toString()
+    {
+        return src1.getSourceLabel() + ", " + immediate + "("
+                + src2.getSourceLabel() + ")";
     }
 }

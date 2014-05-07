@@ -6,8 +6,8 @@ public class DSUBI extends TwoRegImmediateInstruction
     public DSUBI(String sourceLabel, String destinationLabel, int immediate)
     {
         super(sourceLabel, destinationLabel, immediate);
-        this.functionalUnitType = FunctionalUnitType.IU;
-        this.instructionType = InstructionType.ARITHMETIC_IMM;
+        this.setFunctionalUnitType(FunctionalUnitType.IU);
+        this.setInstructionType(InstructionType.ARITHMETIC_IMM);
     }
 
     public DSUBI(DSUBI obj)

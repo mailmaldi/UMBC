@@ -18,7 +18,7 @@ public interface InstructionI
      * All execute does is locally do arithmetic operations or calculate target
      * address
      */
-    public void executeInstruction();
+    public void executeInstruction() throws Exception;
 
     /*
      * For Decode Instruction we need the following

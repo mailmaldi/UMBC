@@ -11,13 +11,12 @@ public class J extends Instruction
     {
         super();
         this.destinationLabel = destinationLabel;
-        this.instructionType = InstructionType.JUMP;
+        this.setInstructionType(InstructionType.JUMP);
     }
 
     public J(J obj)
     {
         super(obj);
-        setPrintableInstruction(obj.printableInstruction);
         destinationLabel = obj.destinationLabel;
     }
 

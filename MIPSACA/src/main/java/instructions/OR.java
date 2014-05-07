@@ -5,8 +5,8 @@ public class OR extends ThreeRegInstruction
     public OR(String sourceLabel1, String sourceLabel2, String destinationLabel)
     {
         super(sourceLabel1, sourceLabel2, destinationLabel);
-        this.functionalUnitType = FunctionalUnitType.IU;
-        this.instructionType = InstructionType.ARITHMETIC_REG;
+        this.setFunctionalUnitType(FunctionalUnitType.IU);
+        this.setInstructionType(InstructionType.ARITHMETIC_REG);
     }
 
     public OR(OR obj)

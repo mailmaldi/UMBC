@@ -21,7 +21,6 @@ public abstract class TwoRegImmediateInstruction extends Instruction
     public TwoRegImmediateInstruction(TwoRegImmediateInstruction obj)
     {
         super(obj);
-        setPrintableInstruction(obj.printableInstruction);
         this.src1 = new SourceObject(obj.src1);
         this.dest = new WriteBackObject(obj.dest);
         this.immediate = obj.immediate;
