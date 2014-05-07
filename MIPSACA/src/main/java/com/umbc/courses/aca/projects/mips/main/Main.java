@@ -2,6 +2,7 @@ package com.umbc.courses.aca.projects.mips.main;
 
 import com.umbc.courses.aca.projects.mips.config.ConfigManager;
 import com.umbc.courses.aca.projects.mips.config.ConfigParser;
+import com.umbc.courses.aca.projects.mips.main.CPU.RUN;
 import com.umbc.courses.aca.projects.mips.memory.DataMemoryFileParser;
 import com.umbc.courses.aca.projects.mips.memory.DataMemoryManager;
 import com.umbc.courses.aca.projects.mips.program.ProgramManager;
@@ -9,12 +10,6 @@ import com.umbc.courses.aca.projects.mips.program.ProgramParser;
 import com.umbc.courses.aca.projects.mips.registers.RegisterFileParser;
 import com.umbc.courses.aca.projects.mips.registers.RegisterManager;
 import com.umbc.courses.aca.projects.mips.results.ResultsManager;
-import com.umbc.courses.aca.projects.mips.stages.CPU;
-import com.umbc.courses.aca.projects.mips.stages.DecodeStage;
-import com.umbc.courses.aca.projects.mips.stages.ExStage;
-import com.umbc.courses.aca.projects.mips.stages.FetchStage;
-import com.umbc.courses.aca.projects.mips.stages.WriteBackStage;
-import com.umbc.courses.aca.projects.mips.stages.CPU.RUN;
 
 public class Main
 {
@@ -70,47 +65,8 @@ public class Main
         CPU.CLOCK = 0;
         CPU.PROGRAM_COUNTER = 0;
 
-        WriteBackStage wbStage = WriteBackStage.getInstance();
-        ExStage exStage = ExStage.getInstance();
-        DecodeStage idStage = DecodeStage.getInstance();
-        FetchStage ifStage = FetchStage.getInstance();
+        Pipeline.getInstance().execute();
 
-        try
-        {
-
-            // I run these many clock cycles after HLT to flush pipeline
-            int extraCLKCount = 100;
-            while (extraCLKCount != 0)
-            {
-
-                wbStage.execute();
-                exStage.execute();
-
-                // Well this is just stupid way of doing this
-                // Halt is set only when Halt is decoded by decode stage
-                if (!ResultsManager.instance.isHALT())
-                {
-                    idStage.execute();
-
-                    if (!ResultsManager.instance.isHALT())
-                    {
-                        ifStage.execute();
-                    }
-                }
-                else
-                    extraCLKCount--;
-
-                CPU.CLOCK++;
-            }
-        }
-        catch (Exception e)
-        {
-            System.out.println("ERROR: CLOCK=" + CPU.CLOCK);
-            e.printStackTrace();
-        }
-        finally
-        {
-        }
         Thread.sleep(1000L);
         System.out.println("Results");
         ResultsManager.instance.printResults();

@@ -1,5 +1,6 @@
 package com.umbc.courses.aca.projects.mips.stages;
 
+import com.umbc.courses.aca.projects.mips.functionalUnits.WriteBackUnit;
 import com.umbc.courses.aca.projects.mips.instructions.Instruction;
 
 public class WriteBackStage extends Stage
@@ -20,7 +21,7 @@ public class WriteBackStage extends Stage
         return instance;
     }
 
-    private com.umbc.courses.aca.projects.mips.functionalUnits.WriteBackUnit writeBack;
+    private WriteBackUnit writeBack;
 
     private WriteBackStage()
     {
@@ -28,7 +29,7 @@ public class WriteBackStage extends Stage
 
         this.stageType = StageType.WBSTAGE;
 
-        writeBack = com.umbc.courses.aca.projects.mips.functionalUnits.WriteBackUnit.getInstance();
+        writeBack = WriteBackUnit.getInstance();
     }
 
     @Override

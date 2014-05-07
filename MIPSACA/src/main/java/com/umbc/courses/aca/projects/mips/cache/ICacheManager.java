@@ -2,9 +2,9 @@ package com.umbc.courses.aca.projects.mips.cache;
 
 import com.umbc.courses.aca.projects.mips.config.ConfigManager;
 import com.umbc.courses.aca.projects.mips.instructions.Instruction;
+import com.umbc.courses.aca.projects.mips.main.CPU;
 import com.umbc.courses.aca.projects.mips.program.ProgramManager;
 import com.umbc.courses.aca.projects.mips.results.ResultsManager;
-import com.umbc.courses.aca.projects.mips.stages.CPU;
 import com.umbc.courses.aca.projects.mips.stages.StageType;
 
 public class ICacheManager

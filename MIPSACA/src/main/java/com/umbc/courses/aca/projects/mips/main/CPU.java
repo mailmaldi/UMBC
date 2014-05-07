@@ -1,4 +1,4 @@
-package com.umbc.courses.aca.projects.mips.stages;
+package com.umbc.courses.aca.projects.mips.main;
 
 public class CPU
 {

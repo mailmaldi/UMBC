@@ -7,7 +7,11 @@ import java.util.TreeMap;
 import org.apache.commons.collections4.ListUtils;
 
 import com.umbc.courses.aca.projects.mips.functionalUnits.FPFunctionalUnit;
+import com.umbc.courses.aca.projects.mips.functionalUnits.FpAddUnit;
+import com.umbc.courses.aca.projects.mips.functionalUnits.FpDivUnit;
+import com.umbc.courses.aca.projects.mips.functionalUnits.FpMulUnit;
 import com.umbc.courses.aca.projects.mips.functionalUnits.FunctionalUnit;
+import com.umbc.courses.aca.projects.mips.functionalUnits.IntegerUnit;
 import com.umbc.courses.aca.projects.mips.functionalUnits.MemoryUnit;
 import com.umbc.courses.aca.projects.mips.instructions.EXFunctionalUnitType;
 import com.umbc.courses.aca.projects.mips.instructions.Instruction;
@@ -19,23 +23,21 @@ public class ExStage extends Stage
 
     public static ExStage getInstance()
     {
-
         if (null == instance)
             synchronized (ExStage.class)
             {
                 if (null == instance)
                     instance = new ExStage();
             }
-
         return instance;
     }
 
-    private com.umbc.courses.aca.projects.mips.functionalUnits.IntegerUnit iu;
-    private com.umbc.courses.aca.projects.mips.functionalUnits.MemoryUnit  mem;
-    private com.umbc.courses.aca.projects.mips.functionalUnits.FpAddUnit   fpadd;
-    private com.umbc.courses.aca.projects.mips.functionalUnits.FpMulUnit   fpmul;
-    private com.umbc.courses.aca.projects.mips.functionalUnits.FpDivUnit   fpdiv;
-    private List<FunctionalUnit>        tieBreakerList;
+    private IntegerUnit          iu;
+    private MemoryUnit           mem;
+    private FpAddUnit            fpadd;
+    private FpMulUnit            fpmul;
+    private FpDivUnit            fpdiv;
+    private List<FunctionalUnit> tieBreakerList;
 
     private ExStage()
     {
@@ -43,11 +45,11 @@ public class ExStage extends Stage
 
         this.stageType = StageType.EXSTAGE;
 
-        iu = com.umbc.courses.aca.projects.mips.functionalUnits.IntegerUnit.getInstance();
-        mem = com.umbc.courses.aca.projects.mips.functionalUnits.MemoryUnit.getInstance();
-        fpadd = com.umbc.courses.aca.projects.mips.functionalUnits.FpAddUnit.getInstance();
-        fpmul = com.umbc.courses.aca.projects.mips.functionalUnits.FpMulUnit.getInstance();
-        fpdiv = com.umbc.courses.aca.projects.mips.functionalUnits.FpDivUnit.getInstance();
+        iu = IntegerUnit.getInstance();
+        mem = MemoryUnit.getInstance();
+        fpadd = FpAddUnit.getInstance();
+        fpmul = FpMulUnit.getInstance();
+        fpdiv = FpDivUnit.getInstance();
 
         tieBreakerList = new ArrayList<FunctionalUnit>();
         tieBreakerList.add(mem);

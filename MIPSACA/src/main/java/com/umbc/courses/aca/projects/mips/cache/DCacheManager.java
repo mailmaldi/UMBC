@@ -6,7 +6,7 @@ import com.umbc.courses.aca.projects.mips.instructions.Instruction;
 import com.umbc.courses.aca.projects.mips.instructions.InstructionUtils;
 import com.umbc.courses.aca.projects.mips.instructions.LD;
 import com.umbc.courses.aca.projects.mips.instructions.SD;
-import com.umbc.courses.aca.projects.mips.stages.CPU;
+import com.umbc.courses.aca.projects.mips.main.CPU;
 
 public class DCacheManager
 {

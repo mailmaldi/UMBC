@@ -3,9 +3,9 @@ package com.umbc.courses.aca.projects.mips.functionalUnits;
 import com.umbc.courses.aca.projects.mips.instructions.Instruction;
 import com.umbc.courses.aca.projects.mips.instructions.InstructionUtils;
 import com.umbc.courses.aca.projects.mips.instructions.WriteBackObject;
+import com.umbc.courses.aca.projects.mips.main.CPU;
 import com.umbc.courses.aca.projects.mips.registers.RegisterManager;
 import com.umbc.courses.aca.projects.mips.results.ResultsManager;
-import com.umbc.courses.aca.projects.mips.stages.CPU;
 import com.umbc.courses.aca.projects.mips.stages.StageType;
 
 public class WriteBackUnit extends FunctionalUnit

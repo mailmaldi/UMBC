@@ -1,6 +1,6 @@
 package com.umbc.courses.aca.projects.mips.cache;
 
-import com.umbc.courses.aca.projects.mips.stages.CPU;
+import com.umbc.courses.aca.projects.mips.main.CPU;
 
 public class MemoryBusManager
 {

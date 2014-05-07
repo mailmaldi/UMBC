@@ -5,7 +5,7 @@ import java.util.ArrayDeque;
 import com.umbc.courses.aca.projects.mips.instructions.Instruction;
 import com.umbc.courses.aca.projects.mips.instructions.InstructionUtils;
 import com.umbc.courses.aca.projects.mips.instructions.NOOP;
-import com.umbc.courses.aca.projects.mips.stages.CPU;
+import com.umbc.courses.aca.projects.mips.main.CPU;
 import com.umbc.courses.aca.projects.mips.stages.StageType;
 
 public abstract class FunctionalUnit

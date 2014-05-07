@@ -6,6 +6,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.TreeMap;
 
+import com.umbc.courses.aca.projects.mips.Utils.Constants;
 import com.umbc.courses.aca.projects.mips.cache.DCacheManager;
 import com.umbc.courses.aca.projects.mips.cache.ICacheManager;
 import com.umbc.courses.aca.projects.mips.instructions.Instruction;
@@ -39,8 +40,8 @@ public class ResultsManager
     {
 
         System.out.println(String.format(
-                com.umbc.courses.aca.projects.mips.Utils.Constants.instructionOutputFormatString, "Instruction",
-                "FT", "ID", "EX", "WB", "RAW", "WAR", "WAW", "Struct"));
+                Constants.instructionOutputFormatString, "Instruction", "FT",
+                "ID", "EX", "WB", "RAW", "WAR", "WAW", "Struct"));
         for (int key : instructionMap.keySet())
         {
             Instruction inst = instructionMap.get(key);
@@ -57,9 +58,8 @@ public class ResultsManager
         try
         {
             resultsWriter.write(String.format(
-                    com.umbc.courses.aca.projects.mips.Utils.Constants.instructionOutputFormatString,
-                    "Instruction", "FT", "ID", "EX", "WB", "RAW", "WAR", "WAW",
-                    "Struct"));
+                    Constants.instructionOutputFormatString, "Instruction",
+                    "FT", "ID", "EX", "WB", "RAW", "WAR", "WAW", "Struct"));
             resultsWriter.newLine();
             for (int key : instructionMap.keySet())
             {

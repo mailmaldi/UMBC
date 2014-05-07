@@ -1,5 +1,6 @@
 package com.umbc.courses.aca.projects.mips.stages;
 
+import com.umbc.courses.aca.projects.mips.functionalUnits.FetchUnit;
 import com.umbc.courses.aca.projects.mips.instructions.Instruction;
 
 public class FetchStage extends Stage
@@ -9,23 +10,21 @@ public class FetchStage extends Stage
 
     public static FetchStage getInstance()
     {
-
         if (null == instance)
             synchronized (FetchStage.class)
             {
                 if (null == instance)
                     instance = new FetchStage();
             }
-
         return instance;
     }
 
-    private com.umbc.courses.aca.projects.mips.functionalUnits.FetchUnit fetch;
+    private FetchUnit fetch;
 
     private FetchStage()
     {
         super();
-        fetch = com.umbc.courses.aca.projects.mips.functionalUnits.FetchUnit.getInstance();
+        fetch = FetchUnit.getInstance();
         this.stageType = StageType.IFSTAGE;
     }
 
