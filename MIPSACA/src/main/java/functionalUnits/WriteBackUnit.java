@@ -1,7 +1,7 @@
 package functionalUnits;
 
 import instructions.Instruction;
-import instructions.NOOP;
+import instructions.InstructionUtils;
 import instructions.WriteBackObject;
 import registers.RegisterManager;
 import results.ResultsManager;
@@ -40,7 +40,7 @@ public class WriteBackUnit extends FunctionalUnit
     {
         Instruction inst = peekFirst();
 
-        if (inst instanceof NOOP)
+        if (InstructionUtils.isNOOP(inst))
             return;
 
         System.out.println(CPU.CLOCK + " WBUnit " + inst.debugString());

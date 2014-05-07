@@ -1,6 +1,7 @@
 package functionalUnits;
 
 import instructions.Instruction;
+import instructions.InstructionUtils;
 import instructions.NOOP;
 
 import java.util.ArrayDeque;
@@ -56,7 +57,7 @@ public abstract class FunctionalUnit
     public boolean checkIfFree(Instruction instruction) throws Exception
     {
         validateQueueSize();
-        return (peekLast() instanceof NOOP) ? true : false;
+        return InstructionUtils.isNOOP(peekLast());
 
     }
 
@@ -72,14 +73,14 @@ public abstract class FunctionalUnit
     {
         if (isPipelined)
         {
-            if (!(peekFirst() instanceof NOOP))
+            if (!InstructionUtils.isNOOP(peekFirst()))
             {
                 return true;
             }
         }
         else
         {
-            if (!(peekFirst() instanceof NOOP)
+            if (!InstructionUtils.isNOOP(peekFirst())
                     && ((CPU.CLOCK - peekFirst().entryCycle[stageId.getId()]) >= getClockCyclesRequiredForNonPipeLinedUnit()))
             {
                 return true;
