@@ -38,4 +38,9 @@ public class InstructionUtils
         return (inst instanceof ConditionalBranchInstruction);
     }
 
+    public static boolean isDoubleLoadStore(Instruction inst)
+    {
+        return (isLoadStore(inst) && (inst instanceof LD || inst instanceof SD));
+    }
+
 }

@@ -46,16 +46,16 @@ public class Main
         }
 
         ProgramParser.parse(args[0]);
-        ProgramManager.instance.dumpProgram();
+        // ProgramManager.instance.dumpProgram();
 
         DataMemoryFileParser.parseMemoryFile(args[1]);
-        DataMemoryManager.instance.dumpAllMemory();
+        // DataMemoryManager.instance.dumpAllMemory();
 
         RegisterFileParser.parseRegister(args[2]);
-        RegisterManager.instance.dumpAllRegisters();
+        // RegisterManager.instance.dumpAllRegisters();
 
         ConfigParser.parseConfigFile(args[3]);
-        ConfigManager.instance.dumpConfiguration();
+        // ConfigManager.instance.dumpConfiguration();
 
         ResultsManager.instance.setResultsPath(args[4]);
 

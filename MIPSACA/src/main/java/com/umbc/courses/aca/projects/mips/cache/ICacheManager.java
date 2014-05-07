@@ -73,10 +73,11 @@ public class ICacheManager
                 && (request.lastRequestInstruction >= 0)
                 && (CPU.CLOCK - request.lastRequestInstructionEntryClock >= request.clockCyclesToBlock))
         {
+            // NOTE this can happen multiple times, if cuz of a HAZARD
             if (request.hasBusAccess)
-                MemoryBusManager.instance.setBusFree();
+                MemoryBusManager.instance.setBusFree(0);
             cache.setInCache(request.lastRequestInstruction); // hack
-            // request.resetValues();
+            request.resetValues();
             return true;
         }
         return false;

@@ -72,6 +72,10 @@ public class MemoryUnit extends FunctionalUnit
 
         System.out.println(CPU.CLOCK + " Memory " + inst.debugString());
 
+        if (!WriteBackStage.getInstance().checkIfFree(inst))
+            throw new Exception(
+                    "MemoryUnit: won tie, WB Stage should always be free");
+
         if (!isReadyToSend())
             return;
 
@@ -91,14 +95,9 @@ public class MemoryUnit extends FunctionalUnit
                                         .getDestinationAddress()));
         }
 
-        if (!WriteBackStage.getInstance().checkIfFree(inst))
-            throw new Exception(
-                    "MemoryUnit: won tie, WB Stage should always be free");
-
-        WriteBackStage.getInstance().acceptInstruction(inst);
         updateExitClockCycle(inst);
+        WriteBackStage.getInstance().acceptInstruction(inst);
         rotatePipe();
-
     }
 
     @Override

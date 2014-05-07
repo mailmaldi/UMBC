@@ -4,7 +4,7 @@ import com.umbc.courses.aca.projects.mips.Utils.Utils;
 
 public class DCache
 {
-    DCacheSet[] dCacheSet;
+    private DCacheSet[] dCacheSet;
 
     public DCache()
     {
@@ -154,7 +154,7 @@ class DCacheSet
 
     public DCacheBlock getAddressBlock(int baseAddress)
     {
-        
+
         if (!doesAddressExist(baseAddress))
             return null;
 

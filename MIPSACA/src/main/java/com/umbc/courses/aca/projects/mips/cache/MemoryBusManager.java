@@ -46,10 +46,19 @@ public class MemoryBusManager
         return busAvailable;
     }
 
-    public void setBusFree()
+    public void setBusFree(int id)
     {
-        busRequestedBy = -1;
-        dCacheRequestClk = -1;
+        if (id == busRequestedBy)
+        {
+            busRequestedBy = -1;
+            dCacheRequestClk = -1;
+        }
+        else
+            System.err.println(CPU.CLOCK + " "
+                    + this.getClass().getSimpleName()
+                    + " Bus set free by wrong CacheManager "
+                    + ((id == 0) ? "ICacheManager" : "DCacheManager") + " busRequestedBy: "+ busRequestedBy);
+
     }
 
     private void setBusBusy(int id)

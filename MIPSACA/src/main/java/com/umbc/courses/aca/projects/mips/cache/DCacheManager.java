@@ -27,15 +27,68 @@ public class DCacheManager
         dCacheAccessHits = 0;
     }
 
-    public void setRequest(Instruction inst)
+    public void setRequest(Instruction inst) throws Exception
     {
+        int address = (int) inst.getDestinationAddress();
+        // check if request.address is not same here? Do I terminate here?
+        if (request.lastRequestInstruction == address)
+            System.err.println(CPU.CLOCK + this.getClass().getSimpleName()
+                    + " duplicate request address=" + address + " request="
+                    + request.toDebugString());
+
+        System.out.println(CPU.CLOCK + " " + request.toDebugString());
+
+        request = new DCacheRequestData();
+        request.lastRequestInstruction = address;
+        request.lastRequestInstructionEntryClock = CPU.CLOCK;
+        request.dInstruction = InstructionUtils.isDoubleLoadStore(inst);
+
+        // check hit
+        dCacheAccessRequests++;
+
+        if (cache.doesAddressExist(address))
+        {
+            dCacheAccessHits++;
+            request.cacheHit = true;
+            request.clockCyclesToBlock = ConfigManager.instance.DCacheLatency;
+        }
+        else
+        {
+            if (MemoryBusManager.instance.dCacheCanProceed())
+            {
+                request.hasBusAccess = true;
+            }
+
+            request.clockCyclesToBlock = get2TPlusKValue();
+            System.out.println(CPU.CLOCK + " DCacheM "
+                    + request.toDebugString() + " 2T+K " + get2TPlusKValue());
+        }
 
     }
 
-    public boolean canProceed(Instruction inst)
+    public boolean canProceed(Instruction inst) throws Exception
     {
-        // TODO Auto-generated method stub
-        return true;
+        if (!request.hasBusAccess && !request.cacheHit)
+        {
+            if (MemoryBusManager.instance.dCacheCanProceed())
+            {
+                request.lastRequestInstructionEntryClock = CPU.CLOCK;
+            }
+            return false;
+        }
+        if ((request.hasBusAccess || request.cacheHit)
+                && (CPU.CLOCK - request.lastRequestInstructionEntryClock >= request.clockCyclesToBlock))
+        {
+            // This can run multiple times because of a HAZARD
+            // set bus free only once
+            if (request.hasBusAccess)
+                MemoryBusManager.instance.setBusFree(1);
+            cache.updateBlock((int) inst.getDestinationAddress(),
+                    InstructionUtils.isLoadStore(inst));
+            return true;
+        }
+        return false;
+
     }
 
     public void updateCacheBlock(Instruction inst) throws Exception
@@ -266,10 +319,14 @@ public class DCacheManager
 
 class DCacheRequestData
 {
-    Instruction lastRequestInstruction;
-    int         lastRequestInstructionEntryClock;
-    int         clockCyclesToBlock;
-    boolean     hasAccessVariablesSet;
+    int     lastRequestInstruction;
+    int     lastRequestInstructionEntryClock;
+    int     clockCyclesToBlock;
+    boolean hasAccessVariablesSet;
+    boolean dInstruction;
+
+    boolean cacheHit;
+    boolean hasBusAccess;
 
     public DCacheRequestData()
     {
@@ -279,10 +336,22 @@ class DCacheRequestData
     public void resetValues()
     {
 
-        lastRequestInstruction = null;
+        lastRequestInstruction = -1;
         lastRequestInstructionEntryClock = -1;
         clockCyclesToBlock = -1;
         hasAccessVariablesSet = false;
+        cacheHit = false;
+        hasBusAccess = false;
+        dInstruction = false;
+    }
+
+    public String toDebugString()
+    {
+        return String
+                .format("dCacheRequest [address: %s , entry: %s , block: %s , hit: %s , bus: %s]",
+                        lastRequestInstruction,
+                        lastRequestInstructionEntryClock, clockCyclesToBlock,
+                        cacheHit, clockCyclesToBlock);
     }
 
 }

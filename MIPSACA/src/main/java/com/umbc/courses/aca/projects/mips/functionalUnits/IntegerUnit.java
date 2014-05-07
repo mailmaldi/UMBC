@@ -49,8 +49,8 @@ public class IntegerUnit extends FunctionalUnit
 
         if (MemoryUnit.getInstance().checkIfFree(inst))
         {
-            MemoryUnit.getInstance().acceptInstruction(inst);
             updateExitClockCycle(inst);
+            MemoryUnit.getInstance().acceptInstruction(inst);
             rotatePipe();
         }
         else
