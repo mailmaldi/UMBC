@@ -31,11 +31,34 @@ public class MemoryUnit extends FunctionalUnit
     private MemoryUnit()
     {
         super();
-        isPipelined = false;
-        clockCyclesRequired = ConfigManager.instance.MemoryLatency;
+        setPipelined(false);
+        setClockCyclesRequired(ConfigManager.instance.MemoryLatency);
         pipelineSize = 1;
         stageId = StageType.EXSTAGE;
         createPipelineQueue(pipelineSize);
+    }
+
+    @Override
+    public void acceptInstruction(Instruction inst) throws Exception
+    {
+        super.acceptInstruction(inst);
+
+        // check if its Load-Store, and set request in cache
+        if (InstructionUtils.isLoadStore(inst))
+        {
+
+            switch (CPU.RUN_TYPE)
+            {
+                case MEMORY:
+                    DCacheManager.instance.setRequest(inst);
+                case PIPELINE:
+                    break;
+                default:
+                    throw new Exception("MemoryUnit Illegal CPU.RUN_TYPE ");
+            }
+
+        }
+
     }
 
     @Override
@@ -78,10 +101,11 @@ public class MemoryUnit extends FunctionalUnit
 
     }
 
+    @Override
     public boolean isReadyToSend() throws Exception
     {
         Instruction inst = peekFirst();
-        if (inst instanceof NOOP)
+        if (InstructionUtils.isNOOP(inst))
             return true;
         if (InstructionUtils.isLoadStore(inst))
         {
@@ -91,7 +115,7 @@ public class MemoryUnit extends FunctionalUnit
                     return DCacheManager.instance.canProceed(inst);
                 case PIPELINE:
                     return ((CPU.CLOCK - inst.getEntryCycleForStage(stageId
-                            .getId())) >= clockCyclesRequired);
+                            .getId())) >= getClockCyclesRequired());
                 default:
                     throw new Exception("MemoryUnit Illegal CPU.RUN_TYPE ");
             }

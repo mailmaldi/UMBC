@@ -23,9 +23,9 @@ public class FpAddUnit extends FPFunctionalUnit
     private FpAddUnit()
     {
         super();
-        isPipelined = ConfigManager.instance.FPAdderPipelined;
-        clockCyclesRequired = ConfigManager.instance.FPAdderLatency;
-        pipelineSize = isPipelined ? ConfigManager.instance.FPAdderLatency : 1;
+        setPipelined(ConfigManager.instance.FPAdderPipelined);
+        setClockCyclesRequired(ConfigManager.instance.FPAdderLatency);
+        pipelineSize = isPipelined() ? ConfigManager.instance.FPAdderLatency : 1;
         stageId = StageType.EXSTAGE;
         createPipelineQueue(pipelineSize);
     }

@@ -31,8 +31,8 @@ public class FetchUnit extends FunctionalUnit
     private FetchUnit()
     {
         super();
-        this.isPipelined = false;
-        this.clockCyclesRequired = 1;
+        this.setPipelined(false);
+        this.setClockCyclesRequired(1);
         this.pipelineSize = 1;
         this.stageId = StageType.IFSTAGE;
         createPipelineQueue(pipelineSize);
@@ -42,61 +42,90 @@ public class FetchUnit extends FunctionalUnit
     @Override
     public int getClockCyclesRequiredForNonPipeLinedUnit()
     {
-        return clockCyclesRequired;
+        return getClockCyclesRequired();
+    }
+
+    @Override
+    public boolean isReadyToSend() throws Exception
+    {
+        if (!checkIfFree())
+        {
+            switch (CPU.RUN_TYPE)
+            {
+                case MEMORY:
+                    return ICacheManager.instance.canProceed();
+                case PIPELINE:
+                    return true;
+            }
+        }
+        return false;
     }
 
     @Override
     public void executeUnit() throws Exception
     {
         validateQueueSize();
+        Instruction inst = peekFirst();
         if (hasBeenFlushed)
         {
             System.out.println(CPU.CLOCK + " FetchUnit: Running Flush hack");
             hasBeenFlushed = false;
-            return;
-        }
-        Instruction inst = peekFirst();
-
-        if (!InstructionUtils.isNOOP(inst))
-        {
-            System.out.println(CPU.CLOCK + " Fetch  " + inst.debugString());
-
-            if (DecodeStage.getInstance().checkIfFree(inst))
+            if (!InstructionUtils.isNOOP(inst))
             {
-                DecodeStage.getInstance().acceptInstruction(inst);
                 updateExitClockCycle(inst);
+                ResultsManager.instance.addInstruction(inst);
                 rotatePipe();
+                fetchNextInstruction();
+                // Tell ICache that instruction was flushed ,
+            }
+            else
+            {
+                System.out.println(CPU.CLOCK + this.getClass().getSimpleName()
+                        + " Flush should never find NOOP");
+                throw new Exception(CPU.CLOCK + this.getClass().getSimpleName()
+                        + " Flush should never find NOOP");
             }
         }
+        else
+        {
+            if (checkIfFree())
+            {
+                fetchNextInstruction();
+            }
+            else
+            {
+                System.out.println(CPU.CLOCK + " Fetch  " + inst.debugString());
+                if ((DecodeStage.getInstance().checkIfFree(inst))
+                        && isReadyToSend())
+                {
+                    DecodeStage.getInstance().acceptInstruction(inst);
+                    updateExitClockCycle(inst);
+                    rotatePipe();
+                    fetchNextInstruction();
+                    // Set ICache Bus Free
+                    // increment PC here
+                }
+                else
+                {
 
-        fetchNextInstruction();
+                }
+            }
+        }
     }
 
     public void flushUnit() throws Exception
     {
         validateQueueSize();
 
-        // flush the ICacheManager
         hasBeenFlushed = true;
-        ICacheManager.instance.flush();
+
+        // flush the ICacheManager
+        // ICacheManager.instance.flush();
 
         Instruction inst = peekFirst();
-
-        System.out.println("FetchUnit flushUnit called for inst: "
+        System.out.println(CPU.CLOCK + " FetchUnit flushUnit called for inst: "
                 + inst.debugString());
 
-        if (InstructionUtils.isNOOP(inst))
-            return;
-
-        // update inst exitcycle
-        // updateEntryClockCycle(inst); // hack dont do this!!!
-        updateExitClockCycle(inst);
-        // send to result manager
-        ResultsManager.instance.addInstruction(inst);
-        // remove inst & add NOOP
-        rotatePipe();
-
-        validateQueueSize();
     }
 
     private void fetchNextInstruction() throws Exception
@@ -104,32 +133,23 @@ public class FetchUnit extends FunctionalUnit
         // fetch a new instruction only if ifStage is free
         if (checkIfFree())
         {
-            boolean checkInst = false;
 
-            Instruction next = null;
+            Instruction next = ProgramManager.instance
+                    .getInstructionAtAddress(CPU.PROGRAM_COUNTER);
+
             switch (CPU.RUN_TYPE)
             {
                 case MEMORY:
-                    next = ICacheManager.instance
-                            .getInstructionFromCache(CPU.PROGRAM_COUNTER);
-                    if (next != null)
-                        checkInst = true;
+                    ICacheManager.instance.setRequest(CPU.PROGRAM_COUNTER);
                     break;
-
                 case PIPELINE:
-                    next = ProgramManager.instance
-                            .getInstructionAtAddress(CPU.PROGRAM_COUNTER);
-                    checkInst = true;
                     break;
             }
 
-            if (checkInst && checkIfFree())
-            {
-                acceptInstruction(next);
-                CPU.PROGRAM_COUNTER++;
-            }
+            acceptInstruction(next);
+            CPU.PROGRAM_COUNTER++;
 
         } // end ifStage.checkIfFree
-
     }
+
 }

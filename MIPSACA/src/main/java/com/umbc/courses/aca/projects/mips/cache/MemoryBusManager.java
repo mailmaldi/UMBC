@@ -4,81 +4,65 @@ import com.umbc.courses.aca.projects.mips.main.CPU;
 
 public class MemoryBusManager
 {
-    boolean                              iCacheRequested;
-    int                                  iCacheRequestClk;
-    boolean                              dCacheRequested;
     int                                  dCacheRequestClk;
+    int                                  busRequestedBy;
 
     public static final MemoryBusManager instance = new MemoryBusManager();
 
     private MemoryBusManager()
     {
         resetValues();
-
     }
 
-    public int getDelay()
+    public boolean canICacheAccessBus()
     {
-        return 0;
+        return (busRequestedBy == -1)
+                || (busRequestedBy == 1 && dCacheRequestClk == CPU.CLOCK);
     }
 
-    public int getDelayForDCache()
+    public boolean iCacheCanProceed()
     {
-        if (iCacheRequested == true)
+        boolean busAvailable = canICacheAccessBus();
+        if (busAvailable)
         {
-            return CPU.CLOCK - (iCacheRequestClk)
-                    + ICacheManager.instance.get2TPlusKValue() - 1;
+            setBusBusy(0);
         }
-        return 0;
+        return busAvailable;
     }
 
-    public int getDelayForICache()
+    public boolean canDCacheAccessBus()
     {
-        if (dCacheRequested == true
-                && DCacheManager.instance.request.lastRequestInstructionEntryClock < CPU.CLOCK)
+        return (busRequestedBy == -1);
+    }
+
+    public boolean dCacheCanProceed()
+    {
+        boolean busAvailable = canDCacheAccessBus();
+        if (busAvailable)
         {
-            System.out.println(CPU.CLOCK + " DUMMY " + dCacheRequestClk + " "
-                    + DCacheManager.instance.request.clockCyclesToBlock);
-            return (dCacheRequestClk + DCacheManager.instance.request.clockCyclesToBlock)
-                    - CPU.CLOCK;
+            dCacheRequestClk = CPU.CLOCK;
+            setBusBusy(1);
         }
-        else
-        {
-            DCacheManager.instance.request.resetValues();
-            return 0;
-        }
+        return busAvailable;
     }
 
-    public void setICacheBusy()
+    public void setBusFree()
     {
-        iCacheRequested = true;
-        iCacheRequestClk = CPU.CLOCK;
-    }
-
-    public void setICacheFree()
-    {
-        iCacheRequestClk = -1;
-        iCacheRequested = false;
-    }
-
-    public void setDCacheBusy()
-    {
-        dCacheRequested = true;
-        dCacheRequestClk = CPU.CLOCK;
-    }
-
-    public void setDCacheFree()
-    {
+        busRequestedBy = -1;
         dCacheRequestClk = -1;
-        dCacheRequested = false;
+    }
+
+    private void setBusBusy(int id)
+    {
+        busRequestedBy = id;
     }
 
     private void resetValues()
     {
-        iCacheRequested = false;
-        iCacheRequestClk = 0;
-        dCacheRequested = false;
         dCacheRequestClk = 0;
+        busRequestedBy = -1; // -1 is free
+        // 0 is icache
+        // 1 is dcache
 
     }
 

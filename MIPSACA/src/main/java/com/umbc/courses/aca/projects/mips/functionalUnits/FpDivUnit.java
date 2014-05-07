@@ -23,9 +23,9 @@ public class FpDivUnit extends FPFunctionalUnit
     private FpDivUnit()
     {
         super();
-        isPipelined = ConfigManager.instance.FPDividerPipelined;
-        clockCyclesRequired = ConfigManager.instance.FPDivideLatency;
-        pipelineSize = isPipelined ? ConfigManager.instance.FPDivideLatency : 1;
+        setPipelined(ConfigManager.instance.FPDividerPipelined);
+        setClockCyclesRequired(ConfigManager.instance.FPDivideLatency);
+        pipelineSize = isPipelined() ? ConfigManager.instance.FPDivideLatency : 1;
         stageId = StageType.EXSTAGE;
         createPipelineQueue(pipelineSize);
     }

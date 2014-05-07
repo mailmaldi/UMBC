@@ -23,9 +23,9 @@ public class FpMulUnit extends FPFunctionalUnit
     private FpMulUnit()
     {
         super();
-        isPipelined = ConfigManager.instance.FPMultPipelined;
-        clockCyclesRequired = ConfigManager.instance.FPMultLatency;
-        pipelineSize = isPipelined ? ConfigManager.instance.FPMultLatency : 1;
+        setPipelined(ConfigManager.instance.FPMultPipelined);
+        setClockCyclesRequired(ConfigManager.instance.FPMultLatency);
+        pipelineSize = isPipelined() ? ConfigManager.instance.FPMultLatency : 1;
         stageId = StageType.EXSTAGE;
         createPipelineQueue(pipelineSize);
     }

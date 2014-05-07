@@ -28,8 +28,8 @@ public class WriteBackUnit extends FunctionalUnit
     private WriteBackUnit()
     {
         super();
-        isPipelined = false;
-        clockCyclesRequired = 1;
+        setPipelined(true);
+        setClockCyclesRequired(1);
         pipelineSize = 1;
         stageId = StageType.WBSTAGE;
         createPipelineQueue(pipelineSize);
@@ -71,6 +71,6 @@ public class WriteBackUnit extends FunctionalUnit
     public int getClockCyclesRequiredForNonPipeLinedUnit()
     {
         // TODO Auto-generated method stub
-        return clockCyclesRequired;
+        return getClockCyclesRequired();
     }
 }

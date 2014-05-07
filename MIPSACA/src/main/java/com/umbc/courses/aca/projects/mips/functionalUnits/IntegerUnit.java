@@ -25,8 +25,8 @@ public class IntegerUnit extends FunctionalUnit
     private IntegerUnit()
     {
         super();
-        isPipelined = false;
-        clockCyclesRequired = 1;
+        setPipelined(true);
+        setClockCyclesRequired(1);
         pipelineSize = 1;
         stageId = StageType.EXSTAGE;
         createPipelineQueue(pipelineSize);
@@ -63,6 +63,6 @@ public class IntegerUnit extends FunctionalUnit
     @Override
     public int getClockCyclesRequiredForNonPipeLinedUnit()
     {
-        return clockCyclesRequired;
+        return getClockCyclesRequired();
     }
 }

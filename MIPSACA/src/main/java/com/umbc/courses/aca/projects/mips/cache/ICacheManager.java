@@ -1,11 +1,7 @@
 package com.umbc.courses.aca.projects.mips.cache;
 
 import com.umbc.courses.aca.projects.mips.config.ConfigManager;
-import com.umbc.courses.aca.projects.mips.instructions.Instruction;
 import com.umbc.courses.aca.projects.mips.main.CPU;
-import com.umbc.courses.aca.projects.mips.program.ProgramManager;
-import com.umbc.courses.aca.projects.mips.results.ResultsManager;
-import com.umbc.courses.aca.projects.mips.stages.StageType;
 
 public class ICacheManager
 {
@@ -26,64 +22,65 @@ public class ICacheManager
         iCacheAccessHits = 0;
     }
 
-    public Instruction getInstructionFromCache(int address) throws Exception
+    public void setRequest(int address) throws Exception
     {
-        if (request.lastRequestInstruction != -1
-                && request.lastRequestInstruction != address)
-            throw new Exception(
-                    "ICacheManager Requested an instruction address when already blocking address="
-                            + address + " lastrequestaddress="
-                            + request.lastRequestInstruction);
+        // check if request.address is not same here?
+        if (request.lastRequestInstruction == address)
+            System.err.println(CPU.CLOCK + this.getClass().getSimpleName()
+                    + " duplicate request address=" + address + " request="
+                    + request.toDebugString());
 
-        if (request.lastRequestInstruction == -1)
+        System.out.println(CPU.CLOCK + " " + request.toDebugString());
+
+        request = new ICacheRequestData();
+        request.lastRequestInstruction = address;
+        request.lastRequestInstructionEntryClock = CPU.CLOCK;
+
+        // check hit
+        iCacheAccessRequests++;
+        if (cache.checkInCache(address))
         {
-            System.out.println(CPU.CLOCK + " ICacheM First Request for PC="
-                    + address);
-            request.lastRequestInstruction = address;
-            request.lastRequestInstructionEntryClock = CPU.CLOCK;
-            iCacheAccessRequests++;
-
-            if (cache.checkInCache(address))
-            {
-                iCacheAccessHits++;
-                request.clockCyclesToBlock = ConfigManager.instance.ICacheLatency - 1;
-            }
-            else
-            {
-                int delayToBus = MemoryBusManager.instance.getDelayForICache();
-                if (delayToBus == 0)
-                    MemoryBusManager.instance.setICacheBusy();
-                // else
-                // request.resetValues();
-                request.clockCyclesToBlock = delayToBus + get2TPlusKValue() - 1;
-                System.out.println(CPU.CLOCK + " ICacheM "
-                        + request.toDebugString() + " delayToBus " + delayToBus
-                        + " 2T+K " + get2TPlusKValue());
-            }
-        }
-        return validateClockCyclesToBlock();
-    }
-
-    private Instruction validateClockCyclesToBlock() throws Exception
-    {
-        if ((request.lastRequestInstruction >= 0)
-                && (CPU.CLOCK - request.lastRequestInstructionEntryClock == request.clockCyclesToBlock))
-        {
-            MemoryBusManager.instance.setICacheFree();
-
-            cache.setInCache(request.lastRequestInstruction); // hack
-            return getInstructionAndResetRequest();
+            iCacheAccessHits++;
+            request.cacheHit = true;
+            request.clockCyclesToBlock = ConfigManager.instance.ICacheLatency;
         }
         else
-            return null;
+        {
+            if (MemoryBusManager.instance.iCacheCanProceed())
+            {
+                request.hasBusAccess = true;
+            }
+
+            request.clockCyclesToBlock = get2TPlusKValue();
+            System.out.println(CPU.CLOCK + " ICacheM "
+                    + request.toDebugString() + " 2T+K " + get2TPlusKValue());
+
+        }
     }
 
-    private Instruction getInstructionAndResetRequest() throws Exception
+    // will be called by isReadytoSend
+    public boolean canProceed() throws Exception
     {
-        Instruction inst = ProgramManager.instance
-                .getInstructionAtAddress(request.lastRequestInstruction);
-        request.resetValues();
-        return inst;
+        if (!request.hasBusAccess && !request.cacheHit)
+        {
+            if (MemoryBusManager.instance.iCacheCanProceed())
+            {
+                request.lastRequestInstructionEntryClock = CPU.CLOCK;
+            }
+            return false;
+        }
+        if ((request.hasBusAccess || request.cacheHit)
+                && (request.lastRequestInstruction >= 0)
+                && (CPU.CLOCK - request.lastRequestInstructionEntryClock >= request.clockCyclesToBlock))
+        {
+            if (request.hasBusAccess)
+                MemoryBusManager.instance.setBusFree();
+            cache.setInCache(request.lastRequestInstruction); // hack
+            // request.resetValues();
+            return true;
+        }
+        return false;
+
     }
 
     public int getICacheAccessRequests()
@@ -113,30 +110,15 @@ public class ICacheManager
                 getICacheAccessHits()));
         return sb.toString();
     }
-
-    public void flush() throws Exception
-    {
-        // TODO this is weird, fix it!!
-        if (request.lastRequestInstruction >= 0)
-        {
-            Instruction inst = ProgramManager.instance
-                    .getInstructionAtAddress(request.lastRequestInstruction);
-            inst.setEntryCycleForStage(StageType.IFSTAGE.getId(), CPU.CLOCK - 1);
-            inst.setExitCycleForStage(StageType.IFSTAGE.getId(), CPU.CLOCK);
-            ResultsManager.instance.addInstruction(inst);
-        }
-
-        this.request.resetValues();
-        MemoryBusManager.instance.setICacheFree();
-    }
-
 }
 
 class ICacheRequestData
 {
-    int lastRequestInstruction;
-    int lastRequestInstructionEntryClock;
-    int clockCyclesToBlock;
+    int     lastRequestInstruction;
+    int     lastRequestInstructionEntryClock;
+    int     clockCyclesToBlock;
+    boolean cacheHit;
+    boolean hasBusAccess;
 
     public ICacheRequestData()
     {
@@ -145,16 +127,20 @@ class ICacheRequestData
 
     public void resetValues()
     {
-
         lastRequestInstruction = -1;
         lastRequestInstructionEntryClock = -1;
         clockCyclesToBlock = -1;
+        hasBusAccess = false;
+        cacheHit = false;
     }
 
     public String toDebugString()
     {
-        return lastRequestInstructionEntryClock + " " + lastRequestInstruction
-                + " " + clockCyclesToBlock;
+        return String
+                .format("iCacheRequest [address: %s , entry: %s , block: %s , hit: %s , bus: %s]",
+                        lastRequestInstruction,
+                        lastRequestInstructionEntryClock, clockCyclesToBlock,
+                        cacheHit, clockCyclesToBlock);
     }
 
 }

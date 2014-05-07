@@ -11,10 +11,10 @@ import com.umbc.courses.aca.projects.mips.stages.StageType;
 public abstract class FunctionalUnit
 {
 
-    public boolean                  isPipelined;
-    public int                      clockCyclesRequired;
-    public int                      pipelineSize;
-    public StageType                stageId;
+    private boolean                 isPipelined;
+    private int                     clockCyclesRequired;
+    protected int                   pipelineSize;
+    protected StageType             stageId;
     private ArrayDeque<Instruction> instructionQueue;
 
     public abstract void executeUnit() throws Exception;
@@ -24,21 +24,16 @@ public abstract class FunctionalUnit
 
     public void acceptInstruction(Instruction instruction) throws Exception
     {
-
         if (!checkIfFree(instruction))
             throw new Exception("FUNCTIONALUNIT: Illegal state of queue "
                     + this.getClass().getSimpleName());
 
         removeLast();
         addLast(instruction);
-
         instruction.setEntryCycleForStage(stageId.getId(), CPU.CLOCK);
-
         validateQueueSize();
-
-        // System.out.format("%-3s  %-20s %50s %n", CPU.CLOCK, this.getClass()
-        // .getSimpleName(), instruction.debugString());
-
+        System.out.format("%-3s  %-20s %50s %n", CPU.CLOCK, this.getClass()
+                .getSimpleName(), instruction.debugString());
     }
 
     protected void validateQueueSize() throws Exception
@@ -63,9 +58,10 @@ public abstract class FunctionalUnit
     }
 
     // Some Functional Units override this, Memory Unit
+    // Frozen, if u need to modify this, modify in sub-class
     public boolean isReadyToSend() throws Exception
     {
-        if (isPipelined)
+        if (isPipelined())
         {
             if (!InstructionUtils.isNOOP(peekFirst()))
                 return true;
@@ -163,5 +159,25 @@ public abstract class FunctionalUnit
     protected Instruction removeLast()
     {
         return instructionQueue.removeLast();
+    }
+
+    public boolean isPipelined()
+    {
+        return isPipelined;
+    }
+
+    protected void setPipelined(boolean isPipelined)
+    {
+        this.isPipelined = isPipelined;
+    }
+
+    public int getClockCyclesRequired()
+    {
+        return clockCyclesRequired;
+    }
+
+    protected void setClockCyclesRequired(int clockCyclesRequired)
+    {
+        this.clockCyclesRequired = clockCyclesRequired;
     }
 }

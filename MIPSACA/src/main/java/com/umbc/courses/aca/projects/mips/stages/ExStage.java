@@ -175,11 +175,11 @@ public class ExStage extends Stage
         for (FunctionalUnit fu : tieList)
         {
             if (fu instanceof MemoryUnit)
-                mergeFUMap(fu.clockCyclesRequired + 1, fu, fUMap);
-            else if (fu.isPipelined)
-                mergeFUMap(fu.clockCyclesRequired, fu, fUMap);
+                mergeFUMap(fu.getClockCyclesRequired() + 1, fu, fUMap);
+            else if (fu.isPipelined())
+                mergeFUMap(fu.getClockCyclesRequired(), fu, fUMap);
             else
-                mergeFUMap(1000 + fu.clockCyclesRequired, fu, fUMap);
+                mergeFUMap(1000 + fu.getClockCyclesRequired(), fu, fUMap);
         }
         return fUMap.get(fUMap.lastKey());
     }

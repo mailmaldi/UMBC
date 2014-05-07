@@ -37,7 +37,7 @@ public abstract class FPFunctionalUnit extends FunctionalUnit
                 WriteBackStage.getInstance().acceptInstruction(inst);
                 updateExitClockCycle(inst);
             }
-            else if (!isPipelined)
+            else if (!isPipelined())
             {
                 // if not pipelined code is not ready to send,
                 // then dont rotate pipe
@@ -51,13 +51,13 @@ public abstract class FPFunctionalUnit extends FunctionalUnit
     @Override
     public int getClockCyclesRequiredForNonPipeLinedUnit()
     {
-        return clockCyclesRequired;
+        return getClockCyclesRequired();
     }
 
     public void rotatePipelineOnHazard() throws Exception
     {
         validateQueueSize();
-        if (!isPipelined)
+        if (!isPipelined())
             return;
         // non pipelined, now iterate in reverse
         System.out.println(this.getClass().getSimpleName()
