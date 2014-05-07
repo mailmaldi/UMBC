@@ -6,7 +6,7 @@ public class CPU
 
     public static int PROGRAM_COUNTER = 0;
 
-    public static RUN RUN_TYPE        = RUN.PIPELINE; // DEFAULT
+    public static RUN RUN_TYPE        = RUN.MEMORY; // DEFAULT
 
     public enum RUN
     {

@@ -1,10 +1,7 @@
 package functionalUnits;
 
-import instructions.BEQ;
-import instructions.BNE;
 import instructions.ConditionalBranchInstruction;
 import instructions.EXFunctionalUnitType;
-import instructions.HLT;
 import instructions.Instruction;
 import instructions.InstructionUtils;
 import instructions.J;
