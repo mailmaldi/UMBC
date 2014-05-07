@@ -3,6 +3,7 @@ package functionalUnits;
 import instructions.DADDI;
 import instructions.HLT;
 import instructions.Instruction;
+import instructions.InstructionUtils;
 import instructions.J;
 import instructions.NOOP;
 
@@ -24,7 +25,7 @@ public abstract class FPFunctionalUnit extends FunctionalUnit
         inst.executeInstruction();
 
         // TODO clean this up!!!
-        if (!(inst instanceof NOOP))
+        if (!InstructionUtils.isNOOP(inst))
         {
             if (isReadyToSend())
             {
@@ -62,7 +63,7 @@ public abstract class FPFunctionalUnit extends FunctionalUnit
 
         for (int i = 0; i < objects.length - 1; i++)
         {
-            if (objects[i] instanceof NOOP)
+            if (InstructionUtils.isNOOP(objects[i]))
             {
                 Instruction temp = objects[i];
                 objects[i] = objects[i + 1];
@@ -95,7 +96,7 @@ public abstract class FPFunctionalUnit extends FunctionalUnit
 
         for (int i = 0; i < objects.length - 1; i++)
         {
-            if (objects[i] instanceof NOOP)
+            if (InstructionUtils.isNOOP(objects[i]))
             {
                 Instruction temp = objects[i];
                 objects[i] = objects[i + 1];

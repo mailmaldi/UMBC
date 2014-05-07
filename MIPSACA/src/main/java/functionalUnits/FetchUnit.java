@@ -1,13 +1,13 @@
 package functionalUnits;
 
-import program.ProgramManager;
-import cache.ICacheManager;
 import instructions.Instruction;
-import instructions.NOOP;
+import instructions.InstructionUtils;
+import program.ProgramManager;
 import results.ResultsManager;
 import stages.CPU;
 import stages.DecodeStage;
 import stages.StageType;
+import cache.ICacheManager;
 
 public class FetchUnit extends FunctionalUnit
 {
@@ -57,7 +57,7 @@ public class FetchUnit extends FunctionalUnit
         }
         Instruction inst = peekFirst();
 
-        if (!(inst instanceof NOOP))
+        if (!InstructionUtils.isNOOP(inst))
         {
             System.out.println(CPU.CLOCK + " Fetch  " + inst.debugString());
 
@@ -85,7 +85,7 @@ public class FetchUnit extends FunctionalUnit
         System.out.println("FetchUnit flushUnit called for inst: "
                 + inst.debugString());
 
-        if (inst instanceof NOOP)
+        if (InstructionUtils.isNOOP(inst))
             return;
 
         // update inst exitcycle

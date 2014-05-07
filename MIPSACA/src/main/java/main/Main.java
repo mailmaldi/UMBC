@@ -79,7 +79,7 @@ public class Main
         {
 
             // I run these many clock cycles after HLT to flush pipeline
-            int extraCLKCount = 50;
+            int extraCLKCount = 100;
             while (extraCLKCount != 0)
             {
 
@@ -87,6 +87,7 @@ public class Main
                 exStage.execute();
 
                 // Well this is just stupid way of doing this
+                // Halt is set only when Halt is decoded by decode stage
                 if (!ResultsManager.instance.isHALT())
                 {
                     idStage.execute();

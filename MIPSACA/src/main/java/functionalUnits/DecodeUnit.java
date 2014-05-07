@@ -5,7 +5,6 @@ import instructions.EXFunctionalUnitType;
 import instructions.Instruction;
 import instructions.InstructionUtils;
 import instructions.J;
-import instructions.NOOP;
 import instructions.SourceObject;
 import instructions.WriteBackObject;
 
@@ -60,7 +59,7 @@ public class DecodeUnit extends FunctionalUnit
 
         Instruction inst = peekFirst();
 
-        if (inst instanceof NOOP)
+        if (InstructionUtils.isNOOP(inst))
             return;
 
         System.out.println(CPU.CLOCK + " Decode " + inst.debugString());
