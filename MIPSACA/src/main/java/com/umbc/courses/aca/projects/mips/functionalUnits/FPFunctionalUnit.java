@@ -57,6 +57,8 @@ public abstract class FPFunctionalUnit extends FunctionalUnit
         if (!isPipelined)
             return;
         // non pipelined, now iterate in reverse
+        System.out.println(this.getClass().getSimpleName()
+                + " Rotating pipeline on Hazard");
 
         Instruction objects[] = pipelineToArray();
 

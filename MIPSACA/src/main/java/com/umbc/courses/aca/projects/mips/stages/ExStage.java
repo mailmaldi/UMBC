@@ -37,7 +37,7 @@ public class ExStage extends Stage
     private FpAddUnit            fpadd;
     private FpMulUnit            fpmul;
     private FpDivUnit            fpdiv;
-    private List<FunctionalUnit> tieBreakerList;
+    private List<FunctionalUnit> allFUList;
 
     private ExStage()
     {
@@ -51,11 +51,11 @@ public class ExStage extends Stage
         fpmul = FpMulUnit.getInstance();
         fpdiv = FpDivUnit.getInstance();
 
-        tieBreakerList = new ArrayList<FunctionalUnit>();
-        tieBreakerList.add(mem);
-        tieBreakerList.add(fpadd);
-        tieBreakerList.add(fpmul);
-        tieBreakerList.add(fpdiv);
+        allFUList = new ArrayList<FunctionalUnit>();
+        allFUList.add(mem);
+        allFUList.add(fpadd);
+        allFUList.add(fpmul);
+        allFUList.add(fpdiv);
     }
 
     @Override
@@ -64,7 +64,7 @@ public class ExStage extends Stage
 
         List<FunctionalUnit> readyList = new ArrayList<FunctionalUnit>();
 
-        for (FunctionalUnit fu : tieBreakerList)
+        for (FunctionalUnit fu : allFUList)
         {
             if (fu.isReadyToSend())
                 readyList.add(fu);
@@ -72,7 +72,7 @@ public class ExStage extends Stage
 
         if (readyList.size() <= 1)
         {
-            for (FunctionalUnit fu : tieBreakerList)
+            for (FunctionalUnit fu : allFUList)
                 fu.executeUnit();
         }
         else
@@ -87,14 +87,13 @@ public class ExStage extends Stage
             List<FunctionalUnit> losersList = ListUtils.subtract(readyList,
                     winnerList);
 
-            List<FunctionalUnit> exeList = ListUtils.subtract(tieBreakerList,
+            List<FunctionalUnit> exeList = ListUtils.subtract(allFUList,
                     losersList);
 
             // for all losers, run mark StructHazard
             for (FunctionalUnit fu : losersList)
             {
                 fu.markStructHazard();
-                // TODO for pipelined FPFunctionalUnit, move things 1 right
 
                 if (fu instanceof FPFunctionalUnit)
                     ((FPFunctionalUnit) fu).rotatePipelineOnHazard();
@@ -106,7 +105,6 @@ public class ExStage extends Stage
         }
 
         iu.executeUnit(); // Special Handling for this
-
     }
 
     // This method will be called by ID while executing and passing on the
@@ -114,8 +112,7 @@ public class ExStage extends Stage
     @Override
     public boolean acceptInstruction(Instruction instruction) throws Exception
     {
-        // TODO Implement this method
-        FunctionalUnit functionalUnit = getFunctionalUnit(instruction);
+        FunctionalUnit functionalUnit = getEXFunctionalUnit(instruction);
         if (!functionalUnit.checkIfFree(instruction))
             throw new Exception("EXSTAGE: Illegal state exception "
                     + instruction.toString());
@@ -130,7 +127,7 @@ public class ExStage extends Stage
     @Override
     public boolean checkIfFree(Instruction instruction) throws Exception
     {
-        FunctionalUnit functionalUnit = getFunctionalUnit(instruction);
+        FunctionalUnit functionalUnit = getEXFunctionalUnit(instruction);
         return functionalUnit.checkIfFree(instruction);
     }
 
@@ -138,12 +135,12 @@ public class ExStage extends Stage
      * 
      * @param instruction
      *            to find which FU to use
-     * @return
+     * @return the FunctionUnit object
      * @throws Exception
      *             defensive
      */
     @SuppressWarnings("incomplete-switch")
-    private FunctionalUnit getFunctionalUnit(Instruction instruction)
+    private FunctionalUnit getEXFunctionalUnit(Instruction instruction)
             throws Exception
     {
 
@@ -177,46 +174,30 @@ public class ExStage extends Stage
 
         for (FunctionalUnit fu : tieList)
         {
-
             if (fu instanceof MemoryUnit)
-            {
                 mergeFUMap(fu.clockCyclesRequired + 1, fu, fUMap);
-                continue;
-            }
-
-            if (fu.isPipelined)
-            {
+            else if (fu.isPipelined)
                 mergeFUMap(fu.clockCyclesRequired, fu, fUMap);
-            }
             else
-            {
                 mergeFUMap(1000 + fu.clockCyclesRequired, fu, fUMap);
-            }
         }
-
         return fUMap.get(fUMap.lastKey());
     }
 
     private void mergeFUMap(int calculatedKey, FunctionalUnit fu,
             TreeMap<Integer, FunctionalUnit> map)
     {
-
-        if (map.containsKey(calculatedKey))
-        {
-
-            FunctionalUnit mapEntry = (FunctionalUnit) map.get(calculatedKey);
-            int fuEntry = fu.peekFirst().getEntryCycleForStage(
-                    StageType.IFSTAGE.getId());
-            int localEntry = mapEntry.peekFirst().getEntryCycleForStage(
-                    StageType.IFSTAGE.getId());
-            if (fuEntry < localEntry)
-                map.put(calculatedKey, fu);
-
-        }
-        else
+        if (!map.containsKey(calculatedKey))
         {
             map.put(calculatedKey, fu);
+            return;
         }
+        FunctionalUnit mapEntry = (FunctionalUnit) map.get(calculatedKey);
+        int fuEntry = fu.peekFirst().getEntryCycleForStage(
+                StageType.IFSTAGE.getId());
+        int localEntry = mapEntry.peekFirst().getEntryCycleForStage(
+                StageType.IFSTAGE.getId());
+        if (fuEntry < localEntry)
+            map.put(calculatedKey, fu);
     }
-
 }

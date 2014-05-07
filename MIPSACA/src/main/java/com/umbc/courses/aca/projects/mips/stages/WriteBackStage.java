@@ -35,18 +35,15 @@ public class WriteBackStage extends Stage
     @Override
     public void execute() throws Exception
     {
-        /*
-         * System.out.println("------------------------------");
-         * System.out.println("WRITEBACK - "); writeBack.dumpUnitDetails();
-         * System.out.println("------------------------------");
-         */
-
         writeBack.executeUnit();
     }
 
     @Override
     public boolean acceptInstruction(Instruction instruction) throws Exception
     {
+        if (!writeBack.checkIfFree(instruction))
+            throw new Exception("WBStage: Illegal state exception "
+                    + instruction.toString());
         writeBack.acceptInstruction(instruction);
         return true;
     }
