@@ -23,9 +23,11 @@ public abstract class FPFunctionalUnit extends FunctionalUnit
         Instruction inst = peekFirst();
         inst.executeInstruction();
 
-        // TODO clean this up!!!
+        // if a NOOP, then dont care abt rotating
         if (!InstructionUtils.isNOOP(inst))
         {
+            // if piped or non are ready to send
+            // send to WB
             if (isReadyToSend())
             {
                 if (!WriteBackStage.getInstance().checkIfFree(inst))
@@ -37,11 +39,12 @@ public abstract class FPFunctionalUnit extends FunctionalUnit
             }
             else if (!isPipelined)
             {
+                // if not pipelined code is not ready to send,
+                // then dont rotate pipe
                 return;
             }
         }
 
-        // This is the same effect as running pipleine once :)
         rotatePipe();
     }
 

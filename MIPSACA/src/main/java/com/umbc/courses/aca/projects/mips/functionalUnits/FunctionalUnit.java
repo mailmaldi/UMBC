@@ -22,8 +22,6 @@ public abstract class FunctionalUnit
     public abstract int getClockCyclesRequiredForNonPipeLinedUnit()
             throws Exception;
 
-    // TODO: Increment entry cycle and exit cycle clock depending on stage
-    // number
     public void acceptInstruction(Instruction instruction) throws Exception
     {
 
@@ -38,10 +36,8 @@ public abstract class FunctionalUnit
 
         validateQueueSize();
 
-        /*
-         * System.out.format("%-3s  %-20s %50s %n", CPU.CLOCK, this.getClass()
-         * .getSimpleName(), instruction.debugString());
-         */
+        // System.out.format("%-3s  %-20s %50s %n", CPU.CLOCK, this.getClass()
+        // .getSimpleName(), instruction.debugString());
 
     }
 
@@ -52,7 +48,6 @@ public abstract class FunctionalUnit
                     + this.getClass().getName());
     }
 
-    // This is being done for the execute stage functional units.
     public boolean checkIfFree(Instruction instruction) throws Exception
     {
         validateQueueSize();
@@ -60,33 +55,28 @@ public abstract class FunctionalUnit
 
     }
 
+    // currently only FetchUnit uses this to call itself!!!
+    // why does my brain work like this
     public boolean checkIfFree() throws Exception
     {
         return checkIfFree(null);
     }
 
-    /*
-     * TODO may have to override this for If functionalunit
-     */
+    // Some Functional Units override this, Memory Unit
     public boolean isReadyToSend() throws Exception
     {
         if (isPipelined)
         {
             if (!InstructionUtils.isNOOP(peekFirst()))
-            {
                 return true;
-            }
         }
         else
         {
             if (!InstructionUtils.isNOOP(peekFirst())
                     && ((CPU.CLOCK - peekFirst().getEntryCycleForStage(
                             stageId.getId())) >= getClockCyclesRequiredForNonPipeLinedUnit()))
-            {
                 return true;
-            }
         }
-
         return false;
     }
 
@@ -99,8 +89,6 @@ public abstract class FunctionalUnit
     {
         // defensive, call validateQueueSize, may call isReadyToSend too!
         validateQueueSize();
-
-        // TODO find this out else do
 
         peekFirst().setStruct(true);
 

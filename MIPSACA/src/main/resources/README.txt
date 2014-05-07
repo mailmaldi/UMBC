@@ -36,3 +36,6 @@ I recommend copying the jar to the folder where you want to test the input files
 NOTES AND ASSUMPTIONS IN CODE:
 - DIVD can have a divide by zero, i'm just going to log it rather than cease execution
 - data.txt Parser finishes on encountering first empty line or EOF
+- In a pipelined Functional Unit, like FPAdd, etc. If the last instruction cannot goto next stage, only that instr is marked with Structual hazard, the previous ones are not!
+Example, if size[4] Pipeline has [ NOOP, I4, I5 , I6] , only I6 is marked struct hazard
+I have written code to mark all 3 Stuct hazard as well, but I've commented it , since I think its incorrect to.
