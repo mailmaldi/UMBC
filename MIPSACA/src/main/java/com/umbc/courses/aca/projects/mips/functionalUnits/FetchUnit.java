@@ -133,10 +133,8 @@ public class FetchUnit extends FunctionalUnit
         // fetch a new instruction only if ifStage is free
         if (checkIfFree())
         {
-
             Instruction next = ProgramManager.instance
                     .getInstructionAtAddress(CPU.PROGRAM_COUNTER);
-
             switch (CPU.RUN_TYPE)
             {
                 case MEMORY:
