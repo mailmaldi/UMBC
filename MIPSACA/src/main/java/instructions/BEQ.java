@@ -6,7 +6,6 @@ public class BEQ extends ConditionalBranchInstruction
     public BEQ(String sourceLabel1, String sourceLabel2, String destinationLabel)
     {
         super(sourceLabel1, sourceLabel2, destinationLabel);
-        this.setInstructionType(InstructionType.BRANCH);
     }
 
     public BEQ(BEQ obj)
@@ -17,15 +16,6 @@ public class BEQ extends ConditionalBranchInstruction
     @Override
     public String toString()
     {
-        return "BEQ " + " " + src1.getSourceLabel() + ", "
-                + src2.getSourceLabel() + ", " + destinationLabel;
+        return "BEQ " + super.toString();
     }
-
-    @Override
-    public void executeInstruction()
-    {
-        // Do nothing here
-
-    }
-
 }

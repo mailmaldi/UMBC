@@ -5,9 +5,9 @@ import java.util.List;
 
 public abstract class ConditionalBranchInstruction extends Instruction
 {
-    SourceObject src1, src2;
+    private SourceObject src1, src2;
 
-    String       destinationLabel;
+    private String       destinationLabel;
 
     public ConditionalBranchInstruction(String sourceLabel1,
             String sourceLabel2, String destinationLabel)
@@ -16,6 +16,7 @@ public abstract class ConditionalBranchInstruction extends Instruction
         src1 = new SourceObject(sourceLabel1, 0);
         src2 = new SourceObject(sourceLabel2, 0);
         this.destinationLabel = destinationLabel;
+        this.setInstructionType(InstructionType.BRANCH);
     }
 
     public ConditionalBranchInstruction(ConditionalBranchInstruction obj)
@@ -30,17 +31,14 @@ public abstract class ConditionalBranchInstruction extends Instruction
     public List<SourceObject> getSourceRegister()
     {
         List<SourceObject> sourceRegisterList = new ArrayList<SourceObject>();
-
         sourceRegisterList.add(src1);
         sourceRegisterList.add(src2);
-
         return sourceRegisterList;
     }
 
     @Override
     public WriteBackObject getDestinationRegister()
     {
-
         return null;
     }
 
@@ -52,5 +50,18 @@ public abstract class ConditionalBranchInstruction extends Instruction
     public boolean compareRegisters()
     {
         return (src1.getSource() == src2.getSource());
+    }
+
+    @Override
+    public String toString()
+    {
+        return src1.getSourceLabel() + ", " + src2.getSourceLabel() + ", "
+                + destinationLabel;
+    }
+
+    @Override
+    public void executeInstruction()
+    {
+        // Do nothing here
     }
 }

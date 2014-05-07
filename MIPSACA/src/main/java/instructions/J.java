@@ -46,7 +46,5 @@ public class J extends Instruction
     @Override
     public void executeInstruction()
     {
-        // Do nothing here
-
     }
 }

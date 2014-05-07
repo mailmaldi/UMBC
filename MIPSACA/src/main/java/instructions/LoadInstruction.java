@@ -7,7 +7,7 @@ public abstract class LoadInstruction extends TwoRegImmediateInstruction
             int immediate)
     {
         super(sourceLabel, destinationLabel, immediate);
-        this.setFunctionalUnitType(FunctionalUnitType.IU);
+        this.setFunctionalUnitType(EXFunctionalUnitType.IU);
     }
 
     public LoadInstruction(LoadInstruction li)

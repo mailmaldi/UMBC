@@ -1,8 +1,6 @@
 package instructions;
 
-public enum FunctionalUnitType
+public enum EXFunctionalUnitType
 {
-
     FPADD, FPMUL, FPDIV, IU, UNKNOWN
-
 }

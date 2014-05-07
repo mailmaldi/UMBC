@@ -18,14 +18,12 @@ public class HLT extends Instruction
     @Override
     public List<SourceObject> getSourceRegister()
     {
-        // TODO Auto-generated method stub
         return null;
     }
 
     @Override
     public WriteBackObject getDestinationRegister()
     {
-        // TODO Auto-generated method stub
         return null;
     }
 
@@ -38,8 +36,6 @@ public class HLT extends Instruction
     @Override
     public void executeInstruction()
     {
-        // Do nothing here
-
     }
 
 }

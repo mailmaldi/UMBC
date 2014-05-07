@@ -15,7 +15,7 @@ public abstract class StoreInstruction extends Instruction
         src1 = new SourceObject(sourceLabel1, 0);
         src2 = new SourceObject(sourceLabel2, 0);
         this.immediate = immediate;
-        this.setFunctionalUnitType(FunctionalUnitType.IU);
+        this.setFunctionalUnitType(EXFunctionalUnitType.IU);
     }
 
     public StoreInstruction(StoreInstruction obj)

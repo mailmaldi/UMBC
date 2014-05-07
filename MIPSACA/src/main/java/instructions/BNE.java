@@ -6,7 +6,6 @@ public class BNE extends ConditionalBranchInstruction
     public BNE(String sourceLabel1, String sourceLabel2, String destinationLabel)
     {
         super(sourceLabel1, sourceLabel2, destinationLabel);
-        this.setInstructionType(InstructionType.BRANCH);
     }
 
     public BNE(BNE obj)
@@ -17,15 +16,6 @@ public class BNE extends ConditionalBranchInstruction
     @Override
     public String toString()
     {
-        return "BNE " + " " + src1.getSourceLabel() + ", "
-                + src2.getSourceLabel() + ", " + destinationLabel;
+        return "BNE " + super.toString();
     }
-
-    @Override
-    public void executeInstruction()
-    {
-        // Do nothing here
-
-    }
-
 }

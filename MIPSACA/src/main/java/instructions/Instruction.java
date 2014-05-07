@@ -8,7 +8,7 @@ public abstract class Instruction implements InstructionI
     private boolean            WAR;
     public boolean             WAW;
     public boolean             STRUCT;
-    private FunctionalUnitType functionalUnitType;
+    private EXFunctionalUnitType functionalUnitType;
     private InstructionType    instructionType;
 
     public int[]               entryCycle;
@@ -27,7 +27,7 @@ public abstract class Instruction implements InstructionI
         this.WAR = false;
         this.WAW = false;
         this.STRUCT = false;
-        this.setFunctionalUnitType(FunctionalUnitType.UNKNOWN);
+        this.setFunctionalUnitType(EXFunctionalUnitType.UNKNOWN);
         this.setInstructionType(InstructionType.UNKNOWN);
     }
 
@@ -103,12 +103,12 @@ public abstract class Instruction implements InstructionI
                             + toString());
     }
 
-    public FunctionalUnitType getFunctionalUnitType()
+    public EXFunctionalUnitType getFunctionalUnitType()
     {
         return functionalUnitType;
     }
 
-    protected void setFunctionalUnitType(FunctionalUnitType functionalUnitType)
+    protected void setFunctionalUnitType(EXFunctionalUnitType functionalUnitType)
     {
         this.functionalUnitType = functionalUnitType;
     }

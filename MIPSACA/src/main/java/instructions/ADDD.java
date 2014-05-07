@@ -7,7 +7,7 @@ public class ADDD extends ThreeRegInstruction
             String destinationLabel)
     {
         super(sourceLabel1, sourceLabel2, destinationLabel);
-        this.setFunctionalUnitType(FunctionalUnitType.FPADD);
+        this.setFunctionalUnitType(EXFunctionalUnitType.FPADD);
         this.setInstructionType(InstructionType.ARITHMETIC_FPREG);
     }
 

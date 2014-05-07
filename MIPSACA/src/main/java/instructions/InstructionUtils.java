@@ -18,4 +18,19 @@ public class InstructionUtils
         return isLoad(inst) || isStore(inst);
     }
 
+    public static boolean isNOOP(Instruction inst)
+    {
+        return (inst instanceof NOOP);
+    }
+
+    public static boolean isHLT(Instruction inst)
+    {
+        return (inst instanceof HLT);
+    }
+
+    public static boolean isJump(Instruction inst)
+    {
+        return (inst instanceof J);
+    }
+
 }

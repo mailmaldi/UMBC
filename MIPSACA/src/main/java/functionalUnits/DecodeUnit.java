@@ -3,7 +3,7 @@ package functionalUnits;
 import instructions.BEQ;
 import instructions.BNE;
 import instructions.ConditionalBranchInstruction;
-import instructions.FunctionalUnitType;
+import instructions.EXFunctionalUnitType;
 import instructions.HLT;
 import instructions.Instruction;
 import instructions.J;
@@ -161,8 +161,8 @@ public class DecodeUnit extends FunctionalUnit
     private boolean processStruct(Instruction inst) throws Exception
     {
         // Check for possible STRUCT hazards
-        FunctionalUnitType type = inst.getFunctionalUnitType();
-        if (!type.equals(FunctionalUnitType.UNKNOWN))
+        EXFunctionalUnitType type = inst.getFunctionalUnitType();
+        if (!type.equals(EXFunctionalUnitType.UNKNOWN))
         {
             if (!(ExStage.getInstance().checkIfFree(inst)))
             {

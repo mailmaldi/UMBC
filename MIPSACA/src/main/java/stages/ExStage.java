@@ -1,6 +1,6 @@
 package stages;
 
-import instructions.FunctionalUnitType;
+import instructions.EXFunctionalUnitType;
 import instructions.Instruction;
 
 import java.util.ArrayList;
@@ -146,7 +146,7 @@ public class ExStage extends Stage
             throws Exception
     {
 
-        if (instruction.getFunctionalUnitType() == FunctionalUnitType.UNKNOWN
+        if (instruction.getFunctionalUnitType() == EXFunctionalUnitType.UNKNOWN
                 || instruction.getFunctionalUnitType() == null)
             throw new Exception("EXSTAGE: Incorrect type"
                     + instruction.toString());
