@@ -18,8 +18,7 @@ public class DSUBI extends TwoRegImmediateInstruction
     @Override
     public String toString()
     {
-        return "DSUBI " + dest.getDestinationLabel() + ", "
-                + src1.getSourceLabel() + ", " + immediate;
+        return "DSUBI " + super.toString();
     }
 
     @Override

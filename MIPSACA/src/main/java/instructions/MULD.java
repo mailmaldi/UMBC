@@ -18,8 +18,7 @@ public class MULD extends ThreeRegInstruction
     @Override
     public String toString()
     {
-        return "MULD " + dest.getDestinationLabel() + ", "
-                + src1.getSourceLabel() + ", " + src2.getSourceLabel();
+        return "MULD " + super.toString();
     }
 
     @Override

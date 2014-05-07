@@ -18,8 +18,7 @@ public class DIVD extends ThreeRegInstruction
     @Override
     public String toString()
     {
-        return "DIVD " + dest.getDestinationLabel() + ", "
-                + src1.getSourceLabel() + ", " + src2.getSourceLabel();
+        return "DIVD " + super.toString();
     }
 
     @Override

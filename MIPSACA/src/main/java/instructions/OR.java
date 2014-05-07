@@ -17,8 +17,7 @@ public class OR extends ThreeRegInstruction
     @Override
     public String toString()
     {
-        return "OR " + dest.getDestinationLabel() + ", "
-                + src1.getSourceLabel() + ", " + src2.getSourceLabel();
+        return "OR " + super.toString();
     }
 
     @Override

@@ -30,10 +30,8 @@ public abstract class ThreeRegInstruction extends Instruction
     public List<SourceObject> getSourceRegister()
     {
         List<SourceObject> sourceRegisterList = new ArrayList<SourceObject>();
-
         sourceRegisterList.add(this.src1);
         sourceRegisterList.add(this.src2);
-
         return sourceRegisterList;
     }
 
@@ -41,6 +39,13 @@ public abstract class ThreeRegInstruction extends Instruction
     public WriteBackObject getDestinationRegister()
     {
         return dest;
+    }
+
+    @Override
+    public String toString()
+    {
+        return dest.getDestinationLabel() + ", " + src1.getSourceLabel() + ", "
+                + src2.getSourceLabel();
     }
 
 }

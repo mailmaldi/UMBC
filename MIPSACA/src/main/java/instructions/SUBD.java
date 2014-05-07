@@ -18,8 +18,7 @@ public class SUBD extends ThreeRegInstruction
     @Override
     public String toString()
     {
-        return "SUBD " + dest.getDestinationLabel() + ", "
-                + src1.getSourceLabel() + ", " + src2.getSourceLabel();
+        return "SUBD " + super.toString();
     }
 
     @Override

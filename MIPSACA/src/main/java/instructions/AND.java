@@ -18,8 +18,7 @@ public class AND extends ThreeRegInstruction
     @Override
     public String toString()
     {
-        return "AND " + dest.getDestinationLabel() + ", "
-                + src1.getSourceLabel() + ", " + src2.getSourceLabel();
+        return "AND " + super.toString();
     }
 
     @Override

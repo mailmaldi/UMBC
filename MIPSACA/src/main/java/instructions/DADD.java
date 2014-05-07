@@ -18,8 +18,7 @@ public class DADD extends ThreeRegInstruction
     @Override
     public String toString()
     {
-        return "DADD " + dest.getDestinationLabel() + ", "
-                + src1.getSourceLabel() + ", " + src2.getSourceLabel();
+        return "DADD " + super.toString();
     }
 
     @Override

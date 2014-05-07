@@ -18,8 +18,7 @@ public class ORI extends TwoRegImmediateInstruction
     @Override
     public String toString()
     {
-        return "ORI " + dest.getDestinationLabel() + ", "
-                + src1.getSourceLabel() + ", " + immediate;
+        return "ORI " + super.toString();
     }
 
     @Override

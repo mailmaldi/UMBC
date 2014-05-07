@@ -39,4 +39,13 @@ public abstract class TwoRegImmediateInstruction extends Instruction
     {
         return dest;
     }
+
+    @Override
+    public String toString()
+    {
+        if (InstructionUtils.isLoadStore(this))
+            return "";
+        return dest.getDestinationLabel() + ", " + src1.getSourceLabel() + ", "
+                + immediate;
+    }
 }

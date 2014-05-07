@@ -19,8 +19,7 @@ public class ADDD extends ThreeRegInstruction
     @Override
     public String toString()
     {
-        return "ADDD " + dest.getDestinationLabel() + ", "
-                + src1.getSourceLabel() + ", " + src2.getSourceLabel();
+        return "ADDD " + super.toString();
     }
 
     @Override

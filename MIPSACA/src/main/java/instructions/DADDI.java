@@ -18,8 +18,7 @@ public class DADDI extends TwoRegImmediateInstruction
     @Override
     public String toString()
     {
-        return "DADDI " + dest.getDestinationLabel() + ", "
-                + src1.getSourceLabel() + ", " + immediate;
+        return "DADDI " + super.toString();
     }
 
     @Override

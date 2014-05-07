@@ -23,8 +23,7 @@ public class ANDI extends TwoRegImmediateInstruction
     @Override
     public String toString()
     {
-        return "ANDI " + dest.getDestinationLabel() + ", "
-                + src1.getSourceLabel() + ", " + immediate;
+        return "ANDI " + super.toString();
     }
 
     @Override

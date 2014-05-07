@@ -18,8 +18,7 @@ public class DSUB extends ThreeRegInstruction
     @Override
     public String toString()
     {
-        return "DSUB " + dest.getDestinationLabel() + ", "
-                + src1.getSourceLabel() + ", " + src2.getSourceLabel();
+        return "DSUB " + super.toString();
     }
 
     @Override
