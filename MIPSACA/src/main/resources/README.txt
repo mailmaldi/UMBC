@@ -35,3 +35,4 @@ I recommend copying the jar to the folder where you want to test the input files
 
 NOTES AND ASSUMPTIONS IN CODE:
 - DIVD can have a divide by zero, i'm just going to log it rather than cease execution
+- data.txt Parser finishes on encountering first empty line or EOF
