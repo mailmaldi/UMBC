@@ -4,19 +4,19 @@ import java.util.Arrays;
 
 public abstract class Instruction implements InstructionI
 {
-    private boolean            RAW;
-    private boolean            WAR;
-    public boolean             WAW;
-    public boolean             STRUCT;
+    private boolean              RAW;
+    private boolean              WAR;
+    public boolean               WAW;
+    public boolean               STRUCT;
     private EXFunctionalUnitType functionalUnitType;
-    private InstructionType    instructionType;
+    private InstructionType      instructionType;
 
-    public int[]               entryCycle;
-    public int[]               exitCycle;
+    public int[]                 entryCycle;
+    public int[]                 exitCycle;
 
-    private String             printableInstruction;
+    private String               printableInstruction;
 
-    private long               destinationAddress;  // HACK
+    private long                 destinationAddress;  // HACK
 
     public Instruction()
     {

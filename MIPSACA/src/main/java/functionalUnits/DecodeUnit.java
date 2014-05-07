@@ -6,6 +6,7 @@ import instructions.ConditionalBranchInstruction;
 import instructions.EXFunctionalUnitType;
 import instructions.HLT;
 import instructions.Instruction;
+import instructions.InstructionUtils;
 import instructions.J;
 import instructions.NOOP;
 import instructions.SourceObject;
@@ -100,7 +101,7 @@ public class DecodeUnit extends FunctionalUnit
                     .getDestinationLabel());
 
         // process J instruction
-        if (inst instanceof J)
+        if (InstructionUtils.isJump(inst))
         {
             // update PC to label address
             CPU.PROGRAM_COUNTER = ProgramManager.instance
@@ -111,35 +112,21 @@ public class DecodeUnit extends FunctionalUnit
 
         }
         // process BNE,BEQ instruction
-        else if (inst instanceof ConditionalBranchInstruction)
+        else if (InstructionUtils.isBranch(inst))
         {
-            if (inst instanceof BEQ)
+            ConditionalBranchInstruction temp = (ConditionalBranchInstruction) inst;
+            if (temp.shouldBranch())
             {
-                if (((ConditionalBranchInstruction) inst).compareRegisters())
-                {
-                    // update PC
-                    CPU.PROGRAM_COUNTER = ProgramManager.instance
-                            .getInstructionAddreessForLabel(((BEQ) inst)
-                                    .getDestinationLabel());
-                    // Flush fetch stage
-                    FetchStage.getInstance().flushStage();
-                }
-            }
-            else if (inst instanceof BNE)
-            {
-                if (!((ConditionalBranchInstruction) inst).compareRegisters())
-                {
-                    // update PC
-                    CPU.PROGRAM_COUNTER = ProgramManager.instance
-                            .getInstructionAddreessForLabel(((BNE) inst)
-                                    .getDestinationLabel());
-                    // Flush fetch stage
-                    FetchStage.getInstance().flushStage();
-                }
+                // update PC
+                CPU.PROGRAM_COUNTER = ProgramManager.instance
+                        .getInstructionAddreessForLabel(temp
+                                .getDestinationLabel());
+                // Flush fetch stage
+                FetchStage.getInstance().flushStage();
             }
         }
         // process HLT instruction
-        else if (inst instanceof HLT)
+        else if (InstructionUtils.isHLT(inst))
         {
             ResultsManager.instance.setHALT(true);
         }
@@ -170,7 +157,6 @@ public class DecodeUnit extends FunctionalUnit
                 return true;
             }
         }
-
         return false;
     }
 

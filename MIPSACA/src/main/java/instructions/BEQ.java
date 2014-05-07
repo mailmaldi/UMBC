@@ -18,4 +18,10 @@ public class BEQ extends ConditionalBranchInstruction
     {
         return "BEQ " + super.toString();
     }
+
+    @Override
+    public boolean shouldBranch()
+    {
+        return compareRegisters();
+    }
 }

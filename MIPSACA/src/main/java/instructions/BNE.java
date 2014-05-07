@@ -18,4 +18,10 @@ public class BNE extends ConditionalBranchInstruction
     {
         return "BNE " + super.toString();
     }
+
+    @Override
+    public boolean shouldBranch()
+    {
+        return !compareRegisters();
+    }
 }

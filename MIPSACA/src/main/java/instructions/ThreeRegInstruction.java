@@ -5,8 +5,8 @@ import java.util.List;
 
 public abstract class ThreeRegInstruction extends Instruction
 {
-    SourceObject    src1, src2;
-    WriteBackObject dest;
+    protected SourceObject    src1, src2;
+    protected WriteBackObject dest;
 
     public ThreeRegInstruction(String sourceLabel1, String sourceLabel2,
             String destinationLabel)

@@ -5,8 +5,8 @@ import java.util.List;
 
 public abstract class StoreInstruction extends Instruction
 {
-    SourceObject src1, src2;
-    int          immediate;
+    protected SourceObject src1, src2;
+    protected int          immediate;
 
     public StoreInstruction(String sourceLabel1, String sourceLabel2,
             int immediate)

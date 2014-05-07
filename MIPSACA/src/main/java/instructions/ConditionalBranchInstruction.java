@@ -47,10 +47,15 @@ public abstract class ConditionalBranchInstruction extends Instruction
         return destinationLabel;
     }
 
-    public boolean compareRegisters()
+    protected boolean compareRegisters()
     {
         return (src1.getSource() == src2.getSource());
     }
+
+    /*
+     * Decide when should branch be taken
+     */
+    public abstract boolean shouldBranch();
 
     @Override
     public String toString()

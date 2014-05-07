@@ -33,4 +33,9 @@ public class InstructionUtils
         return (inst instanceof J);
     }
 
+    public static boolean isBranch(Instruction inst)
+    {
+        return (inst instanceof ConditionalBranchInstruction);
+    }
+
 }

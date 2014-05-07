@@ -5,9 +5,9 @@ import java.util.List;
 
 public abstract class TwoRegImmediateInstruction extends Instruction
 {
-    SourceObject    src1;
-    WriteBackObject dest;
-    int             immediate;
+    protected SourceObject    src1;
+    protected WriteBackObject dest;
+    protected int             immediate;
 
     public TwoRegImmediateInstruction(String sourceLabel,
             String destinationLabel, int immediate)
