@@ -1,14 +1,10 @@
 package com.umbc.courses.aca.projects.mips.main;
 
-import com.umbc.courses.aca.projects.mips.config.ConfigManager;
 import com.umbc.courses.aca.projects.mips.config.ConfigParser;
 import com.umbc.courses.aca.projects.mips.main.CPU.RUN;
 import com.umbc.courses.aca.projects.mips.memory.DataMemoryFileParser;
-import com.umbc.courses.aca.projects.mips.memory.DataMemoryManager;
-import com.umbc.courses.aca.projects.mips.program.ProgramManager;
 import com.umbc.courses.aca.projects.mips.program.ProgramFileParser;
 import com.umbc.courses.aca.projects.mips.registers.RegisterFileParser;
-import com.umbc.courses.aca.projects.mips.registers.RegisterManager;
 import com.umbc.courses.aca.projects.mips.results.ResultsManager;
 
 public class Main
