@@ -9,6 +9,27 @@ Both have the same java version, so hopefully you should not run into any issues
 
 BUILDING THE SOURCE:
 
+There are 2 shell files included: build.sh & simulate.sh
+They are both executables. If per chance they are not, then please make them so.
+chmod +x build.sh
+chmod +x simulate.sh
+
+The build.sh will clean, compile and build a jar (MIPSACA-1.0.jar) and also copy it to the base directory.
+e.g.
+./build.sh
+
+The simulate.sh takes the 5 files as parameters and executes the jar passing them the parameters:
+e.g.
+./simulate.sh inst.txt data.txt reg.txt config.txt results.txt
+ 
+ You may optionally send an additional parameter PIPELINE, to execute simulation without memory hierarchy
+ e.g.
+ ./simulate.sh inst.txt data.txt reg.txt config.txt results.txt PIPELINE
+ 
+ The simulate script also redirects stdout & stderr to a file called debug.log
+ 
+ FOLLOW THESE STEPS IF THE SIMULATION SHELL FILES DID NOT WORK:
+
 I'm including the jar that I compiled myself but following steps are used
 To build a jar, from a linux/mac machine, just goto MIPSACA folder and follow these steps;
 
@@ -41,3 +62,4 @@ Example, if size[4] Pipeline has [ NOOP, I4, I5 , I6] , only I6 is marked struct
 I have written code to mark all 3 Stuct hazard as well, but I've commented it , since I think its incorrect to.
 - Please Note that even though the 2nd HALT is fetched, it will never be issued, and since it will never be issued , I never set its exit cycle. Hence the blank in the output.
 The entry cycle is marked, but since we're printing only exit cycle, an instruction that is never issued doesnt have the exit cycle
+- And others...

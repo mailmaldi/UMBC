@@ -1,7 +1,6 @@
 package com.umbc.courses.aca.projects.mips.cache;
 
 import com.umbc.courses.aca.projects.mips.config.ConfigManager;
-import com.umbc.courses.aca.projects.mips.instructions.InstructionUtils;
 import com.umbc.courses.aca.projects.mips.main.CPU;
 
 public class ICacheManager
@@ -94,29 +93,6 @@ public class ICacheManager
             else
                 return false;
         }
-
-        // if (!request.hasBusAccess && !request.cacheHit)
-        // {
-        // if (MemoryBusManager.instance.iCacheCanProceed())
-        // {
-        // request.lastRequestInstructionEntryClock = CPU.CLOCK;
-        // }
-        // return false;
-        // }
-        // if ((request.hasBusAccess || request.cacheHit)
-        // && (request.lastRequestInstruction >= 0)
-        // && (CPU.CLOCK - request.lastRequestInstructionEntryClock >=
-        // request.clockCyclesToBlock))
-        // {
-        // // NOTE this can happen multiple times, if cuz of a HAZARD
-        // if (request.hasBusAccess)
-        // MemoryBusManager.instance.setBusFree(0);
-        // cache.setInCache(request.lastRequestInstruction); // hack
-        // request.resetValues();
-        // return true;
-        // }
-        // return false;
-
     }
 
     public int getICacheAccessRequests()

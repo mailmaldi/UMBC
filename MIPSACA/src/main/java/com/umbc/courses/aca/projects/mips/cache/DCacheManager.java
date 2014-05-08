@@ -32,7 +32,8 @@ public class DCacheManager
         int address = (int) inst.getDestinationAddress();
         // check if request.address is not same here? Do I terminate here?
         if (request.lastRequestInstruction == address)
-            System.err.println(CPU.CLOCK + this.getClass().getSimpleName()
+            System.err.println(CPU.CLOCK + " "
+                    + this.getClass().getSimpleName()
                     + " duplicate request address=" + address + " request="
                     + request.toDebugString());
 

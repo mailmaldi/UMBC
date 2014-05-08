@@ -51,6 +51,7 @@ public class MemoryUnit extends FunctionalUnit
             {
                 case MEMORY:
                     DCacheManager.instance.setRequest(inst);
+                    break;
                 case PIPELINE:
                     break;
                 default:
