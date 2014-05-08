@@ -139,10 +139,10 @@ public class ICacheManager
         String format = "%-60s %4s";
         StringBuilder sb = new StringBuilder();
         sb.append(String.format(format,
-                "Total number of access requests for instruction cache:",
+                "Total number of requests to instruction cache",
                 getICacheAccessRequests()));
         sb.append('\n');
-        sb.append(String.format(format, "Number of instruction cache hits:",
+        sb.append(String.format(format, "Total number of instruction cache hit",
                 getICacheAccessHits()));
         return sb.toString();
     }

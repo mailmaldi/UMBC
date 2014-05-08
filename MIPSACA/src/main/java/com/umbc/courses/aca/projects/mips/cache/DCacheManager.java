@@ -36,7 +36,6 @@ public class DCacheManager
                     + " duplicate request address=" + address + " request="
                     + request.toDebugString());
 
-
         request = new DCacheRequestData();
         request.lastRequestInstruction = address;
         request.lastRequestInstructionEntryClock = CPU.CLOCK;
@@ -390,10 +389,9 @@ public class DCacheManager
         String format = "%-60s %4s";
         StringBuilder sb = new StringBuilder();
         sb.append(String.format(format,
-                "Total number of access requests for Data cache:",
-                dCacheAccessRequests));
+                "Total number of requests to data cache", dCacheAccessRequests));
         sb.append('\n');
-        sb.append(String.format(format, "Number of Data cache hits:",
+        sb.append(String.format(format, "Total number of data cache hit",
                 dCacheAccessHits));
         return sb.toString();
     }

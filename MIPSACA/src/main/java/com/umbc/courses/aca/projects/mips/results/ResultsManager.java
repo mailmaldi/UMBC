@@ -71,6 +71,7 @@ public class ResultsManager
                                 .getOutputString(Constants.instructionOutputWriteFormatString));
                 resultsWriter.newLine();
             }
+            resultsWriter.newLine();
             resultsWriter.write(ICacheManager.instance.getICacheStatistics());
             resultsWriter.newLine();
             resultsWriter.write(DCacheManager.instance.getDCacheStatistics());
