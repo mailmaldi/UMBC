@@ -111,6 +111,10 @@ public class FetchUnit extends FunctionalUnit
                 }
             }
         }
+        if (ResultsManager.instance.isHALT())
+        {
+            updateExitClockCycle(inst);
+        }
     }
 
     public void flushUnit() throws Exception

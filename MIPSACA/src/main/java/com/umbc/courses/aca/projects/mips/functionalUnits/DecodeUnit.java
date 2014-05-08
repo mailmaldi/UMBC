@@ -124,6 +124,7 @@ public class DecodeUnit extends FunctionalUnit
         else if (InstructionUtils.isHLT(inst))
         {
             ResultsManager.instance.setHALT(true);
+            return;
         }
         else
         {

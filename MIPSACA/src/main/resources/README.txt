@@ -39,3 +39,4 @@ NOTES AND ASSUMPTIONS IN CODE:
 - In a pipelined Functional Unit, like FPAdd, etc. If the last instruction cannot goto next stage, only that instr is marked with Structual hazard, the previous ones are not!
 Example, if size[4] Pipeline has [ NOOP, I4, I5 , I6] , only I6 is marked struct hazard
 I have written code to mark all 3 Stuct hazard as well, but I've commented it , since I think its incorrect to.
+- Please Note that even though the 2nd HALT is fetched, it will never be issued, and since it will never be issued , I never set its exit cycle. Hence the blank in the output.

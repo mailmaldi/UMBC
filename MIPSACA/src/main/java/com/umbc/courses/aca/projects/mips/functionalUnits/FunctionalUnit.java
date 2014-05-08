@@ -6,6 +6,7 @@ import com.umbc.courses.aca.projects.mips.instructions.Instruction;
 import com.umbc.courses.aca.projects.mips.instructions.InstructionUtils;
 import com.umbc.courses.aca.projects.mips.instructions.NOOP;
 import com.umbc.courses.aca.projects.mips.main.CPU;
+import com.umbc.courses.aca.projects.mips.results.ResultsManager;
 import com.umbc.courses.aca.projects.mips.stages.StageType;
 
 public abstract class FunctionalUnit
@@ -31,6 +32,8 @@ public abstract class FunctionalUnit
         removeLast();
         addLast(instruction);
         instruction.setEntryCycleForStage(stageId.getId(), CPU.CLOCK);
+        if (stageId == StageType.IFSTAGE)
+            ResultsManager.instance.addInstruction(instruction);
         validateQueueSize();
         System.out.format("%-3s  %-20s %50s %n", CPU.CLOCK, this.getClass()
                 .getSimpleName(), instruction.debugString());

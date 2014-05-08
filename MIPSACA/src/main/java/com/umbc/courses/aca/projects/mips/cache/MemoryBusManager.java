@@ -54,11 +54,14 @@ public class MemoryBusManager
             dCacheRequestClk = -1;
         }
         else
-            System.err.println(CPU.CLOCK + " "
-                    + this.getClass().getSimpleName()
-                    + " Bus set free by wrong CacheManager "
-                    + ((id == 0) ? "ICacheManager" : "DCacheManager")
-                    + " busRequestedBy: " + busRequestedBy);
+        {
+
+            // System.err.println(CPU.CLOCK + " "
+            // + this.getClass().getSimpleName()
+            // + " Bus set free by wrong CacheManager "
+            // + ((id == 0) ? "ICacheManager" : "DCacheManager")
+            // + " busRequestedBy: " + busRequestedBy);
+        }
 
     }
 
