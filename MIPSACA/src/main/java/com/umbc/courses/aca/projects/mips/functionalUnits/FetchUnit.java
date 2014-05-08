@@ -95,8 +95,8 @@ public class FetchUnit extends FunctionalUnit
             else
             {
                 System.out.println(CPU.CLOCK + " Fetch  " + inst.debugString());
-                if ((DecodeStage.getInstance().checkIfFree(inst))
-                        && isReadyToSend())
+                if ((isReadyToSend() && DecodeStage.getInstance().checkIfFree(
+                        inst)))
                 {
                     DecodeStage.getInstance().acceptInstruction(inst);
                     updateExitClockCycle(inst);

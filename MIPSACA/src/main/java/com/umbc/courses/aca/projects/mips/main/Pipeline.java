@@ -38,7 +38,7 @@ public class Pipeline
         {
             // I run these many clock cycles after HLT to flush pipeline
             int extraCLKCount = 100;
-            while (extraCLKCount != 0)
+            while (extraCLKCount != 0 && CPU.CLOCK < 200)
             {
 
                 wbStage.execute();

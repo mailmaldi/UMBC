@@ -1,6 +1,7 @@
 package com.umbc.courses.aca.projects.mips.cache;
 
 import com.umbc.courses.aca.projects.mips.config.ConfigManager;
+import com.umbc.courses.aca.projects.mips.instructions.InstructionUtils;
 import com.umbc.courses.aca.projects.mips.main.CPU;
 
 public class ICacheManager
@@ -30,12 +31,11 @@ public class ICacheManager
                     + " duplicate request address=" + address + " request="
                     + request.toDebugString());
 
-        System.out.println(CPU.CLOCK + " " + request.toDebugString());
-
         request = new ICacheRequestData();
         request.lastRequestInstruction = address;
         request.lastRequestInstructionEntryClock = CPU.CLOCK;
 
+        System.out.println(CPU.CLOCK + " " + request.toDebugString());
         // check hit
         iCacheAccessRequests++;
         if (cache.checkInCache(address))
@@ -43,14 +43,15 @@ public class ICacheManager
             iCacheAccessHits++;
             request.cacheHit = true;
             request.clockCyclesToBlock = ConfigManager.instance.ICacheLatency;
+            request.needsBusAccess = false;
         }
         else
         {
+            request.needsBusAccess = true;
             if (MemoryBusManager.instance.iCacheCanProceed())
             {
                 request.hasBusAccess = true;
             }
-
             request.clockCyclesToBlock = get2TPlusKValue();
             System.out.println(CPU.CLOCK + " ICacheM "
                     + request.toDebugString() + " 2T+K " + get2TPlusKValue());
@@ -61,26 +62,60 @@ public class ICacheManager
     // will be called by isReadytoSend
     public boolean canProceed() throws Exception
     {
-        if (!request.hasBusAccess && !request.cacheHit)
+
+        if (!request.cacheHit)
         {
-            if (MemoryBusManager.instance.iCacheCanProceed())
+            if (request.hasBusAccess
+                    && ((CPU.CLOCK - request.lastRequestInstructionEntryClock >= request.clockCyclesToBlock)))
             {
-                request.lastRequestInstructionEntryClock = CPU.CLOCK;
-            }
-            return false;
-        }
-        if ((request.hasBusAccess || request.cacheHit)
-                && (request.lastRequestInstruction >= 0)
-                && (CPU.CLOCK - request.lastRequestInstructionEntryClock >= request.clockCyclesToBlock))
-        {
-            // NOTE this can happen multiple times, if cuz of a HAZARD
-            if (request.hasBusAccess)
                 MemoryBusManager.instance.setBusFree(0);
-            cache.setInCache(request.lastRequestInstruction); // hack
-            request.resetValues();
-            return true;
+                cache.setInCache(request.lastRequestInstruction);
+                return true;
+            }
+            else
+            {
+                if (MemoryBusManager.instance.iCacheCanProceed()
+                        && !request.hasBusAccess)
+                {
+                    request.lastRequestInstructionEntryClock = CPU.CLOCK;
+                    request.hasBusAccess = true;
+                }
+                return false;
+            }
+
         }
-        return false;
+        else
+        {
+            if ((CPU.CLOCK - request.lastRequestInstructionEntryClock >= request.clockCyclesToBlock))
+            {
+                cache.setInCache(request.lastRequestInstruction);
+                return true;
+            }
+            else
+                return false;
+        }
+
+        // if (!request.hasBusAccess && !request.cacheHit)
+        // {
+        // if (MemoryBusManager.instance.iCacheCanProceed())
+        // {
+        // request.lastRequestInstructionEntryClock = CPU.CLOCK;
+        // }
+        // return false;
+        // }
+        // if ((request.hasBusAccess || request.cacheHit)
+        // && (request.lastRequestInstruction >= 0)
+        // && (CPU.CLOCK - request.lastRequestInstructionEntryClock >=
+        // request.clockCyclesToBlock))
+        // {
+        // // NOTE this can happen multiple times, if cuz of a HAZARD
+        // if (request.hasBusAccess)
+        // MemoryBusManager.instance.setBusFree(0);
+        // cache.setInCache(request.lastRequestInstruction); // hack
+        // request.resetValues();
+        // return true;
+        // }
+        // return false;
 
     }
 
@@ -120,6 +155,7 @@ class ICacheRequestData
     int     clockCyclesToBlock;
     boolean cacheHit;
     boolean hasBusAccess;
+    boolean needsBusAccess;
 
     public ICacheRequestData()
     {
@@ -133,15 +169,16 @@ class ICacheRequestData
         clockCyclesToBlock = -1;
         hasBusAccess = false;
         cacheHit = false;
+        needsBusAccess = false;
     }
 
     public String toDebugString()
     {
         return String
-                .format("iCacheRequest [address: %s , entry: %s , block: %s , hit: %s , bus: %s]",
+                .format("iCacheRequest [address: %s , entryclk: %s , clkblock: %s , hit: %s , needsbusAccess: %s]",
                         lastRequestInstruction,
                         lastRequestInstructionEntryClock, clockCyclesToBlock,
-                        cacheHit, clockCyclesToBlock);
+                        cacheHit, needsBusAccess);
     }
 
 }

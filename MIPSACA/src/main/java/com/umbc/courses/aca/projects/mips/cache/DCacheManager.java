@@ -36,7 +36,6 @@ public class DCacheManager
                     + " duplicate request address=" + address + " request="
                     + request.toDebugString());
 
-        System.out.println(CPU.CLOCK + " " + request.toDebugString());
 
         request = new DCacheRequestData();
         request.lastRequestInstruction = address;
@@ -46,6 +45,7 @@ public class DCacheManager
         // check hit
         dCacheAccessRequests += request.dInstruction ? 2 : 1;
 
+        System.out.println(CPU.CLOCK + " " + request.toDebugString());
         if ((!request.dInstruction && cache.doesAddressExist(address))
                 || (request.dInstruction && cache.doesAddressExist(address + 4) && cache
                         .doesAddressExist(address + 4)))
@@ -58,13 +58,10 @@ public class DCacheManager
         }
         else
         {
-            if (MemoryBusManager.instance.dCacheCanProceed())
-            {
-                request.hasBusAccess = true;
-            }
+            request.beedsBusAccess = true;
 
             // determine clockstoblock here according to inst
-            request.clockCyclesToBlock = getClocksToBlock(inst);
+            request.clockCyclesToBlock = getClocksToBlock(inst) - 1;
         }
         System.out.println(CPU.CLOCK + " " + this.getClass().getSimpleName()
                 + " " + request.toDebugString() + " clockToBlock "
@@ -138,34 +135,73 @@ public class DCacheManager
 
     public boolean canProceed(Instruction inst) throws Exception
     {
-        if (!request.hasBusAccess && !request.cacheHit)
+        if (request.beedsBusAccess)
         {
-            if (MemoryBusManager.instance.dCacheCanProceed())
+            if (request.hasBusAccess
+                    && ((CPU.CLOCK - request.lastRequestInstructionEntryClock >= request.clockCyclesToBlock)))
             {
-                request.lastRequestInstructionEntryClock = CPU.CLOCK;
+                MemoryBusManager.instance.setBusFree(1);
+                int address = (int) inst.getDestinationAddress();
+                cache.updateBlock(address, InstructionUtils.isStore(inst));
+                if (request.dInstruction)
+                    cache.updateBlock(address + 4,
+                            InstructionUtils.isStore(inst));
+                return true;
+            }
+            else
+            {
+                if (MemoryBusManager.instance.dCacheCanProceed())
+                {
+                    request.lastRequestInstructionEntryClock = CPU.CLOCK;
+                    request.hasBusAccess = true;
+                }
+                return false;
+            }
+        }
+        else
+        {
+            if ((CPU.CLOCK - request.lastRequestInstructionEntryClock >= request.clockCyclesToBlock))
+            {
+                int address = (int) inst.getDestinationAddress();
+                cache.updateBlock(address, InstructionUtils.isStore(inst));
+                if (request.dInstruction)
+                    cache.updateBlock(address + 4,
+                            InstructionUtils.isStore(inst));
+                return true;
             }
             return false;
         }
-        if ((request.hasBusAccess || request.cacheHit)
-                && (CPU.CLOCK - request.lastRequestInstructionEntryClock >= request.clockCyclesToBlock))
-        {
-            // This can run multiple times because of a HAZARD
-            // set bus free only once
-            if (request.hasBusAccess)
-                MemoryBusManager.instance.setBusFree(1);
-            int address = (int) inst.getDestinationAddress();
-            cache.updateBlock(address, InstructionUtils.isStore(inst));
-            if (request.dInstruction)
-                cache.updateBlock(address + 4, InstructionUtils.isStore(inst));
-            return true;
-        }
-        return false;
+        // if (!MemoryBusManager.instance.canDCacheAccessBus()
+        // && !request.cacheHit)
+        // {
+        // if (MemoryBusManager.instance.dCacheCanProceed())
+        // {
+        // request.lastRequestInstructionEntryClock = CPU.CLOCK;
+        // }
+        // return false;
+        // }
+        // if ((MemoryBusManager.instance.canDCacheAccessBus() ||
+        // request.cacheHit)
+        // && (CPU.CLOCK - request.lastRequestInstructionEntryClock >=
+        // request.clockCyclesToBlock))
+        // {
+        // // This can run multiple times because of a HAZARD
+        // // set bus free only once
+        // if (request.beedsBusAccess)
+        // MemoryBusManager.instance.setBusFree(1);
+        // int address = (int) inst.getDestinationAddress();
+        // cache.updateBlock(address, InstructionUtils.isStore(inst));
+        // if (request.dInstruction)
+        // cache.updateBlock(address + 4, InstructionUtils.isStore(inst));
+        // return true;
+        // }
+        // return false;
 
     }
 
     public void setBusFree(Instruction inst) throws Exception
     {
-        if (request.hasBusAccess)
+        if (request.beedsBusAccess)
             MemoryBusManager.instance.setBusFree(1);
     }
 
@@ -378,6 +414,7 @@ class DCacheRequestData
     boolean dInstruction;
 
     boolean cacheHit;
+    boolean beedsBusAccess;
     boolean hasBusAccess;
 
     public DCacheRequestData()
@@ -393,8 +430,9 @@ class DCacheRequestData
         clockCyclesToBlock = -1;
         hasAccessVariablesSet = false;
         cacheHit = false;
-        hasBusAccess = false;
+        beedsBusAccess = false;
         dInstruction = false;
+        hasBusAccess = false;
     }
 
     public String toDebugString()
@@ -403,7 +441,7 @@ class DCacheRequestData
                 .format("dCacheRequest [address: %s , entry: %s , block: %s , hit: %s , bus: %s]",
                         lastRequestInstruction,
                         lastRequestInstructionEntryClock, clockCyclesToBlock,
-                        cacheHit, hasBusAccess);
+                        cacheHit, beedsBusAccess);
     }
 
 }

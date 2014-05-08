@@ -16,7 +16,7 @@ public class MemoryBusManager
 
     public boolean canICacheAccessBus()
     {
-        return (busRequestedBy == -1)
+        return (busRequestedBy != 1)
                 || (busRequestedBy == 1 && dCacheRequestClk == CPU.CLOCK);
     }
 
@@ -57,7 +57,8 @@ public class MemoryBusManager
             System.err.println(CPU.CLOCK + " "
                     + this.getClass().getSimpleName()
                     + " Bus set free by wrong CacheManager "
-                    + ((id == 0) ? "ICacheManager" : "DCacheManager") + " busRequestedBy: "+ busRequestedBy);
+                    + ((id == 0) ? "ICacheManager" : "DCacheManager")
+                    + " busRequestedBy: " + busRequestedBy);
 
     }
 
