@@ -36,7 +36,7 @@ public abstract class FunctionalUnit
             ResultsManager.instance.addInstruction(instruction);
         validateQueueSize();
         System.out.format("%-3s  %-20s %50s %n", CPU.CLOCK, this.getClass()
-                .getSimpleName(), instruction.debugString());
+                .getSimpleName() + " accept", instruction.debugString());
     }
 
     protected void validateQueueSize() throws Exception

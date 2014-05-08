@@ -76,7 +76,6 @@ public class FetchUnit extends FunctionalUnit
                 ResultsManager.instance.addInstruction(inst);
                 rotatePipe();
                 fetchNextInstruction();
-                // Tell ICache that instruction was flushed ,
             }
             else
             {
@@ -90,6 +89,8 @@ public class FetchUnit extends FunctionalUnit
         {
             if (checkIfFree())
             {
+                // This should happen only once in entire code cycle, CLK=0
+                // else everytime, an instn is pending or issued
                 fetchNextInstruction();
             }
             else
@@ -102,12 +103,9 @@ public class FetchUnit extends FunctionalUnit
                     updateExitClockCycle(inst);
                     rotatePipe();
                     fetchNextInstruction();
-                    // Set ICache Bus Free
-                    // increment PC here
                 }
                 else
                 {
-
                 }
             }
         }

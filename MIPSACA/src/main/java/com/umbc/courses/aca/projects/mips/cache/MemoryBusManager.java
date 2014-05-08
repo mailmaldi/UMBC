@@ -17,7 +17,7 @@ public class MemoryBusManager
     public boolean canICacheAccessBus()
     {
         return (busRequestedBy != 1)
-                || (busRequestedBy == 1 && dCacheRequestClk == CPU.CLOCK);
+                || (busRequestedBy == 1 && dCacheRequestClk >= CPU.CLOCK);
     }
 
     public boolean iCacheCanProceed()
@@ -32,7 +32,7 @@ public class MemoryBusManager
 
     public boolean canDCacheAccessBus()
     {
-        return (busRequestedBy == -1);
+        return (busRequestedBy != 0);
     }
 
     public boolean dCacheCanProceed()

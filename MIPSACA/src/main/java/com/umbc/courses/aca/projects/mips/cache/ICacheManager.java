@@ -32,9 +32,8 @@ public class ICacheManager
 
         request = new ICacheRequestData();
         request.lastRequestInstruction = address;
-        request.lastRequestInstructionEntryClock = CPU.CLOCK;
+        request.lastRequestInstructionEntryClock = CPU.CLOCK + 1;
 
-        System.out.println(CPU.CLOCK + " " + request.toDebugString());
         // check hit
         iCacheAccessRequests++;
         if (cache.checkInCache(address))
@@ -47,47 +46,63 @@ public class ICacheManager
         else
         {
             request.needsBusAccess = true;
-            if (MemoryBusManager.instance.iCacheCanProceed())
-            {
-                request.hasBusAccess = true;
-            }
+            // if (MemoryBusManager.instance.iCacheCanProceed())
+            // {
+            // request.hasBusAccess = true;
+            // }
             request.clockCyclesToBlock = get2TPlusKValue();
-            System.out.println(CPU.CLOCK + " ICacheM "
-                    + request.toDebugString() + " 2T+K " + get2TPlusKValue());
 
         }
+        request.clockCyclesToBlock--; // since we do +1 in entry clock
+        System.out.println(CPU.CLOCK + " " + this.getClass().getSimpleName()
+                + " " + request.toDebugString());
+    }
+
+    public boolean validateClockElapsed()
+    {
+        return ((CPU.CLOCK - request.lastRequestInstructionEntryClock >= request.clockCyclesToBlock));
     }
 
     // will be called by isReadytoSend
     public boolean canProceed() throws Exception
     {
-
+        System.out.println(CPU.CLOCK + " " + this.getClass().getSimpleName()
+                + " " + request.toDebugString());
         if (!request.cacheHit)
         {
-            if (request.hasBusAccess
-                    && ((CPU.CLOCK - request.lastRequestInstructionEntryClock >= request.clockCyclesToBlock)))
+            if (request.needsBusAccess && !request.hasBusAccess)
             {
-                MemoryBusManager.instance.setBusFree(0);
-                cache.setInCache(request.lastRequestInstruction);
-                return true;
-            }
-            else
-            {
-                if (MemoryBusManager.instance.iCacheCanProceed()
-                        && !request.hasBusAccess)
+                if (MemoryBusManager.instance.iCacheCanProceed())
                 {
-                    request.lastRequestInstructionEntryClock = CPU.CLOCK;
                     request.hasBusAccess = true;
+                    request.lastRequestInstructionEntryClock = CPU.CLOCK;
                 }
                 return false;
             }
-
+            if (request.hasBusAccess)
+            {
+                if (!MemoryBusManager.instance.canICacheAccessBus())
+                    request.hasBusAccess = false;
+                else if (validateClockElapsed())
+                {
+                    MemoryBusManager.instance.setBusFree(0);
+                    cache.setInCache(request.lastRequestInstruction);
+                    request.cacheHit = true;
+                    request.needsBusAccess = false;
+                    request.hasBusAccess = false;
+                    return true;
+                }
+                return false;
+            }
+            return validateClockElapsed(); // can also be return true
         }
         else
         {
-            if ((CPU.CLOCK - request.lastRequestInstructionEntryClock >= request.clockCyclesToBlock))
+            if (validateClockElapsed())
             {
                 cache.setInCache(request.lastRequestInstruction);
+                request.cacheHit = true;
+                request.needsBusAccess = false;
                 return true;
             }
             else
@@ -118,8 +133,8 @@ public class ICacheManager
                 "Total number of requests to instruction cache",
                 getICacheAccessRequests()));
         sb.append('\n');
-        sb.append(String.format(format, "Total number of instruction cache hit",
-                getICacheAccessHits()));
+        sb.append(String.format(format,
+                "Total number of instruction cache hit", getICacheAccessHits()));
         return sb.toString();
     }
 }
@@ -151,10 +166,9 @@ class ICacheRequestData
     public String toDebugString()
     {
         return String
-                .format("iCacheRequest [address: %s , entryclk: %s , clkblock: %s , hit: %s , needsbusAccess: %s]",
+                .format("iCacheRequest [instruction: %s , entryclk: %s , clkblock: %s , hit: %s , needsbusAccess: %s hasBusAccess: %s]",
                         lastRequestInstruction,
                         lastRequestInstructionEntryClock, clockCyclesToBlock,
-                        cacheHit, needsBusAccess);
+                        cacheHit, needsBusAccess, hasBusAccess);
     }
-
 }
