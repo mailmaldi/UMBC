@@ -43,14 +43,39 @@ public class DCacheManager
 
         // check hit
         dCacheAccessRequests += request.dInstruction ? 2 : 1;
+        if (request.dInstruction)
+        {
+            int address1Tag = Utils.getDCacheTag(address);
+            int address2Tag = Utils.getDCacheTag(address + 4);
+            int address1Set = Utils.getDCacheSet(address);
+            int address2Set = Utils.getDCacheSet(address + 4);
+            if ((address1Tag == address2Tag) && (address1Set == address2Set))
+            {
+                if (cache.doesAddressExist(address))
+                    dCacheAccessHits += 2;
+                else
+                    dCacheAccessHits++;
+            }
+            else
+            {
+                if (cache.doesAddressExist(address))
+                    dCacheAccessHits++;
+                if (cache.doesAddressExist(address + 4))
+                    dCacheAccessHits++;
+            }
+        }
+        else
+        {
+            dCacheAccessHits += cache.doesAddressExist(address) ? 1 : 0;
+        }
 
         System.out.println(CPU.CLOCK + " " + request.toDebugString());
         if ((!request.dInstruction && cache.doesAddressExist(address))
                 || (request.dInstruction && cache.doesAddressExist(address + 4) && cache
                         .doesAddressExist(address + 4)))
         {
-            dCacheAccessHits += request.dInstruction ? 2 : 1;
-            request.cacheHit = true;
+            // dCacheAccessHits += request.dInstruction ? 2 : 1;
+            request.cacheHit = true; // when both are true
             request.clockCyclesToBlock = ConfigManager.instance.DCacheLatency
                     + ((request.dInstruction) ? ConfigManager.instance.DCacheLatency
                             : 0);
