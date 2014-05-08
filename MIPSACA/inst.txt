@@ -1,4 +1,4 @@
-GG: DADDI R2,R2,1
-BNE R1,R2,GG
-HLT
+L.D F1                ,4(R4)
+ADD.D       F2,F2,     F1
+            HLT
 HLT

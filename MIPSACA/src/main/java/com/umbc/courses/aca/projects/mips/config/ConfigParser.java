@@ -25,14 +25,8 @@ public class ConfigParser
                     continue;
                 count++;
 
-                try
-                {
-                    parseConfigurationLine(line);
-                }
-                catch (Exception e)
-                {
-                    throw new Exception("Error in Config File line: " + line);
-                }
+                parseConfigurationLine(line);
+
             }
             System.out.println("Total Number of Config Elements = " + count);
         }
@@ -44,7 +38,7 @@ public class ConfigParser
 
     }
 
-    private static void parseConfigurationLine(String line)
+    private static void parseConfigurationLine(String line) throws Exception
     {
         String s[], s1[];
         line = line.trim();
@@ -52,49 +46,56 @@ public class ConfigParser
 
         s = line.split(":");
 
-        String configItem = s[0].trim();
+        String configItem = s[0].trim().toLowerCase();
 
         switch (configItem)
         {
             case "fp adder":
                 s1 = s[1].split(",");
-                ConfigManager.instance.FPAdderLatency = Integer.parseInt(s1[0]
-                        .trim());
-                ConfigManager.instance.FPAdderPipelined = s1[1].trim()
-                        .toLowerCase().equals("yes");
+                ConfigManager.instance.FPAdderLatency = parseConfigInteger(s1[0]);
+                ConfigManager.instance.FPAdderPipelined = parseConfigBoolean(s1[1]);
                 break;
 
             case "fp multiplier":
                 s1 = s[1].split(",");
-                ConfigManager.instance.FPMultLatency = Integer.parseInt(s1[0]
-                        .trim());
-                ConfigManager.instance.FPMultPipelined = s1[1].trim()
-                        .toLowerCase().equals("yes");
+                ConfigManager.instance.FPMultLatency = parseConfigInteger(s1[0]);
+                ConfigManager.instance.FPMultPipelined = parseConfigBoolean(s1[1]);
                 break;
 
             case "fp divider":
                 s1 = s[1].split(",");
-                ConfigManager.instance.FPDivideLatency = Integer.parseInt(s1[0]
-                        .trim());
-                ConfigManager.instance.FPDividerPipelined = s1[1].trim()
-                        .toLowerCase().equals("yes");
+                ConfigManager.instance.FPDivideLatency = parseConfigInteger(s1[0]);
+                ConfigManager.instance.FPDividerPipelined = parseConfigBoolean(s1[1]);
                 break;
 
             case "main memory":
-                ConfigManager.instance.MemoryLatency = Integer.parseInt(s[1]
-                        .trim());
+                ConfigManager.instance.MemoryLatency = parseConfigInteger(s[1]);
                 break;
 
             case "i-cache":
-                ConfigManager.instance.ICacheLatency = Integer.parseInt(s[1]
-                        .trim());
+                ConfigManager.instance.ICacheLatency = parseConfigInteger(s[1]);
                 break;
 
             case "d-cache":
-                ConfigManager.instance.DCacheLatency = Integer.parseInt(s[1]
-                        .trim());
+                ConfigManager.instance.DCacheLatency = parseConfigInteger(s[1]);
                 break;
         }
 
+    }
+
+    private static int parseConfigInteger(String string) throws Exception
+    {
+        int val = Integer.parseInt(string.trim());
+        if (val <= 0)
+            throw new Exception("Invalid Cycle Count: " + val);
+        return val;
+    }
+
+    private static boolean parseConfigBoolean(String string) throws Exception
+    {
+        String str = string.trim().toLowerCase();
+        if (!("yes".equals(str) || "no".equals(str)))
+            throw new Exception("Invalid config element: " + str);
+        return "yes".equals(str);
     }
 }
