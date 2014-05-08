@@ -57,16 +57,17 @@ public abstract class Instruction implements InstructionI
 
     public String debugString()
     {
-        return String.format(com.umbc.courses.aca.projects.mips.Utils.Constants.instructionDebugFormatString,
-                printableInstruction, Arrays.toString(entryCycle),
-                Arrays.toString(exitCycle), RAW ? 'Y' : 'N', WAR ? 'Y' : 'N',
-                WAW ? 'Y' : 'N', STRUCT ? 'Y' : 'N');
+        return String
+                .format(com.umbc.courses.aca.projects.mips.Utils.Constants.instructionDebugFormatString,
+                        printableInstruction, Arrays.toString(entryCycle),
+                        Arrays.toString(exitCycle), RAW ? 'Y' : 'N', WAR ? 'Y'
+                                : 'N', WAW ? 'Y' : 'N', STRUCT ? 'Y' : 'N');
     }
 
-    public String getOutputString()
+    public String getOutputString(String format)
     {
-        return String.format(com.umbc.courses.aca.projects.mips.Utils.Constants.instructionOutputFormatString,
-                printableInstruction, exitCycle[0] != 0 ? exitCycle[0] : "",
+        return String.format(format, printableInstruction,
+                exitCycle[0] != 0 ? exitCycle[0] : "",
                 exitCycle[1] != 0 ? exitCycle[1] : "",
                 exitCycle[2] != 0 ? exitCycle[2] : "",
                 exitCycle[3] != 0 ? exitCycle[3] : "", RAW ? 'Y' : 'N',

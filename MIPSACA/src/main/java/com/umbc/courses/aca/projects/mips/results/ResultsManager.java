@@ -47,7 +47,8 @@ public class ResultsManager
             Instruction inst = instructionMap.get(key);
             // System.out.format("%-3s ", key);
             // System.out.println(inst.debugString());
-            System.out.println(inst.getOutputString());
+            System.out.println(inst
+                    .getOutputString(Constants.instructionOutputFormatString));
         }
         System.out.println(ICacheManager.instance.getICacheStatistics());
         System.out.println(DCacheManager.instance.getDCacheStatistics());
@@ -58,13 +59,16 @@ public class ResultsManager
         try
         {
             resultsWriter.write(String.format(
-                    Constants.instructionOutputFormatString, "Instruction",
-                    "FT", "ID", "EX", "WB", "RAW", "WAR", "WAW", "Struct"));
+                    Constants.instructionOutputWriteFormatString,
+                    "Instruction", "FT", "ID", "EX", "WB", "RAW", "WAR", "WAW",
+                    "Struct"));
             resultsWriter.newLine();
             for (int key : instructionMap.keySet())
             {
                 Instruction inst = instructionMap.get(key);
-                resultsWriter.write(inst.getOutputString());
+                resultsWriter
+                        .write(inst
+                                .getOutputString(Constants.instructionOutputWriteFormatString));
                 resultsWriter.newLine();
             }
             resultsWriter.write(ICacheManager.instance.getICacheStatistics());
