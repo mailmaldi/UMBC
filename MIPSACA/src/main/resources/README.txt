@@ -5,6 +5,8 @@ I have not tested it with Java 1.5 or 1.6 , but doing so should be easy by chang
 I tested this project before submitting on linuxserver1.cs.umbc.edu (gl.umbc.edu ssh connection for me is very slow)
 Both have the same java version, so hopefully you should not run into any issues running this project.
 
+Please be patient with building the first time, since the build script will first download the gradle build utility and then compile the jar.
+
 ============================================================================================================================
 
 BUILDING THE SOURCE:
