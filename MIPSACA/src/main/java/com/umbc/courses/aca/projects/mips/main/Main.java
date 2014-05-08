@@ -6,7 +6,7 @@ import com.umbc.courses.aca.projects.mips.main.CPU.RUN;
 import com.umbc.courses.aca.projects.mips.memory.DataMemoryFileParser;
 import com.umbc.courses.aca.projects.mips.memory.DataMemoryManager;
 import com.umbc.courses.aca.projects.mips.program.ProgramManager;
-import com.umbc.courses.aca.projects.mips.program.ProgramParser;
+import com.umbc.courses.aca.projects.mips.program.ProgramFileParser;
 import com.umbc.courses.aca.projects.mips.registers.RegisterFileParser;
 import com.umbc.courses.aca.projects.mips.registers.RegisterManager;
 import com.umbc.courses.aca.projects.mips.results.ResultsManager;
@@ -45,7 +45,9 @@ public class Main
             System.out.println(CPU.RUN_TYPE);
         }
 
-        ProgramParser.parse(args[0]);
+        ResultsManager.instance.setResultsPath(args[4]);
+
+        ProgramFileParser.parse(args[0]);
         // ProgramManager.instance.dumpProgram();
 
         DataMemoryFileParser.parseMemoryFile(args[1]);
@@ -56,8 +58,6 @@ public class Main
 
         ConfigParser.parseConfigFile(args[3]);
         // ConfigManager.instance.dumpConfiguration();
-
-        ResultsManager.instance.setResultsPath(args[4]);
 
         /**
          * Initialize Global CLOCK and PC to 0

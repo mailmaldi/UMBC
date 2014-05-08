@@ -3,6 +3,8 @@ package com.umbc.courses.aca.projects.mips.program;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.umbc.courses.aca.projects.mips.instructions.ADDD;
 import com.umbc.courses.aca.projects.mips.instructions.AND;
@@ -25,23 +27,52 @@ import com.umbc.courses.aca.projects.mips.instructions.ORI;
 import com.umbc.courses.aca.projects.mips.instructions.SD;
 import com.umbc.courses.aca.projects.mips.instructions.SUBD;
 import com.umbc.courses.aca.projects.mips.instructions.SW;
+import com.umbc.courses.aca.projects.mips.registers.ValidateRegisterName;
+import com.umbc.courses.aca.projects.mips.results.ResultsManager;
 
-public class ProgramParser
+public class ProgramFileParser
 {
 
     public static void parse(String filePath) throws Exception
     {
 
         BufferedReader reader = null;
+        int count = 0;
+        String line = null;
+        List<String> labels = new ArrayList<String>();
         try
         {
             reader = new BufferedReader(new FileReader(new File(filePath)));
-
-            String line = null;
             while ((line = reader.readLine()) != null)
             {
-                parseInstLine(line);
+                count++;
+                parseInstLine(line, labels);
             }
+
+            // check if all labels have instructions
+            // also check if all branch,J inst's labels are present
+            for (String label : labels)
+            {
+                if (!ProgramManager.instance.LabelMap.containsKey(label))
+                    throw new Exception("Label [" + label + "]"
+                            + " not defined anywhere in program");
+            }
+
+            // HACK
+
+            Instruction inst = new HLT();
+            inst.setPrintableInstruction(inst.toString());
+            ProgramManager.instance.InstructionList.put(
+                    ProgramManager.instance.instructionCount++, inst);
+
+        }
+        catch (Exception e)
+        {
+            String message = "Invalid instructions file: " + e.getMessage()
+                    + " Line [" + count + "]" + " Line Value: " + line;
+            System.err.println(message);
+            ResultsManager.instance.writeLine(message);
+            throw e;
 
         }
         finally
@@ -49,32 +80,30 @@ public class ProgramParser
             if (reader != null)
                 reader.close();
         }
-        // HACK
-
-        Instruction inst = new HLT();
-        inst.setPrintableInstruction(inst.toString());
-        ProgramManager.instance.InstructionList.put(
-                ProgramManager.instance.instructionCount++, inst);
 
     }
 
-    private static void parseInstLine(String line) throws Exception
+    private static void parseInstLine(String line, List<String> labels)
+            throws Exception
     {
+        line = line.trim().toUpperCase();
+
         Instruction inst = null;
         String tokens[] = new String[5];
-        line = line.trim();
-        line = line.toUpperCase();
+
         String sourceRegister1, sourceRegister2, destinationRegister;
         String[] operands;
         int offset;
         int immediate;
+        String destinatonLabel;
 
-        /* CHECK IF IT HAS A LOOP */
+        /* CHECK IF IT HAS A LOOP , i.e. a LABEL */
         String loopName = "";
         if (line.contains(":"))
         {
             int index = line.lastIndexOf(':');
             loopName = line.substring(0, index);
+            loopName = validateAndGetLabelString(loopName);
             line = line.substring(index + 1);
             line = line.trim();
             ProgramManager.instance.LabelMap.put(loopName.trim(),
@@ -96,6 +125,10 @@ public class ProgramParser
                 sourceRegister1 = operands[1].substring(
                         operands[1].lastIndexOf('(') + 1,
                         operands[1].lastIndexOf(')'));
+                sourceRegister1 = ValidateRegisterName
+                        .getValidIntegerRegisterName(sourceRegister1);
+                destinationRegister = ValidateRegisterName
+                        .getValidIntegerRegisterName(destinationRegister);
                 inst = new LW(sourceRegister1, destinationRegister, offset);
                 break;
             case "L.D":
@@ -106,6 +139,10 @@ public class ProgramParser
                 sourceRegister1 = operands[1].substring(
                         operands[1].lastIndexOf('(') + 1,
                         operands[1].lastIndexOf(')'));
+                sourceRegister1 = ValidateRegisterName
+                        .getValidIntegerRegisterName(sourceRegister1);
+                destinationRegister = ValidateRegisterName
+                        .getValidFPRegisterName(destinationRegister);
                 inst = new LD(sourceRegister1, destinationRegister, offset);
                 break;
             case "SW":
@@ -116,6 +153,10 @@ public class ProgramParser
                 sourceRegister2 = operands[1].substring(
                         operands[1].lastIndexOf('(') + 1,
                         operands[1].lastIndexOf(')'));
+                sourceRegister1 = ValidateRegisterName
+                        .getValidIntegerRegisterName(sourceRegister1);
+                sourceRegister2 = ValidateRegisterName
+                        .getValidIntegerRegisterName(sourceRegister2);
                 inst = new SW(sourceRegister1, sourceRegister2, offset);
                 break;
             case "S.D":
@@ -126,6 +167,10 @@ public class ProgramParser
                 sourceRegister2 = operands[1].substring(
                         operands[1].lastIndexOf('(') + 1,
                         operands[1].lastIndexOf(')'));
+                sourceRegister1 = ValidateRegisterName
+                        .getValidFPRegisterName(sourceRegister1);
+                sourceRegister2 = ValidateRegisterName
+                        .getValidIntegerRegisterName(sourceRegister2);
                 inst = new SD(sourceRegister1, sourceRegister2, offset);
                 break;
             case "ADD.D":
@@ -135,6 +180,12 @@ public class ProgramParser
                 sourceRegister2 = operands[2];
                 inst = new ADDD(sourceRegister1, sourceRegister2,
                         destinationRegister);
+                sourceRegister1 = ValidateRegisterName
+                        .getValidFPRegisterName(sourceRegister1);
+                sourceRegister2 = ValidateRegisterName
+                        .getValidFPRegisterName(sourceRegister2);
+                destinationRegister = ValidateRegisterName
+                        .getValidFPRegisterName(destinationRegister);
                 break;
             case "SUB.D":
                 operands = getOperands(tokens);
@@ -143,6 +194,12 @@ public class ProgramParser
                 sourceRegister2 = operands[2];
                 inst = new SUBD(sourceRegister1, sourceRegister2,
                         destinationRegister);
+                sourceRegister1 = ValidateRegisterName
+                        .getValidFPRegisterName(sourceRegister1);
+                sourceRegister2 = ValidateRegisterName
+                        .getValidFPRegisterName(sourceRegister2);
+                destinationRegister = ValidateRegisterName
+                        .getValidFPRegisterName(destinationRegister);
                 break;
             case "MUL.D":
                 operands = getOperands(tokens);
@@ -151,6 +208,12 @@ public class ProgramParser
                 sourceRegister2 = operands[2];
                 inst = new MULD(sourceRegister1, sourceRegister2,
                         destinationRegister);
+                sourceRegister1 = ValidateRegisterName
+                        .getValidFPRegisterName(sourceRegister1);
+                sourceRegister2 = ValidateRegisterName
+                        .getValidFPRegisterName(sourceRegister2);
+                destinationRegister = ValidateRegisterName
+                        .getValidFPRegisterName(destinationRegister);
                 break;
             case "DIV.D":
                 operands = getOperands(tokens);
@@ -159,6 +222,12 @@ public class ProgramParser
                 sourceRegister2 = operands[2];
                 inst = new DIVD(sourceRegister1, sourceRegister2,
                         destinationRegister);
+                sourceRegister1 = ValidateRegisterName
+                        .getValidFPRegisterName(sourceRegister1);
+                sourceRegister2 = ValidateRegisterName
+                        .getValidFPRegisterName(sourceRegister2);
+                destinationRegister = ValidateRegisterName
+                        .getValidFPRegisterName(destinationRegister);
                 break;
             case "DADD":
                 operands = getOperands(tokens);
@@ -167,6 +236,12 @@ public class ProgramParser
                 sourceRegister2 = operands[2];
                 inst = new DADD(sourceRegister1, sourceRegister2,
                         destinationRegister);
+                sourceRegister1 = ValidateRegisterName
+                        .getValidIntegerRegisterName(sourceRegister1);
+                sourceRegister2 = ValidateRegisterName
+                        .getValidIntegerRegisterName(sourceRegister2);
+                destinationRegister = ValidateRegisterName
+                        .getValidIntegerRegisterName(destinationRegister);
                 break;
             case "DADDI":
                 operands = getOperands(tokens);
@@ -175,6 +250,10 @@ public class ProgramParser
                 immediate = Integer.parseInt(operands[2]);
                 inst = new DADDI(sourceRegister1, destinationRegister,
                         immediate);
+                sourceRegister1 = ValidateRegisterName
+                        .getValidIntegerRegisterName(sourceRegister1);
+                destinationRegister = ValidateRegisterName
+                        .getValidIntegerRegisterName(destinationRegister);
                 break;
             case "DSUB":
                 operands = getOperands(tokens);
@@ -183,6 +262,12 @@ public class ProgramParser
                 sourceRegister2 = operands[2];
                 inst = new DSUB(sourceRegister1, sourceRegister2,
                         destinationRegister);
+                sourceRegister1 = ValidateRegisterName
+                        .getValidIntegerRegisterName(sourceRegister1);
+                sourceRegister2 = ValidateRegisterName
+                        .getValidIntegerRegisterName(sourceRegister2);
+                destinationRegister = ValidateRegisterName
+                        .getValidIntegerRegisterName(destinationRegister);
                 break;
             case "DSUBI":
                 operands = getOperands(tokens);
@@ -191,6 +276,10 @@ public class ProgramParser
                 immediate = Integer.parseInt(operands[2]);
                 inst = new DSUBI(sourceRegister1, destinationRegister,
                         immediate);
+                sourceRegister1 = ValidateRegisterName
+                        .getValidIntegerRegisterName(sourceRegister1);
+                destinationRegister = ValidateRegisterName
+                        .getValidIntegerRegisterName(destinationRegister);
                 break;
             case "AND":
                 operands = getOperands(tokens);
@@ -199,6 +288,12 @@ public class ProgramParser
                 sourceRegister2 = operands[2];
                 inst = new AND(sourceRegister1, sourceRegister2,
                         destinationRegister);
+                sourceRegister1 = ValidateRegisterName
+                        .getValidIntegerRegisterName(sourceRegister1);
+                sourceRegister2 = ValidateRegisterName
+                        .getValidIntegerRegisterName(sourceRegister2);
+                destinationRegister = ValidateRegisterName
+                        .getValidIntegerRegisterName(destinationRegister);
                 break;
             case "ANDI":
                 operands = getOperands(tokens);
@@ -206,6 +301,10 @@ public class ProgramParser
                 sourceRegister1 = operands[1];
                 immediate = Integer.parseInt(operands[2]);
                 inst = new ANDI(sourceRegister1, destinationRegister, immediate);
+                sourceRegister1 = ValidateRegisterName
+                        .getValidIntegerRegisterName(sourceRegister1);
+                destinationRegister = ValidateRegisterName
+                        .getValidIntegerRegisterName(destinationRegister);
                 break;
             case "OR":
                 operands = getOperands(tokens);
@@ -214,6 +313,12 @@ public class ProgramParser
                 sourceRegister2 = operands[2];
                 inst = new OR(sourceRegister1, sourceRegister2,
                         destinationRegister);
+                sourceRegister1 = ValidateRegisterName
+                        .getValidIntegerRegisterName(sourceRegister1);
+                sourceRegister2 = ValidateRegisterName
+                        .getValidIntegerRegisterName(sourceRegister2);
+                destinationRegister = ValidateRegisterName
+                        .getValidIntegerRegisterName(destinationRegister);
                 break;
             case "ORI":
                 operands = getOperands(tokens);
@@ -221,33 +326,48 @@ public class ProgramParser
                 sourceRegister1 = operands[1];
                 immediate = Integer.parseInt(operands[2]);
                 inst = new ORI(sourceRegister1, destinationRegister, immediate);
+                sourceRegister1 = ValidateRegisterName
+                        .getValidIntegerRegisterName(sourceRegister1);
+                destinationRegister = ValidateRegisterName
+                        .getValidIntegerRegisterName(destinationRegister);
                 break;
             case "BEQ":
                 operands = getOperands(tokens);
                 sourceRegister1 = operands[0];
                 sourceRegister2 = operands[1];
-                destinationRegister = operands[2];
+                destinatonLabel = validateAndGetLabelString(operands[2]);
                 inst = new BEQ(sourceRegister1, sourceRegister2,
-                        destinationRegister);
+                        destinatonLabel);
+                sourceRegister1 = ValidateRegisterName
+                        .getValidIntegerRegisterName(sourceRegister1);
+                sourceRegister2 = ValidateRegisterName
+                        .getValidIntegerRegisterName(sourceRegister2);
+                labels.add(destinatonLabel);
                 break;
             case "BNE":
                 operands = getOperands(tokens);
                 sourceRegister1 = operands[0];
                 sourceRegister2 = operands[1];
-                destinationRegister = operands[2];
+                destinatonLabel = validateAndGetLabelString(operands[2]);
                 inst = new BNE(sourceRegister1, sourceRegister2,
-                        destinationRegister);
+                        destinatonLabel);
+                sourceRegister1 = ValidateRegisterName
+                        .getValidIntegerRegisterName(sourceRegister1);
+                sourceRegister2 = ValidateRegisterName
+                        .getValidIntegerRegisterName(sourceRegister2);
+                labels.add(destinatonLabel);
                 break;
             case "HLT":
                 inst = new HLT();
                 break;
             case "J":
                 operands = getOperands(tokens);
-                destinationRegister = operands[0];
-                inst = new J(destinationRegister);
+                destinatonLabel = validateAndGetLabelString(operands[0]);
+                inst = new J(destinatonLabel);
+                labels.add(destinatonLabel);
                 break;
             default:
-                throw new Exception("Illegal Instruction encountered");
+                throw new Exception("Illegal Instruction ");
 
         }
         loopName = (loopName != null && loopName.length() > 0) ? loopName
@@ -287,6 +407,14 @@ public class ProgramParser
             }
         }
         return arg1;
+    }
+
+    private static String validateAndGetLabelString(String string)
+            throws Exception
+    {
+        if (string == null || string.length() == 0)
+            throw new Exception("LABEL String is empty");
+        return string.trim();
     }
 
 }

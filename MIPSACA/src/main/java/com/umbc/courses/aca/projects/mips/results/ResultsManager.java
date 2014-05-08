@@ -36,6 +36,25 @@ public class ResultsManager
         resultsWriter = new BufferedWriter(new FileWriter(new File(path)));
     }
 
+    public void closeFile() throws IOException
+    {
+        if (resultsWriter != null)
+        {
+            resultsWriter.flush();
+            resultsWriter.close();
+        }
+    }
+
+    public void writeLine(String line) throws IOException
+    {
+        if (resultsWriter != null)
+        {
+            resultsWriter.write(line);
+            resultsWriter.newLine();
+            resultsWriter.flush();
+        }
+    }
+
     public void printResults()
     {
 

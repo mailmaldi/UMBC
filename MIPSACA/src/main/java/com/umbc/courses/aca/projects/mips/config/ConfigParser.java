@@ -4,19 +4,22 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 
+import com.umbc.courses.aca.projects.mips.results.ResultsManager;
+
 public class ConfigParser
 {
 
     public static void parseConfigFile(String fileName) throws Exception
     {
         BufferedReader bfread = null;
+        int count = 0;
         try
         {
 
             bfread = new BufferedReader(new FileReader(new File(fileName)));
 
             String line = null;
-            int count = 0;
+            count = 0;
 
             while ((line = bfread.readLine()) != null)
             {
@@ -29,6 +32,14 @@ public class ConfigParser
 
             }
             System.out.println("Total Number of Config Elements = " + count);
+        }
+        catch (Exception e)
+        {
+            String message = "Invalid config file: " + e.getMessage()
+                    + " Line [" + count + "]";
+            System.err.println(message);
+            ResultsManager.instance.writeLine(message);
+            throw e;
         }
         finally
         {
