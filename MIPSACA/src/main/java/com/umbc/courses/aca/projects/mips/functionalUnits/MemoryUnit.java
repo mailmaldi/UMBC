@@ -4,7 +4,6 @@ import com.umbc.courses.aca.projects.mips.cache.DCacheManager;
 import com.umbc.courses.aca.projects.mips.config.ConfigManager;
 import com.umbc.courses.aca.projects.mips.instructions.Instruction;
 import com.umbc.courses.aca.projects.mips.instructions.InstructionUtils;
-import com.umbc.courses.aca.projects.mips.instructions.NOOP;
 import com.umbc.courses.aca.projects.mips.instructions.StoreInstruction;
 import com.umbc.courses.aca.projects.mips.main.CPU;
 import com.umbc.courses.aca.projects.mips.memory.DataMemoryManager;
@@ -68,7 +67,7 @@ public class MemoryUnit extends FunctionalUnit
         validateQueueSize();
 
         Instruction inst = peekFirst();
-        if ((inst instanceof NOOP))
+        if (InstructionUtils.isNOOP(inst))
             return;
 
         System.out.println(CPU.CLOCK + " Memory " + inst.debugString());
@@ -82,7 +81,7 @@ public class MemoryUnit extends FunctionalUnit
 
         if (InstructionUtils.isLoadStore(inst))
         {
-            if (inst instanceof StoreInstruction)
+            if (InstructionUtils.isStore(inst))
                 DataMemoryManager.instance.setValueToAddress((int) inst
                         .getDestinationAddress(),
                         (int) ((StoreInstruction) inst).getValueToWrite()
