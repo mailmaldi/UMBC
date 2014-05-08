@@ -13,50 +13,6 @@ public class DCache
         dCacheSet[1] = new DCacheSet();
     }
 
-    //
-    // public int isPresent(int address)
-    // {
-    // DCacheSet set = getSet(address);
-    // int baseAddress = getBaseAddress(address);
-    //
-    // for (int i = 0; i < 2; i++)
-    // {
-    // if (baseAddress == set.dCacheBlocks[i].baseAddress)
-    // return i;
-    // }
-    // return -1;
-    // }
-    //
-    // public DCacheBlock getBlockForAddress(int address)
-    // {
-    // DCacheSet set = getSet(address);
-    //
-    // int blockId = isPresent(address);
-    // if (blockId == -1)
-    // {
-    // blockId = set.lru;
-    // set.lru ^= 1;
-    // }
-    // else
-    // {
-    // // when found same address in cache
-    // }
-    // return set.dCacheBlocks[blockId];
-    // }
-    //
-    // public boolean isDirty(int address)
-    // {
-    // DCacheBlock block = getBlockForAddress(address);
-    // return (block != null && block.dirty);
-    // }
-    //
-    // public void setData(int address)
-    // {
-    // DCacheBlock block = getBlockForAddress(address);
-    // block.baseAddress = getBaseAddress(address);
-    // block.dirty = true;
-    // }
-
     private DCacheSet getSet(int address)
     {
         int setId = address & 0b10000;
@@ -85,13 +41,13 @@ public class DCache
 
     public void updateBlock(int address, boolean store) throws Exception
     {
-        // TODO Auto-generated method stub
         DCacheSet set = getSet(address);
         int baseAddress = Utils.getDCacheTag(address);
 
         DCacheBlock block = null;
-        // update same address block, if not then free block , if not then
-        // lrublock
+        // update same address block,
+        // if not then free block ,
+        // if not then lrublock
         if (doesAddressExist(address))
         {
             block = set.getAddressBlock(baseAddress);
@@ -106,8 +62,9 @@ public class DCache
         }
         if (block == null)
             throw new Exception("DCache cannot find a null block");
+        if (block.tag != baseAddress)
+            block.dirty = store;
         block.tag = baseAddress;
-        block.dirty = store;
         set.toggleLRU(block);
     }
 

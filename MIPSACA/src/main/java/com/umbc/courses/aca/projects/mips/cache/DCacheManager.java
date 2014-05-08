@@ -44,11 +44,7 @@ public class DCacheManager
         dCacheAccessRequests += request.dInstruction ? 2 : 1;
         if (request.dInstruction)
         {
-            int address1Tag = Utils.getDCacheTag(address);
-            int address2Tag = Utils.getDCacheTag(address + 4);
-            int address1Set = Utils.getDCacheSet(address);
-            int address2Set = Utils.getDCacheSet(address + 4);
-            if ((address1Tag == address2Tag) && (address1Set == address2Set))
+            if (Utils.areDCacheAddressesSameBlock(address, address + 4))
             {
                 if (cache.doesAddressExist(address))
                     dCacheAccessHits += 2;
@@ -107,35 +103,42 @@ public class DCacheManager
             if (cache.doesAddressExist(address))
             {
                 clocksToBlock += ConfigManager.instance.DCacheLatency;
-                if (Utils.getDCacheTag(address + 4) != Utils
-                        .getDCacheTag(address)
-                        || Utils.getDCacheSet(address + 4) != Utils
-                                .getDCacheSet(address))
+                if (!Utils.areDCacheAddressesSameBlock(address, address + 4))
                     if (cache.doesAddressExist(address + 4))
                     {
                         clocksToBlock += ConfigManager.instance.DCacheLatency;
                     }
                     else
                     {
-                        clocksToBlock += get2TPlusKValue();
+                        if (cache.isThereAFreeBlock(address + 4)
+                                || !cache.isLRUBlockDirty(address + 4))
+                            clocksToBlock += get2TPlusKValue();
+                        else
+                            clocksToBlock += 2 * get2TPlusKValue();
                     }
                 else
                     clocksToBlock += ConfigManager.instance.DCacheLatency;
             }
             else
             {
-                clocksToBlock += get2TPlusKValue();
-                if (Utils.getDCacheTag(address + 4) != Utils
-                        .getDCacheTag(address)
-                        || Utils.getDCacheSet(address + 4) != Utils
-                                .getDCacheSet(address))
+                if (cache.isThereAFreeBlock(address)
+                        || !cache.isLRUBlockDirty(address))
+                    clocksToBlock += get2TPlusKValue();
+                else
+                    clocksToBlock += 2 * get2TPlusKValue();
+
+                if (!Utils.areDCacheAddressesSameBlock(address, address + 4))
                     if (cache.doesAddressExist(address + 4))
                     {
                         clocksToBlock += ConfigManager.instance.DCacheLatency;
                     }
                     else
                     {
-                        clocksToBlock += get2TPlusKValue();
+                        if (cache.isThereAFreeBlock(address + 4)
+                                || !cache.isLRUBlockDirty(address + 4))
+                            clocksToBlock += get2TPlusKValue();
+                        else
+                            clocksToBlock += 2 * get2TPlusKValue();
                     }
                 else
                     clocksToBlock += ConfigManager.instance.DCacheLatency;
@@ -149,7 +152,11 @@ public class DCacheManager
             }
             else
             {
-                clocksToBlock = get2TPlusKValue();
+                if (cache.isThereAFreeBlock(address)
+                        || !cache.isLRUBlockDirty(address))
+                    clocksToBlock += get2TPlusKValue();
+                else
+                    clocksToBlock += 2 * get2TPlusKValue();
             }
         }
 

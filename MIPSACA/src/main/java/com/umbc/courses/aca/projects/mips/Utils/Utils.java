@@ -21,4 +21,13 @@ public class Utils
         baseAddress = baseAddress & 0b1;
         return baseAddress;
     }
+
+    public static boolean areDCacheAddressesSameBlock(int address1, int address2)
+    {
+        if ((getDCacheSet(address1) == getDCacheSet(address2))
+                && (getDCacheTag(address1) == getDCacheTag(address2)))
+            return true;
+        else
+            return false;
+    }
 }

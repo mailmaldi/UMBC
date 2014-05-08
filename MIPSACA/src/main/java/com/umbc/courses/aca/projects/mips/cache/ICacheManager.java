@@ -46,12 +46,7 @@ public class ICacheManager
         else
         {
             request.needsBusAccess = true;
-            // if (MemoryBusManager.instance.iCacheCanProceed())
-            // {
-            // request.hasBusAccess = true;
-            // }
             request.clockCyclesToBlock = get2TPlusKValue();
-
         }
         request.clockCyclesToBlock--; // since we do +1 in entry clock
         System.out.println(CPU.CLOCK + " " + this.getClass().getSimpleName()
