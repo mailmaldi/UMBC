@@ -103,7 +103,7 @@ public class MemoryUnit extends FunctionalUnit
     {
         Instruction inst = peekFirst();
         if (InstructionUtils.isNOOP(inst))
-            return true;
+            return false;
         if (InstructionUtils.isLoadStore(inst))
         {
             switch (CPU.RUN_TYPE)
