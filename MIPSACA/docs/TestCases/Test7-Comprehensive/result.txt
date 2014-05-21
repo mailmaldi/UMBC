@@ -1,0 +1,63 @@
+instruction                   	IF		ID		EX		WB		RAW		WAR		WAW		Struct
+lw r1,0(r28)                  	8		9		18		19		N		N		N		N
+lw r2,4(r29)                  	9		10		19		20		N		N		N		Y
+lw r3,16(r30)                 	10		18		34		35		N		N		N		Y
+lw r4,20(r31)                 	18		19		35		36		N		N		N		Y
+dsub r5,r27,r1                	26		34		36		37		N		N		N		Y
+dsubi r6,r2,4                 	34		35		37		38		N		N		N		N
+dadd r7,r26,r3                	35		36		38		39		N		N		N		N
+daddi r8,r4,4                 	36		37		39		40		N		N		N		N
+gg1:l.d f1,0(r5)              	44		45		48		49		N		N		N		N
+l.d f2,4(r6)                  	45		46		50		51		N		N		N		Y
+l.d f3,4(r7)                  	46		48		52		53		N		N		N		Y
+l.d f4,8(r8)                  	48		50		65		66		N		N		N		Y
+add.d f5,f4,f1                	56		66		69		70		Y		N		N		N
+sub.d f5,f3,f2                	66		70		73		74		N		N		Y		N
+mul.d f4,f4,f5                	70		74		79		80		Y		N		N		N
+mul.d f5,f3,f1                	74		75		80		81		N		N		N		N
+div.d f7,f5,f3                	82		83		93		94		N		N		N		N
+div.d f8,f6,f1                	83		93		103		104		N		N		N		Y
+s.d f8,12(r25)                	93		104		107		108		Y		N		N		N
+s.d f7,8(r25)                 	104		105		109		110		N		N		N		Y
+s.d f6,4(r25)                 	112		113		116		117		N		N		N		N
+s.d f5,0(r25)                 	113		114		118		119		N		N		N		Y
+dsub r9,r9,r0                 	114		116		119		120		N		N		N		Y
+bne r1,r9,gg1                 	116		120						Y		N		N		N
+gg1:l.d f1,0(r5)              	132		133		136		137		N		N		N		N
+l.d f2,4(r6)                  	133		134		138		139		N		N		N		Y
+l.d f3,4(r7)                  	134		136		140		141		N		N		N		Y
+l.d f4,8(r8)                  	136		138		142		143		N		N		N		Y
+add.d f5,f4,f1                	138		143		146		147		Y		N		N		N
+sub.d f5,f3,f2                	143		147		150		151		N		N		Y		N
+mul.d f4,f4,f5                	147		151		156		157		Y		N		N		N
+mul.d f5,f3,f1                	151		152		157		158		N		N		N		N
+div.d f7,f5,f3                	152		158		168		169		Y		N		N		N
+div.d f8,f6,f1                	158		168		178		179		N		N		N		Y
+s.d f8,12(r25)                	168		179		182		183		Y		N		N		N
+s.d f7,8(r25)                 	179		180		184		185		N		N		N		Y
+s.d f6,4(r25)                 	180		182		186		187		N		N		N		Y
+s.d f5,0(r25)                 	182		184		188		189		N		N		N		Y
+dsub r9,r9,r0                 	184		186		189		190		N		N		N		Y
+bne r1,r9,gg1                 	186		190						Y		N		N		N
+sw r5,4(r17)                  	194		195		197		198		N		N		N		N
+sw r6,8(r18)                  	195		196		198		199		N		N		N		N
+sw r7,12(r19)                 	196		197		199		200		N		N		N		N
+sw r8,16(r20)                 	197		198		200		201		N		N		N		N
+gg2:and r10,r14,r15           	205		206		208		209		N		N		N		N
+andi r11,r14,0                	206		207		209		210		N		N		N		N
+beq r10,r11,end               	207		210						Y		N		N		N
+or r15,r11,r16                	210		211		213		214		N		N		N		N
+ori r15,r15,0                 	218		219		221		222		N		N		N		N
+j gg2                         	219		220						N		N		N		N
+end:hlt                       	220								N		N		N		N
+gg2:and r10,r14,r15           	221		222		224		225		N		N		N		N
+andi r11,r14,0                	222		223		225		226		N		N		N		N
+beq r10,r11,end               	223		226						Y		N		N		N
+or r15,r11,r16                	226								N		N		N		N
+end:hlt                       	227		228						N		N		N		N
+hlt                           	228								N		N		N		N
+
+Total number of requests to instruction cache  58
+Total number of instruction cache hit  47
+Total number of requests to data cache  40
+Total number of data cache hit  37

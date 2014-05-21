@@ -1,0 +1,10 @@
+Instruction                     FT      ID      EX      WB      RAW     WAR     WAW     Struct  
+LD F1, 4(R4)                    6       7       15      16      N       N       N       N       
+ADDD F2, F2, F1                 7       16      20      21      Y       N       N       N       
+HLT                             16      17                      N       N       N       N       
+HLT                                                             N       N       N       N       
+
+Total number of requests to instruction cache                   4
+Total number of instruction cache hit                           3
+Total number of requests to data cache                          2
+Total number of data cache hit                                  1

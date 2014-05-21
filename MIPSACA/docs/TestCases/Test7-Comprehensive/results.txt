@@ -1,0 +1,21 @@
+Instruction                     FT      ID      EX      WB      RAW     WAR     WAW     Struct  
+LW R1, 0(R28)                   8       9       18      19      N       N       N       N       
+LW R2, 4(R29)                   9       10      19      20      N       N       N       Y       
+LW R3, 16(R30)                  10      18      34      35      N       N       N       Y       
+LW R4, 20(R31)                  18      19      35      36      N       N       N       Y       
+DSUB R5, R27, R1                26      34      36      37      N       N       N       Y       
+DSUBI R6, R2, 4                 34      35      37      38      N       N       N       N       
+DADD R7, R26, R3                35      36      38      39      N       N       N       N       
+DADDI R8, R4, 4                 36      37      39      40      N       N       N       N       
+GG1: LD F1, 0(R5)               44      45      48      49      N       N       N       N       
+LD F2, 4(R6)                    45      46      50      51      N       N       N       Y       
+LD F3, 4(R7)                    46      48      52      53      N       N       N       Y       
+LD F4, 8(R8)                    48      50      65      66      N       N       N       Y       
+ADDD F5, F4, F1                 56      66                      Y       N       N       Y       
+SUBD F5, F3, F2                 66                              N       N       Y       N       
+MULD F4, F4, F5                                                 N       N       N       N       
+
+Total number of requests to instruction cache                  15
+Total number of instruction cache hit                          11
+Total number of requests to data cache                         12
+Total number of data cache hit                                  9
